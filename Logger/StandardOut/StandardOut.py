@@ -35,8 +35,6 @@ class StandardOut(Logger):
 	#
 	#A timestamp is logged alongside with the logged message.
 	def log(self,level,message,*arguments):
-		import datetime
-		datetime = datetime.datetime.now()
-		formatted = "[" + str(datetime.hour) + ":" + str(datetime.minute) + ":" + str(datetime.second) + "] " #Format the date and time.
+		formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
 		formatted += message % arguments #Replace the %'s in the message with the arguments.
 		print(formatted)
