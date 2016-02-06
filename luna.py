@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+#This is free and unencumbered software released into the public domain.
+#
+#Anyone is free to copy, modify, publish, use, compile, sell, or distribute this
+#software, either in source code form or as a compiled binary, for any purpose,
+#commercial or non-commercial, and by any means.
+#
+#In jurisdictions that recognize copyright laws, the author or authors of this
+#software dedicate any and all copyright interest in the software to the public
+#domain. We make this dedication for the benefit of the public at large and to
+#the detriment of our heirs and successors. We intend this dedication to be an
+#overt act of relinquishment in perpetuity of all present and future rights to
+#this software under copyright law.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+#ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+#WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+#For more information, please refer to <https://unlicense.org/>
+
+import os #For finding the root directory of Luna.
+import sys #For reading command line arguments.
+from Luna.Plugins import Plugins
+
+#Starts the Luna application.
+#
+#This process will start the plugin registering, and then selects a logger and
+#an interface based on the command line arguments.
+#
+#\return True if the application was finished successfully, or False if
+#something went wrong.
+class Luna(object):
+	def run(self):
+		baseDir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
+		Plugins.addPluginLocation(os.path.join(baseDir,"Interface"))
+		Plugins.addPluginLocation(os.path.join(baseDir,"Logger"))
+		Plugins.discover()
+
+		loggerName = "StandardOut" #The logger for this part of the interface is StandardOut. An interface may select its own logger if it so wishes.
+		logger = Plugins.getLogger(loggerName)
+		if not logger:
+			print("Could not load the logger %s. Aborting.",loggerName)
+			return False
+
+		interfaceName = "Automatic" #Default to Automatic interface.
+		if len(sys.argv) >= 2:
+			interfaceName = sys.argv[1]
+		interface = Plugins.getInterface(interfaceName)
+		if not interface:
+			logger.log("e","Could not load the interface %s. Aborting.",interfaceName)
+			return False
+		interface.start()
+
+		return True #Success.
+
+#Launches Luna if called from the command line.
+if __name__ == "__main__":
+	application = Luna()
+	application.run()
