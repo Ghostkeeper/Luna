@@ -11,4 +11,4 @@ __pycache__/
 #IDEs
 .kdev4 #KDevelop 4
 *.kdev4
-.idea #PyCharm
+.idea/* #PyCharm
