@@ -47,6 +47,17 @@ class StandardOut(Logger):
 		else:
 			self.colourPrintAnsi(formatted,level)
 
+	#Prints a message with colour-coding in Windows Bash.
+	#
+	#The colour coding is based on the level of the message:
+	# - Red for errors.
+	# - Magenta for criticals.
+	# - Yellow for warnings.
+	# - Green for information.
+	# - Blue for debug messages.
+	#
+	#\param message The text to print.
+	#\param level The warning level of the message.
 	def colourPrintWin32(self,message,level):
 		if level == Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
@@ -59,8 +70,19 @@ class StandardOut(Logger):
 		elif level == Level.DEBUG:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
 		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #White.
+		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
 
+	#Prints a message with colour-coding in ANSI-based terminals, such as Linux.
+	#
+	#The colour coding is based on the level of the message:
+	# - Red for errors.
+	# - Magenta for criticals.
+	# - Yellow for warnings.
+	# - Green for information.
+	# - Blue for debug messages.
+	#
+	#\param message The text to print.
+	#\param level The warning level of the message.
 	def colourPrintAnsi(self,message,level):
 		if level == Level.ERROR:
 			ansiColour = '\033[38m' #Red.
