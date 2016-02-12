@@ -1,4 +1,5 @@
-#Add the directories that need to be processed.
-add_subdirectory(Luna) #The internal Luna directory.
-add_subdirectory(Interface)
-add_subdirectory(Logger)
+cmake_minimum_required(VERSION 2.6)
+project(Luna)
+
+#Dependencies.
+find_package(PythonInterp 3.4.0 REQUIRED)
