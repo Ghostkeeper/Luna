@@ -22,15 +22,16 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from Luna.Logger import Logger,Level
+from Luna.Logger import Level
+from Luna.LoggerPlugin import LoggerPlugin
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
 
 #Logs messages to the standard output of the program.
-class StandardOut(Logger):
+class StandardOut(LoggerPlugin):
 	#Creates a new instance of the StandardOut logger.
 	def __init__(self):
-		Logger.__init__(self)
+		LoggerPlugin.__init__(self)
 		self.__standardOutHandle = None
 		if ctypes and ctypes.windll and ctypes.windll.kernel32: #Windows bash.
 			self.__standardOutHandle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.

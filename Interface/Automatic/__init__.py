@@ -22,13 +22,13 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from . import Automatic
+from Automatic import Automatic
 
 def metadata():
 	return {
 		"api": 1,
 		"type": "Interface",
-		"class": Automatic,
+		"class": Automatic.Automatic,
 		"dependencies": [
 			"Logger/StandardOut"
 		]

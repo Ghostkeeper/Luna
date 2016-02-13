@@ -22,13 +22,13 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from . import StandardOut
+from StandardOut import StandardOut
 
 def metadata():
 	return {
 		"api": 1,
 		"type": "Logger",
-		"class": StandardOut,
+		"class": StandardOut.StandardOut,
 		"dependencies": [
 		]
 	}

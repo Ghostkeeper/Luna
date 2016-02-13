@@ -22,9 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-import importlib.util #Imports Python modules dynamically.
+import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
-import pkgutil #Imports Python packages dynamically.
+from Luna.Logger import Level #Logging messages.
+from Luna.Logger import Logger #Logging messages.
 
 #Handles all administration on plug-ins.
 #
@@ -49,8 +50,8 @@ class Plugins:
 
 	#Dictionary holding all plug-ins.
 	#
-	#The plug-ins are indexed by a key of the form "<type>/<name>", indicating
-	#the type and the name of the plug-in.
+	#The plug-ins are indexed by tuples as keys, of the form (<type>,<name>),
+	#where <type> is the plug-in type and <name> the identifier of the plug-in.
 	__plugins = {}
 
 	#Adds a location to the list of locations where the application looks for
@@ -71,58 +72,67 @@ class Plugins:
 	#This method can also be used to update the plug-in repository, but plug-ins
 	#are not deleted then. Only new plug-ins are added by this function.
 	def discover():
-		candidates = [] #Plug-ins we've found here. Dependencies are not checked yet when they enter this list.
-		pluginPaths = Plugins.__findPluginPaths()
-		for pluginPath in pluginPaths:
-			module = Plugins.__createPackage(pluginPath)
-			if not module: #Module loading failed.
+		candidates = Plugins.__findCandidates() #Makes a list of (id,path) tuples indicating names and folder paths of possible plug-ins.
+		dependencyCandidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. Tuples of (name,type,class,dependencies).
+		for name,folder in candidates:
+			Logger.log(Level.DEBUG,"Loading plug-in %s from %s.",name,folder)
+			#Loading the plug-in.
+			module = Plugins.__loadCandidate(name,folder)
+			if not module: #Failed to load module.
 				continue
-
-			#Reading the metadata.
+			
+			#Parsing the metadata.
 			try:
 				metadata = module.metadata()
-			except: #Error in metadata()
+			except Exception as e:
+				Logger.log(Level.WARNING,"Failed to load metadata of plug-in %s: %s",name,str(e))
 				continue
-			if not isinstance(metadata,dict): #Metadata didn't return a dictionary.
+			if not metadata or not isinstance(metadata,dict): #Metadata not a dictionary.
+				Logger.log(Level.WARNING,"Metadata of plug-in %s is not a dictionary. Can't load this plug-in.",name)
 				continue
-			if not "api" in metadata or metadata["api"] > Plugins.APIVERSION: #Plug-in requires newer version of Luna to interface.
+			if not "api" in metadata:
+				Logger.log(Level.WARNING,"Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
+				continue
+			if metadata["api"] > Plugins.APIVERSION:
+				Logger.log(Level.WARNING,"Plug-in %s is too modern for this version of the application. Can't load this plug-in.",name)
 				continue
 			if not "type" in metadata:
+				Logger.log(Level.WARNING,"Plug-in %s defines no plug-in type. Can't load this plug-in.",name)
 				continue
-			pluginType = metadata["type"]
+			if Plugins.__getPlugin(metadata["type"],name):
+				Logger.log(Level.WARNING,"Plug-in %s is already loaded.",name)
+				continue
 			if not "class" in metadata:
+				Logger.log(Level.WARNING,"Plug-in %s defines no base class. Can't load this plug-in.",name)
 				continue
-			pluginClass = metadata["class"]
-			_,name = os.path.split(pluginPath) #Get the name of the plug-in from the directory name.
-			dependencies = [] #If this entry is missing, assume there are no dependencies.
+			dependencies = [] #If this entry is missing, give a warning but assume that there are no dependencies.
 			if "dependencies" in metadata:
 				dependencies = metadata["dependencies"]
+			else:
+				Logger.log(Level.WARNING,"Plug-in %s defines no dependencies. Assuming it has no dependencies.",name)
 
-			#Creating the plug-in instance.
-			try:
-				plugin = pluginClass() #Run the constructor of the plug-in class!
-			except: #Plug-in constructor gave an exception.
-				continue
-			plugin.name = name
-			plugin.type = pluginType
-			plugin.dependencies = dependencies
-			candidates.append(plugin)
+			dependencyCandidates.append((name,metadata["type"],metadata["class"],dependencies,module))
 
-		#Now go through the list and add all plug-ins whose dependencies can be met.
-		for plugin in candidates:
-			for dependency in plugin.dependencies:
-				if "/" not in dependency: #Dependency syntax in plug-in metadata is wrong.
-					break
+		#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
+		for pluginName,pluginType,pluginClass,pluginDependencies,pluginModule in dependencyCandidates:
+			for dependency in pluginDependencies:
+				if dependency.count("/") != 1:
+					Logger.log(Level.WARNING,"Plug-in %s has an invalid dependency %s.",pluginName,dependency)
+					continue #With the next dependency.
 				dependencyType,dependencyName = dependency.split("/",1) #Parse the dependency.
-				for candidate in candidates:
-					if candidate.type == dependencyType and candidate.name == dependencyName: #Found the dependency.
+				for dependencyCandidateName,dependencyCandidateType,_,_,_ in dependencyCandidates: #See if that dependency is present.
+					if dependencyName == dependencyCandidateName and dependencyType == dependencyCandidateType:
 						break
 				else: #Dependency was not found.
+					Logger.log(Level.WARNING,"Plug-in %s is missing dependency %s!",pluginName,dependency)
 					break
-			else: #All dependencies are present.
-				Plugins.__plugins[plugin.type + "/" + plugin.name] = plugin #Actually add the plug-in!
-
-		importlib.invalidate_caches() #Updates cached versions of the packages.
+			else: #All dependencies are resolved!
+				try:
+					pluginInstance = pluginClass() #Actually construct an instance of the plug-in.
+				except Exception as e:
+					Logger.log(Level.WARNING,"Initialising plug-in %s failed: %s",pluginName,str(e))
+					continue #With next plug-in.
+				Plugins.__plugins[(pluginType,pluginName)] = pluginInstance
 
 	#Gets an interface plug-in with the specified name, if it exists.
 	#
@@ -138,52 +148,57 @@ class Plugins:
 	def getLogger(name):
 		return Plugins.__getPlugin("Logger",name)
 
-	#Creates a package out of the specified plug-in path.
+	#Finds candidates for what looks like might be plug-ins.
 	#
-	#The path should already be known to contain __init__.py. This function does
-	#two things under water: It loads all modules in the specified folder, and
-	#it creates an additional model for __init__.py and executes that model. The
-	#init script's model is returned so that the metadata can be requested from
-	#that script later.
+	#A candidate is a folder inside a plug-in location, which has a file
+	#"__init__.py". The file is not yet ran at this point.
 	#
-	#\param pluginPath The path to the plug-in's folder.
-	#\return A Python module created from the init script in the specified
-	#folder, or None if loading failed.
-	def __createPackage(pluginPath):
-		#Create a package from all modules in the plugin folder.
-		for importer,packageName,_ in pkgutil.iter_modules([pluginPath]):
-			module = importer.find_module(packageName).load_module(packageName)
-
-		#Create a module from __init__.py
-		_,packageName = os.path.split(pluginPath)
-		try:
-			spec = importlib.util.spec_from_file_location(packageName,os.path.join(pluginPath,"__init__.py"))
-			module = importlib.util.module_from_spec(spec)
-			spec.loader.exec_module(module)
-		except: #Any number of reasons: No __init__.py, syntax error, dependency not mentioned, etc.
-			return None
-		return module
-
-	#Creates a list of paths to folders of candidate plug-ins.
-	#
-	#These candidates are plug-ins that might be loaded as a real plug-in at
-	#some point, but whether this is possible is not certain yet because the
-	#metadata has not yet been looked at.
-	#
-	#\return A list of paths to plug-in folders.
-	def __findPluginPaths():
+	#\return A list of tuples of the form (name,path), containing respectively
+	#the name of the plug-in and the path to the plug-in's folder.
+	def __findCandidates():
 		candidates = []
 		for location in Plugins.__pluginLocations:
 			if not os.path.isdir(location): #Invalid plug-in location.
+				Logger.log(Level.WARNING,"Plug-in location not valid: %s",location)
 				continue
 			for pluginFolder in os.listdir(location):
+				name = pluginFolder #The name of the folder becomes the plug-in's actual name.
 				pluginFolder = os.path.join(location,pluginFolder)
 				if not os.path.isdir(pluginFolder): #os.listdir gets both files and folders. We want only folders at this level.
 					continue
 				initScript = os.path.join(pluginFolder,"__init__.py") #Plug-in must have an init script.
 				if os.path.exists(initScript) and (os.path.isfile(initScript) or os.path.islink(initScript)):
-					candidates.append(pluginFolder)
+					candidates.append((name,location))
 		return candidates
+
+	#Loads a plug-in candidate as a Python library.
+	#
+	#This is intended to be used on Python packages, containing an init script.
+	#
+	#\param name The name of the plug-in to load. Hierarchical names are not
+	#supported.
+	#\param folder The path to the folder where the plug-in can be found.
+	#\return A Python module representing the plug-in. If anything went wrong,
+	#None is returned.
+	def __loadCandidate(name,folder):
+		if "." in name:
+			Logger.log(Level.WARNING,"Can't load plug-in %s: Invalid plug-in name; periods are forbidden.",name)
+			return None
+		try:
+			file,path,description = imp.find_module(name,[folder])
+		except Exception as e:
+			Logger.log(Level.WARNING,"Failed to find module of plug-in in %s: %s",folder,str(e))
+			return None
+		try:
+			module = imp.load_module(name,file,path,description)
+		except Exception as e:
+			Logger.log(Level.WARNING,"Failed to load plug-in %s: %s",name,str(e))
+			return None
+		finally:
+			if file: #Plug-in loading should not open any files, but if it does, close it immediately.
+				Logger.log(Level.WARNING,"Plug-in %s is a file: %s",name,str(file))
+				file.close()
+		return module
 
 	#Gets a plug-in of the specified type and the specified name, if it exists.
 	#
@@ -191,7 +206,6 @@ class Plugins:
 	#\param name The name of the plug-in to get.
 	#\return The plug-in, or None if it doesn't exist.
 	def __getPlugin(type,name):
-		id = type + "/" + name
-		if id in Plugins.__plugins:
-			return Plugins.__plugins[id]
+		if (type,name) in Plugins.__plugins:
+			return Plugins.__plugins[(type,name)]
 		return None #Plug-in couldn't be found.
