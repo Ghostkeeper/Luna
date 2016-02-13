@@ -24,8 +24,7 @@
 
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
-from Luna.Logger import Level #Logging messages.
-from Luna.Logger import Logger #Logging messages.
+from Luna.Logger import Level,Logger #Logging messages.
 
 #Handles all administration on plug-ins.
 #
