@@ -12,3 +12,6 @@ __pycache__/
 .kdev4 #KDevelop 4
 *.kdev4
 .idea/* #PyCharm
+
+#Building
+build/*
