@@ -51,9 +51,9 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
 			formatted += message % arguments #Replace the %'s in the message with the arguments.
 			if hasWinKernel: #Windows bash.
-				self.colourPrintWin32(formatted,level)
+				self.__colourPrintWin32(formatted,level)
 			else:
-				self.colourPrintAnsi(formatted,level)
+				self.__colourPrintAnsi(formatted,level)
 
 	#Changes which log levels are logged.
 	#
@@ -75,7 +75,7 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	#
 	#\param message The text to print.
 	#\param level The warning level of the message.
-	def colourPrintWin32(self,message,level):
+	def __colourPrintWin32(self,message,level):
 		if level == Luna.Logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
@@ -100,7 +100,7 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	#
 	#\param message The text to print.
 	#\param level The warning level of the message.
-	def colourPrintAnsi(self,message,level):
+	def __colourPrintAnsi(self,message,level):
 		if level == Luna.Logger.Level.ERROR:
 			ansiColour = '\033[38m' #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
