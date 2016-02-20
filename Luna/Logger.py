@@ -55,15 +55,26 @@ class Logger:
 		if not loggers: #If there are no loggers, fall back to the built-in logging system.
 			Logger.__fallbackLog(level,substituted)
 
-	#Sets the log levels that are logged by a specific plug-in.
+	#Sets the log levels that are logged by the loggers.
 	#
-	#If the plug-in doesn't exist, a warning is logged.
-	def setLogLevels(loggerName,levels):
-		plugin = Luna.Plugins.Plugins.getLogger(loggerName)
-		if not plugin:
-			Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Logger %s doesn't exist.",loggerName)
-			return
-		plugin.setLevels(levels)
+	#The logger(s) will only acquire log messages with importance levels that
+	#are in the list specified by the last call to this function.
+	#If given a logger name, the log levels are only set for that specific
+	#logger. If not given a name, the log levels are set for all loggers.
+	#
+	#\param levels A list of log levels that the logger(s) will log.
+	#\param loggerName The identifier of a logger plug-in if setting the levels
+	#for a specific logger, or None if setting the levels for all loggers.
+	def setLogLevels(levels,loggerName = None):
+		if loggerName: #If given a specific logger name, set the log levels only for that logger.
+			plugin = Luna.Plugins.Plugins.getLogger(loggerName)
+			if not plugin:
+				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Logger %s doesn't exist.",loggerName)
+				return
+			plugin.setLevels(levels)
+		else: #If not given any specific logger name, set the log levels for all loggers.
+			for plugin in Luna.Plugins.Plugins.getLoggers():
+				plugin.setLevels(levels)
 
 	#Logs a message to the standard output.
 	#
