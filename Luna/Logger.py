@@ -45,6 +45,7 @@ class Level(Enum):
 
 #Provides an API to use logger plug-ins.
 class Logger:
+	#Logs a new message.
 	def log(level,message,*args):
 		substituted = message % args #Substitute all arguments into the message.
 		loggers = Luna.Plugins.Plugins.getLoggers()
