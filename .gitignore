@@ -9,9 +9,14 @@ __pycache__/
 *.pot
 
 #IDEs
-.kdev4 #KDevelop 4
+#  KDevelop 4
+.kdev4
 *.kdev4
-.idea/* #PyCharm
+*.kate-swp
+#  PyCharm
+.idea/*
+#  gedit
+*~
 
 #Building
 build/*
