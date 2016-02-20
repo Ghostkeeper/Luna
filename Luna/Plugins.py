@@ -231,5 +231,4 @@ class Plugins(object):
 	def __getPlugin(type,name):
 		if (type,name) in Plugins.__plugins:
 			return Plugins.__plugins[(type,name)]
-		Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Can't find %s plug-in %s.",type,name)
 		return None #Plug-in couldn't be found.
