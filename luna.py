@@ -40,6 +40,7 @@ class Luna(object):
 		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Interface"))
 		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Logger"))
 		Plugins.Plugins.discover()
+		Logger.Logger.setLogLevels([Logger.Level.ERROR,Logger.Level.CRITICAL,Logger.Level.WARNING,Logger.Level.INFO,Logger.Level.DEBUG])
 
 		interfaceName = "Automatic" #Default to Automatic interface.
 		if len(sys.argv) >= 2:
