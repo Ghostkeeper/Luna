@@ -22,14 +22,4 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-import Automatic.Automatic as AutomaticModule #Prevent mixing up the package name and the module name!
-
-def metadata():
-	return {
-		"api": 1,
-		"type": "Interface",
-		"class": AutomaticModule.Automatic,
-		"dependencies": [
-			"Logger/StandardOut"
-		]
-	}
+#This file is required for Python to recognise the directory as a package.

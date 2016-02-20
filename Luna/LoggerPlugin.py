@@ -22,17 +22,17 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from Luna.Plugin import Plugin
+import Luna.Plugin #Superclass.
 
 #Superclass for Logger-type plug-ins.
 #
 #Any plug-in that wishes to be a logger should derive from this class. It will
 #ensure that the log() function exists (and that it raises a NotImplementedError
 #if the function is not implemented).
-class LoggerPlugin(Plugin):
+class LoggerPlugin(Luna.Plugin.Plugin):
 	#Creates a new instance of the Logger plug-in.
 	def __init__(self):
-		Plugin.__init__(self)
+		super(Luna.Plugin.Plugin,self).__init__()
 
 	#Adds a new log entry.
 	#

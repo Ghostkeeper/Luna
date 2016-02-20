@@ -22,21 +22,22 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from Luna.Interface import Interface
+import Luna.InterfacePlugin #Superclass.
+import Luna.Logger
 
 #An interface that allows no control by the user.
 #
 #This interface is designed to work without any user input. It automatically
 #converts any files in the same folder it can to the output files using the
 #default settings.
-class Automatic(Interface):
+class Automatic(Luna.InterfacePlugin.InterfacePlugin):
 	#Creates a new instance of the Automatic interface.
 	def __init__(self):
-		Interface.__init__(self)
+		super(Luna.InterfacePlugin.InterfacePlugin,self).__init__()
 
 	#Starts the Automatic interface.
 	#
 	#For now this just prints a message that the Automatic interface is started.
 	def start(self):
-		print("Starting Automatic interface.") #Not implemented yet.
+		Luna.Logger.Logger.log(Luna.Logger.Level.INFO,"Starting Automatic interface.") #Not implemented yet.
 		return False

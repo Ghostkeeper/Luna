@@ -24,7 +24,8 @@
 
 import os #For finding the root directory of Luna.
 import sys #For reading command line arguments.
-from Luna.Plugins import Plugins
+import Luna.Logger as Logger
+import Luna.Plugins as Plugins #To initiate the plug-in loading.
 
 #Starts the Luna application.
 #
@@ -36,22 +37,16 @@ from Luna.Plugins import Plugins
 class Luna(object):
 	def run(self):
 		baseDir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
-		Plugins.addPluginLocation(os.path.join(baseDir,"Interface"))
-		Plugins.addPluginLocation(os.path.join(baseDir,"Logger"))
-		Plugins.discover()
-
-		loggerName = "StandardOut" #The logger for this part of the interface is StandardOut. An interface may select its own logger if it so wishes.
-		logger = Plugins.getLogger(loggerName)
-		if not logger:
-			print("Could not load the logger %s. Aborting.",loggerName)
-			return False
+		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Interface"))
+		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Logger"))
+		Plugins.Plugins.discover()
 
 		interfaceName = "Automatic" #Default to Automatic interface.
 		if len(sys.argv) >= 2:
 			interfaceName = sys.argv[1]
-		interface = Plugins.getInterface(interfaceName)
+		interface = Plugins.Plugins.getInterface(interfaceName)
 		if not interface:
-			logger.log("e","Could not load the interface %s. Aborting.",interfaceName)
+			Logger.Logger.log(Logger.Level.ERROR,"Could not load the interface %s. Aborting.",interfaceName)
 			return False
 		interface.start()
 

@@ -22,16 +22,16 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from Luna.Logger import Level
-from Luna.LoggerPlugin import LoggerPlugin
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
+import Luna.Logger
+import Luna.LoggerPlugin
 
 #Logs messages to the standard output of the program.
-class StandardOut(LoggerPlugin):
+class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	#Creates a new instance of the StandardOut logger.
 	def __init__(self):
-		LoggerPlugin.__init__(self)
+		(Luna.LoggerPlugin.LoggerPlugin,self).__init__()
 		self.__standardOutHandle = None
 		if ctypes and ctypes.windll and ctypes.windll.kernel32: #Windows bash.
 			self.__standardOutHandle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
@@ -60,15 +60,15 @@ class StandardOut(LoggerPlugin):
 	#\param message The text to print.
 	#\param level The warning level of the message.
 	def colourPrintWin32(self,message,level):
-		if level == Level.ERROR:
+		if level == Luna.Logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
-		elif level == Level.CRITICAL:
+		elif level == Luna.Logger.Level.CRITICAL:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,13) #Magenta.
-		elif level == Level.WARNING:
+		elif level == Luna.Logger.Level.WARNING:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,14) #Yellow.
-		elif level == Level.INFO:
+		elif level == Luna.Logger.Level.INFO:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,10) #Green.
-		elif level == Level.DEBUG:
+		elif level == Luna.Logger.Level.DEBUG:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
 		print(message)
 		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
@@ -85,14 +85,14 @@ class StandardOut(LoggerPlugin):
 	#\param message The text to print.
 	#\param level The warning level of the message.
 	def colourPrintAnsi(self,message,level):
-		if level == Level.ERROR:
+		if level == Luna.Logger.Level.ERROR:
 			ansiColour = '\033[38m' #Red.
-		elif level == Level.CRITICAL:
+		elif level == Luna.Logger.Level.CRITICAL:
 			ansiColour = '\033[35m' #Magenta.
-		elif level == Level.WARNING:
+		elif level == Luna.Logger.Level.WARNING:
 			ansiColour = '\033[33m' #Yellow.
-		elif level == Level.INFO:
+		elif level == Luna.Logger.Level.INFO:
 			ansiColour = '\033[32m' #Green.
-		elif level == Level.DEBUG:
+		elif level == Luna.Logger.Level.DEBUG:
 			ansiColour = '\033[34m' #Blue.
 		print(ansiColour + message + '\033[m') #Start code, then message, then revert to default colour.

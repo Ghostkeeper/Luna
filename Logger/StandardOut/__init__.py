@@ -22,13 +22,13 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-from StandardOut import StandardOut
+import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
 
 def metadata():
 	return {
 		"api": 1,
 		"type": "Logger",
-		"class": StandardOut.StandardOut,
+		"class": StandardOutModule.StandardOut,
 		"dependencies": [
 		]
 	}

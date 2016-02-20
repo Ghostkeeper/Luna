@@ -23,6 +23,7 @@
 #For more information, please refer to <https://unlicense.org/>
 
 from enum import Enum #To define the log levels.
+import Luna.Plugins #To call all the loggers to log.
 
 #Enumerates the logging importance levels.
 class Level(Enum):
@@ -45,6 +46,23 @@ class Level(Enum):
 #Provides an API to use logger plug-ins.
 class Logger:
 	def log(level,message,*args):
+		substituted = message % args #Substitute all arguments into the message.
+		loggers = Luna.Plugins.Plugins.getLoggers()
+		for logger in loggers:
+			logger.log(level,substituted)
+
+		if not loggers: #If there are no loggers, fall back to the built-in logging system.
+			Logger.__fallbackLog(level,substituted)
+
+	#Logs a message to the standard output.
+	#
+	#This way of logging is meant to be kept very simple. It is used only when
+	#there are no other logging methods available, still providing a way of
+	#debugging if something goes wrong during the plug-in loading.
+	#
+	#\param level The message importance level.
+	#\param message The message to log.
+	def __fallbackLog(level,message):
 		if level == Level.ERROR:
 			levelStr = "ERROR"
 		elif level == Level.CRITICAL:
@@ -55,4 +73,4 @@ class Logger:
 			levelStr = "INFO"
 		elif level == Level.DEBUG:
 			levelStr = "DEBUG"
-		print("[" + levelStr + "] " + (message % args))
+		print("[" + levelStr + "] " + message)
