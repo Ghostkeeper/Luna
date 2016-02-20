@@ -26,6 +26,11 @@ import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
 import Luna.Logger
 import Luna.LoggerPlugin
+try:
+	import ctypes.windll.kernel32
+	hasWinKernel = True
+except ImportError:
+	hasWinKernel = False
 
 #Logs messages to the standard output of the program.
 class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
@@ -33,7 +38,7 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	def __init__(self):
 		(Luna.LoggerPlugin.LoggerPlugin,self).__init__()
 		self.__standardOutHandle = None
-		if ctypes and ctypes.windll and ctypes.windll.kernel32: #Windows bash.
+		if hasWinKernel: #Windows bash.
 			self.__standardOutHandle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 			self.__defaultConsoleAttributes = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
@@ -43,7 +48,7 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	def log(self,level,message,*arguments):
 		formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
 		formatted += message % arguments #Replace the %'s in the message with the arguments.
-		if ctypes and ctypes.windll and ctypes.windll.kernel32: #Windows bash.
+		if hasWinKernel: #Windows bash.
 			self.colourPrintWin32(formatted,level)
 		else:
 			self.colourPrintAnsi(formatted,level)
