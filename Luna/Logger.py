@@ -45,6 +45,9 @@ class Level(Enum):
 
 #Provides an API to use logger plug-ins.
 class Logger:
+	#The default log levels to log for the fallback logger.
+	__levels = [Level.ERROR,Level.CRITICAL,Level.WARNING,Level.INFO]
+
 	#Logs a new message.
 	def log(level,message,*args):
 		substituted = message % args #Substitute all arguments into the message.
@@ -75,6 +78,7 @@ class Logger:
 		else: #If not given any specific logger name, set the log levels for all loggers.
 			for plugin in Luna.Plugins.Plugins.getLoggers():
 				plugin.setLevels(levels)
+			Logger.__levels = levels #Also for the fallback logger.
 
 	#Logs a message to the standard output.
 	#
@@ -85,6 +89,8 @@ class Logger:
 	#\param level The message importance level.
 	#\param message The message to log.
 	def __fallbackLog(level,message):
+		if level not in Logger.__levels: #I'm set not to log this.
+			return
 		if level == Level.ERROR:
 			levelStr = "ERROR"
 		elif level == Level.CRITICAL:
