@@ -127,7 +127,6 @@ class Plugins(object):
 					break
 			else: #All dependencies are resolved!
 				try:
-					print(type(pluginClass))
 					pluginInstance = pluginClass() #Actually construct an instance of the plug-in.
 				except Exception as e:
 					Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Initialising plug-in %s failed: %s",pluginName,str(e))
