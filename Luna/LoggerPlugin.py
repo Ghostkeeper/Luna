@@ -22,6 +22,7 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+import Luna.Logger #To access the log levels.
 import Luna.Plugin #Superclass.
 
 #Superclass for Logger-type plug-ins.
@@ -40,9 +41,18 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 	#have to be used. For instance, a text-only logger may choose to omit the
 	#title of the message in the log.
 	#
-	#\param level The importance level of logging. Must be an instance of Level.
+	#\param level The importance level of logging.
 	#\param message The body of information of this log entry. All information
 	#regarding the log entry should be contained in this except the level.
 	#\param title The title of the log entry.
 	def log(self,level,message,title = ""):
+		raise NotImplementedError() #A subclass must implement this.
+
+	#Changes which log levels are logged.
+	#
+	#After this function is called, the log should only acquire messages with
+	#a log level that is in the list of levels passed to this function.
+	#
+	#\param levels A list of log levels that will be logged.
+	def setLevels(self,levels):
 		raise NotImplementedError() #A subclass must implement this.
