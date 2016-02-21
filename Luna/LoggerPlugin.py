@@ -34,7 +34,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 	``NotImplementedError`` if the function is not implemented).
 	"""
 
-	APIVERSION = 1
+	APIVERSION = 2
 	"""
 	Version number of the Logger plug-in API.
 
@@ -51,19 +51,42 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		super(Luna.Plugin.Plugin,self).__init__()
 
-	def log(self,level,message,title = ""):
+	def critical(self,message,title = ""):
 		"""
-		.. function:: log(level,message[,title])
-		Adds a new log entry.
+		.. function:: critical(message[,title])
+		Adds a new critical message to the log.
 
-		Depending on the method of logging, not all parameters of this function
-		have to be used. For instance, a text-only logger may choose to omit the
-		title of the message in the log.
+		:param message: The message to log.
+		:param title: A header for the log entry.
+		"""
+		raise NotImplementedError() #A subclass must implement this.
 
-		:param level: The importance level of logging.
-		:param message: The body of information of this log entry. All
-			information regarding the log entry should be contained in this
-			except the level.
+	def debug(self,message,title = ""):
+		"""
+		.. function:: debug(message[,title])
+		Adds a new debug message to the log.
+
+		:param message: The message to log.
+		:param title: A header for the log entry.
+		"""
+		raise NotImplementedError() #A subclass must implement this.
+
+	def error(self,message,title = ""):
+		"""
+		.. function:: error(message[,title])
+		Adds a new error message to the log.
+
+		:param message: The message to log.
+		:param title: A header for the log entry.
+		"""
+		raise NotImplementedError() #A subclass must implement this.
+
+	def info(self,message,title = ""):
+		"""
+		.. function:: info(message[,title])
+		Adds a new information message to the log.
+
+		:param message: The message to log.
 		:param title: A header for the log entry.
 		"""
 		raise NotImplementedError() #A subclass must implement this.
@@ -77,5 +100,15 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		a log level that is in the list of levels passed to this function.
 
 		:param levels: A list of log levels that will be logged.
+		"""
+		raise NotImplementedError() #A subclass must implement this.
+
+	def warning(self,message,title = ""):
+		"""
+		.. function:: warning(message[,title])
+		Adds a new warning message to the log.
+
+		:param message: The message to log.
+		:param title: A header for the log entry.
 		"""
 		raise NotImplementedError() #A subclass must implement this.

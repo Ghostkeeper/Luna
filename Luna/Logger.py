@@ -68,24 +68,81 @@ class Logger:
 	The default log levels to log for the fallback logger.
 	"""
 
-	def log(level,message,*args):
+	def critical(message,*args,title = "Critical"):
 		"""
-		.. function:: log(level,message[,args])
-		Logs a new message.
+		.. function:: critical(message[,args][,title = "Message title"])
+		Logs a new critical message with all loggers.
 
-		:param level: The importance level of the message.
-		:param message: The message string.
-		:param arguments: Extra arguments that are filled into the message
-			string. These are filled in place of characters preceded by a
-			%-symbol.
+		:param message: The message body.
+		:param args: Extra arguments that are filled into the message body.
+			These are filled in place of characters preceded by a %-symbol.
+		:param title: The title of the message, if any. Due to the Python syntax
+			for parameters, this parameter must be specified as a key-value
+			pair!
 		"""
 		substituted = message % args #Substitute all arguments into the message.
 		loggers = Luna.Plugins.Plugins.getLoggers()
 		for logger in loggers:
-			logger.log(level,substituted)
+			logger.critical(substituted,title)
+		if not loggers: #There are no loggers.
+			Logger.__fallbackCritical(substituted)
 
-		if not loggers: #If there are no loggers, fall back to the built-in logging system.
-			Logger.__fallbackLog(level,substituted)
+	def debug(message,*args,title = "Debug"):
+		"""
+		.. function:: debug(message[,args][,title = "Message title"])
+		Logs a new debug message with all loggers.
+
+		:param message: The message body.
+		:param args: Extra arguments that are filled into the message body.
+			These are filled in place of characters preceded by a %-symbol.
+		:param title: The title of the message, if any. Due to the Python syntax
+			for parameters, this parameter must be specified as a key-value
+			pair!
+		"""
+		substituted = message % args #Substitute all arguments into the message.
+		loggers = Luna.Plugins.Plugins.getLoggers()
+		for logger in loggers:
+			logger.debug(substituted,title)
+		if not loggers: #There are no loggers.
+			Logger.__fallbackDebug(substituted)
+
+	def error(message,*args,title = "Error"):
+		"""
+		.. function:: error(message[,args][,title = "Message title"])
+		Logs a new error message with all loggers.
+
+		:param message: The message body.
+		:param args: Extra arguments that are filled into the message body.
+			These are filled in place of characters preceded by a %-symbol.
+		:param title: The title of the message, if any. Due to the Python syntax
+			for parameters, this parameter must be specified as a key-value
+			pair!
+		"""
+		substituted = message % args #Substitute all arguments into the message.
+		loggers = Luna.Plugins.Plugins.getLoggers()
+		for logger in loggers:
+			logger.error(substituted,title)
+		if not loggers: #There are no loggers.
+			Logger.__fallbackError(substituted)
+
+	def info(message,*args,title = "Information"):
+		"""
+		.. function:: info(message[,args][,title = "Message title"])
+		Logs a new information message with all loggers.
+
+		:param message: The message body.
+		:param args: Extra arguments that are filled into the message body.
+			These are filled in place of characters preceded by a %-symbol.
+		:param title: The title of the message, if any. Due to the Python syntax
+			for parameters, this parameter must be specified as a key-value
+			pair!
+		"""
+		substituted = message % args #Substitute all arguments into the message.
+		loggers = Luna.Plugins.Plugins.getLoggers()
+		for logger in loggers:
+			logger.info(substituted,title)
+		if not loggers: #There are no loggers.
+			Logger.__fallbackInfo(substituted)
 
 	def setLogLevels(levels,loggerName = None):
 		"""
@@ -114,28 +171,96 @@ class Logger:
 				plugin.setLevels(levels)
 			Logger.__levels = levels #Also for the fallback logger.
 
-	def __fallbackLog(level,message):
+	def warning(message,*args,title = "Warning"):
 		"""
-		.. function:: __fallbackLog(level,message)
-		Logs a message to the standard output.
+		.. function:: warning(message[,args][,title = "Message title"])
+		Logs a new warning message with all loggers.
+
+		:param message: The message body.
+		:param args: Extra arguments that are filled into the message body.
+			These are filled in place of characters preceded by a %-symbol.
+		:param title: The title of the message, if any. Due to the Python syntax
+			for parameters, this parameter must be specified as a key-value
+			pair!
+		"""
+		substituted = message % args #Substitute all arguments into the message.
+		loggers = Luna.Plugins.Plugins.getLoggers()
+		for logger in loggers:
+			logger.warning(substituted,title)
+		if not loggers: #There are no loggers.
+			Logger.__fallbackWarning(substituted)
+
+	def __fallbackCritical(message):
+		"""
+		.. function:: __fallbackCritical(message)
+		Logs a critical message to the standard output.
 
 		This way of logging is meant to be kept very simple. It is used only
 		when there are no other logging methods available, still providing a way
 		of debugging if something goes wrong before any loggers are loaded.
 
-		:param level: The message importance level.
 		:param message: The message to log.
 		"""
-		if level not in Logger.__levels: #I'm set not to log this.
+		if Level.CRITICAL not in Logger.__levels: #I'm configured not to log this.
 			return
-		if level == Level.ERROR:
-			levelStr = "ERROR"
-		elif level == Level.CRITICAL:
-			levelStr = "CRITICAL"
-		elif level == Level.WARNING:
-			levelStr = "WARNING"
-		elif level == Level.INFO:
-			levelStr = "INFO"
-		elif level == Level.DEBUG:
-			levelStr = "DEBUG"
-		print("[" + levelStr + "] " + message)
+		print("[CRITICAL]",message)
+
+	def __fallbackDebug(message):
+		"""
+		.. function:: __fallbackDebug(message)
+		Logs a debug message to the standard output.
+
+		This way of logging is meant to be kept very simple. It is used only
+		when there are no other logging methods available, still providing a way
+		of debugging if something goes wrong before any loggers are loaded.
+
+		:param message: The message to log.
+		"""
+		if Level.DEBUG not in Logger.__levels: #I'm configured not to log this.
+			return
+		print("[DEBUG]",message)
+
+	def __fallbackError(message):
+		"""
+		.. function:: __fallbackError(message)
+		Logs an error message to the standard output.
+
+		This way of logging is meant to be kept very simple. It is used only
+		when there are no other logging methods available, still providing a way
+		of debugging if something goes wrong before any loggers are loaded.
+
+		:param message: The message to log.
+		"""
+		if Level.ERROR not in Logger.__levels: #I'm configured not to log this.
+			return
+		print("[ERROR]",message)
+
+	def __fallbackInfo(message):
+		"""
+		.. function:: __fallbackInfo(message)
+		Logs an information message to the standard output.
+
+		This way of logging is meant to be kept very simple. It is used only
+		when there are no other logging methods available, still providing a way
+		of debugging if something goes wrong before any loggers are loaded.
+
+		:param message: The message to log.
+		"""
+		if Level.INFO not in Logger.__levels: #I'm configured not to log this.
+			return
+		print("[INFO]",message)
+
+	def __fallbackWarning(message):
+		"""
+		.. function:: __fallbackWarning(message)
+		Logs a warning message to the standard output.
+
+		This way of logging is meant to be kept very simple. It is used only
+		when there are no other logging methods available, still providing a way
+		of debugging if something goes wrong before any loggers are loaded.
+
+		:param message: The message to log.
+		"""
+		if Level.WARNING not in Logger.__levels: #I'm configured not to log this.
+			return
+		print("[WARNING]",message)
