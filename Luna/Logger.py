@@ -25,31 +25,60 @@
 from enum import Enum #To define the log levels.
 import Luna.Plugins #To call all the loggers to log.
 
-#Enumerates the logging importance levels.
 class Level(Enum):
-	#For logging fatal errors that will crash the program.
+	"""
+	Enumerates the logging importance levels.
+	"""
+
 	ERROR = 1
+	"""
+	For logging fatal errors that will crash the program.
+	"""
 
-	#For logging fatal errors that will crash the current operation.
 	CRITICAL = 2
+	"""
+	For logging fatal errors that will crash the current operation.
+	"""
 
-	#For logging events that are probably not going the way the user intended.
 	WARNING = 3
+	"""
+	For logging events that are probably not going the way the user intended.
+	"""
 
-	#For logging events, at least all events that got initiated from an external
-	#source.
 	INFO = 4
+	"""
+	For logging events.
 
-	#Information that might be useful for a debugger to know.
+	At least all events that got initiated from an external source must be
+	logged with this level.
+	"""
+
 	DEBUG = 5
+	"""
+	Information that might be useful for a debugger to know.
+	"""
 
-#Provides an API to use logger plug-ins.
 class Logger:
-	#The default log levels to log for the fallback logger.
-	__levels = [Level.ERROR,Level.CRITICAL,Level.WARNING,Level.INFO]
+	"""
+	Provides an API to use logger plug-ins.
+	"""
 
-	#Logs a new message.
+	__levels = [Level.ERROR,Level.CRITICAL,Level.WARNING,Level.INFO]
+	"""
+	The default log levels to log for the fallback logger.
+	"""
+
 	def log(level,message,*args):
+		"""
+		.. function:: log(level,message[,args])
+		Logs a new message.
+
+		:param level: The importance level of the message.
+		:param message: The message string.
+		:param arguments: Extra arguments that are filled into the message
+			string. These are filled in place of characters preceded by a
+			%-symbol.
+		"""
 		substituted = message % args #Substitute all arguments into the message.
 		loggers = Luna.Plugins.Plugins.getLoggers()
 		for logger in loggers:
@@ -58,17 +87,22 @@ class Logger:
 		if not loggers: #If there are no loggers, fall back to the built-in logging system.
 			Logger.__fallbackLog(level,substituted)
 
-	#Sets the log levels that are logged by the loggers.
-	#
-	#The logger(s) will only acquire log messages with importance levels that
-	#are in the list specified by the last call to this function.
-	#If given a logger name, the log levels are only set for that specific
-	#logger. If not given a name, the log levels are set for all loggers.
-	#
-	#\param levels A list of log levels that the logger(s) will log.
-	#\param loggerName The identifier of a logger plug-in if setting the levels
-	#for a specific logger, or None if setting the levels for all loggers.
 	def setLogLevels(levels,loggerName = None):
+		"""
+		.. function:: setLogLevels(levels[,loggerName])
+		Sets the log levels that are logged by the loggers.
+
+		The logger(s) will only acquire log messages with importance levels that
+		are in the list specified by the last call to this function.
+
+		If given a logger name, the log levels are only set for the specified
+		logger. If not given a name, the log levels are set for all loggers.
+
+		:param levels: A list of log levels that the logger(s) will log.
+		:param loggerName: The identifier of a logger plug-in if setting the
+			levels for a specific logger, or None if setting the levels for all
+			loggers.
+		"""
 		if loggerName: #If given a specific logger name, set the log levels only for that logger.
 			plugin = Luna.Plugins.Plugins.getLogger(loggerName)
 			if not plugin:
@@ -80,15 +114,18 @@ class Logger:
 				plugin.setLevels(levels)
 			Logger.__levels = levels #Also for the fallback logger.
 
-	#Logs a message to the standard output.
-	#
-	#This way of logging is meant to be kept very simple. It is used only when
-	#there are no other logging methods available, still providing a way of
-	#debugging if something goes wrong during the plug-in loading.
-	#
-	#\param level The message importance level.
-	#\param message The message to log.
 	def __fallbackLog(level,message):
+		"""
+		.. function:: __fallbackLog(level,message)
+		Logs a message to the standard output.
+
+		This way of logging is meant to be kept very simple. It is used only
+		when there are no other logging methods available, still providing a way
+		of debugging if something goes wrong before any loggers are loaded.
+
+		:param level: The message importance level.
+		:param message: The message to log.
+		"""
 		if level not in Logger.__levels: #I'm set not to log this.
 			return
 		if level == Level.ERROR:

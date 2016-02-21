@@ -25,6 +25,12 @@
 import Automatic.Automatic as AutomaticModule #Prevent mixing up the package name and the module name!
 
 def metadata():
+	"""
+	.. function:: metadata()
+	Provides the metadata for the Automatic plug-in.
+
+	:returns: Dictionary of metadata.
+	"""
 	return {
 		"api": 1,
 		"type": "Interface",

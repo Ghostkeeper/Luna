@@ -24,23 +24,32 @@
 
 import Luna.Plugin #Superclass.
 
-#Superclass for Interface-type plug-ins.
-#
-#Any plug-in that wishes to be an interface should derive from this class. It
-#will ensure that the start() function exists (and that it raises a
-#NotImplementedError if the function is not implemented).
 class InterfacePlugin(Luna.Plugin.Plugin):
-	#Creates a new instance of the Interface plug-in.
+	"""
+	Superclass for Interface-type plug-ins.
+
+	Any plug-in that wishes to be an interface should derive from this class. It
+	will ensure that the ``start()`` function exists (and that it raises a
+	``NotImplementedError`` if the function is not implemented).
+	"""
+
 	def __init__(self):
+		"""
+		.. function:: __init__()
+		Creates a new instance of the Interface plug-in.
+		"""
 		super(Luna.Plugin.Plugin,self).__init__()
 
-	#Starts interfacing.
-	#
-	#This method should regulate the process of conversion. That is, it should
-	#find out where to load the input from (e.g. by asking the user), how to
-	#convert the input to the output (e.g. by evaluating the settings) and where
-	#to write the output (e.g. by reading the command line arguments). This is
-	#not limited to one conversion step, of course. An interface may keep
-	#running indefinitely until the user wants it to stop.
 	def start(self):
+		"""
+		.. function:: start()
+		Starts interfacing.
+
+		This method should regulate the process of conversion. That is, it
+		should find out where to load the input from (e.g. by asking the user),
+		how to convert the input to the output (e.g. by evaluating the settings)
+		and where to write the output (e.g. by reading the command line
+		arguments). This is not limited to one conversion step, of course. An
+		interface may keep running indefinitely until the user wants it to stop.
+		"""
 		raise NotImplementedError()

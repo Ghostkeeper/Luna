@@ -25,34 +25,47 @@
 import Luna.Logger #To access the log levels.
 import Luna.Plugin #Superclass.
 
-#Superclass for Logger-type plug-ins.
-#
-#Any plug-in that wishes to be a logger should derive from this class. It will
-#ensure that the log() function exists (and that it raises a NotImplementedError
-#if the function is not implemented).
 class LoggerPlugin(Luna.Plugin.Plugin):
-	#Creates a new instance of the Logger plug-in.
+	"""
+	Superclass for Logger-type plug-ins.
+
+	Any plug-in that wishes to be a logger should derive from this class. It
+	will ensure that the ``log()`` function exists (and that it raises a
+	``NotImplementedError`` if the function is not implemented).
+	"""
+
 	def __init__(self):
+		"""
+		.. function:: __init__()
+		Creates a new instance of the Logger plug-in.
+		"""
 		super(Luna.Plugin.Plugin,self).__init__()
 
-	#Adds a new log entry.
-	#
-	#Depending on the method of logging, not all parameters of this function
-	#have to be used. For instance, a text-only logger may choose to omit the
-	#title of the message in the log.
-	#
-	#\param level The importance level of logging.
-	#\param message The body of information of this log entry. All information
-	#regarding the log entry should be contained in this except the level.
-	#\param title The title of the log entry.
 	def log(self,level,message,title = ""):
+		"""
+		.. function:: log(level,message[,title])
+		Adds a new log entry.
+
+		Depending on the method of logging, not all parameters of this function
+		have to be used. For instance, a text-only logger may choose to omit the
+		title of the message in the log.
+
+		:param level: The importance level of logging.
+		:param message: The body of information of this log entry. All
+			information regarding the log entry should be contained in this
+			except the level.
+		:param title: A header for the log entry.
+		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	#Changes which log levels are logged.
-	#
-	#After this function is called, the log should only acquire messages with
-	#a log level that is in the list of levels passed to this function.
-	#
-	#\param levels A list of log levels that will be logged.
 	def setLevels(self,levels):
+		"""
+		.. function:: setLevels(levels)
+		Changes which log levels are logged.
+
+		After this function is called, the log should only acquire messages with
+		a log level that is in the list of levels passed to this function.
+
+		:param levels: A list of log levels that will be logged.
+		"""
 		raise NotImplementedError() #A subclass must implement this.

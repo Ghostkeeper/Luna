@@ -22,12 +22,18 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-#Base class for plug-ins, containing metadata that is common to all plug-ins.
 class Plugin(object):
-	#Creates a new instance of the plug-in.
-	#
-	#This initialises some metadata of the plug-in.
+	"""
+	Base class for plug-ins, containing metadata that is common to all plug-ins.
+	"""
+
 	def __init__(self):
+		"""
+		.. function:: __init__()
+		Creates a new instance of the plug-in.
+
+		This initialises some metadata of the plug-in.
+		"""
 		self.type = "Uninitialised"
 		self.name = "Uninitialised"
 		self.dependencies = []

@@ -25,6 +25,12 @@
 import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
 
 def metadata():
+	"""
+	.. function:: metadata()
+	Provides the metadata for the StandardOut plug-in.
+
+	:returns: Dictionary of metadata.
+	"""
 	return {
 		"api": 1,
 		"type": "Logger",

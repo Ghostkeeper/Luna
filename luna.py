@@ -27,15 +27,21 @@ import sys #For reading command line arguments.
 import Luna.Logger as Logger
 import Luna.Plugins as Plugins #To initiate the plug-in loading.
 
-#Starts the Luna application.
-#
-#This process will start the plugin registering, and then selects a logger and
-#an interface based on the command line arguments.
-#
-#\return True if the application was finished successfully, or False if
-#something went wrong.
 class Luna(object):
+	"""
+	Base instance of the application.
+	"""
+
 	def run(self):
+		"""
+		.. function:: run()
+		Starts the application.
+
+		This process will start the plug-in registering, and then selects an
+		interface based on the command line arguments.
+
+		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
+		"""
 		baseDir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
 		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Interface"))
 		Plugins.Plugins.addPluginLocation(os.path.join(baseDir,"Logger"))

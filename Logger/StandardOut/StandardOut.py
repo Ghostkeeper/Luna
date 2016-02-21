@@ -32,10 +32,16 @@ try:
 except ImportError:
 	hasWinKernel = False
 
-#Logs messages to the standard output of the program.
 class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
-	#Creates a new instance of the StandardOut logger.
+	"""
+	Logs messages to the standard output of the program.
+	"""
+
 	def __init__(self):
+		"""
+		.. function:: __init__()
+		Creates a new instance of the StandardOut logger.
+		"""
 		(Luna.LoggerPlugin.LoggerPlugin,self).__init__()
 		self.__levels = [Luna.Logger.Level.ERROR,Luna.Logger.Level.CRITICAL,Luna.Logger.Level.WARNING,Luna.Logger.Level.INFO] #The importance levels that are logged by default.
 		self.__standardOutHandle = None
@@ -43,10 +49,19 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 			self.__standardOutHandle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 			self.__defaultConsoleAttributes = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
-	#Logs a new message.
-	#
-	#A timestamp is logged alongside with the logged message.
 	def log(self,level,message,*arguments):
+		"""
+		.. function:: log(level,message[,arguments])
+		Logs a new message.
+
+		A timestamp is logged alongside with the logged message.
+
+		:param level: The importance level of the message.
+		:param message: The message string.
+		:param arguments: Extra arguments that are filled into the message
+			string. These are filled in place of characters preceded by a
+			%-symbol.
+		"""
 		if level in self.__levels:
 			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
 			formatted += message % arguments #Replace the %'s in the message with the arguments.
@@ -55,27 +70,33 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 			else:
 				self.__colourPrintAnsi(formatted,level)
 
-	#Changes which log levels are logged.
-	#
-	#After this function is called, the log should only acquire messages with
-	#a log level that is in the list of levels passed to this function.
-	#
-	#\param levels A list of log levels that will be logged.
 	def setLevels(self,levels):
+		"""
+		.. function:: setLevels(levels)
+		Changes which log levels are logged.
+
+		After this function is called, the log should only acquire messages with
+		a log level that is in the list of levels passed to this function.
+
+		:param levels: A list of log levels that will be logged.
+		"""
 		self.__levels = levels
 
-	#Prints a message with colour-coding in Windows Bash.
-	#
-	#The colour coding is based on the level of the message:
-	# - Red for errors.
-	# - Magenta for criticals.
-	# - Yellow for warnings.
-	# - Green for information.
-	# - Blue for debug messages.
-	#
-	#\param message The text to print.
-	#\param level The warning level of the message.
 	def __colourPrintWin32(self,message,level):
+		"""
+		.. function:: __colourPrintWin32(message,level)
+		Prints a message with colour-coding in Windows Bash.
+
+		The colour coding is based on the level of the message:
+		* Red for errors.
+		* Magenta for criticals.
+		* Yellow for warnings.
+		* Green for information.
+		* Blue for debug messages.
+
+		:param message: The text to print.
+		:param level: The warning level of the message.
+		"""
 		if level == Luna.Logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
@@ -89,18 +110,22 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		print(message)
 		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
 
-	#Prints a message with colour-coding in ANSI-based terminals, such as Linux.
-	#
-	#The colour coding is based on the level of the message:
-	# - Red for errors.
-	# - Magenta for criticals.
-	# - Yellow for warnings.
-	# - Green for information.
-	# - Blue for debug messages.
-	#
-	#\param message The text to print.
-	#\param level The warning level of the message.
 	def __colourPrintAnsi(self,message,level):
+		"""
+		.. function:: __colourPrintAnsi(message,level)
+		Prints a message with colour-coding in ANSI-based terminals, such as the
+		console of Linux.
+
+		The colour coding is based on the level of the message:
+		* Red for errors.
+		* Magenta for criticals.
+		* Yellow for warnings.
+		* Green for information.
+		* Blue for debug messages.
+
+		:param message: The text to print.
+		:param level: The warning level of the message.
+		"""
 		if level == Luna.Logger.Level.ERROR:
 			ansiColour = '\033[38m' #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
