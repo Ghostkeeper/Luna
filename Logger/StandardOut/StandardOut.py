@@ -82,34 +82,6 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		"""
 		self.__levels = levels
 
-	def __colourPrintWin32(self,message,level):
-		"""
-		.. function:: __colourPrintWin32(message,level)
-		Prints a message with colour-coding in Windows Bash.
-
-		The colour coding is based on the level of the message:
-		* Red for errors.
-		* Magenta for criticals.
-		* Yellow for warnings.
-		* Green for information.
-		* Blue for debug messages.
-
-		:param message: The text to print.
-		:param level: The warning level of the message.
-		"""
-		if level == Luna.Logger.Level.ERROR:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
-		elif level == Luna.Logger.Level.CRITICAL:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,13) #Magenta.
-		elif level == Luna.Logger.Level.WARNING:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,14) #Yellow.
-		elif level == Luna.Logger.Level.INFO:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,10) #Green.
-		elif level == Luna.Logger.Level.DEBUG:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
-		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
-
 	def __colourPrintAnsi(self,message,level):
 		"""
 		.. function:: __colourPrintAnsi(message,level)
@@ -137,3 +109,31 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		elif level == Luna.Logger.Level.DEBUG:
 			ansiColour = '\033[34m' #Blue.
 		print(ansiColour + message + '\033[m') #Start code, then message, then revert to default colour.
+
+	def __colourPrintWin32(self,message,level):
+		"""
+		.. function:: __colourPrintWin32(message,level)
+		Prints a message with colour-coding in Windows Bash.
+
+		The colour coding is based on the level of the message:
+		* Red for errors.
+		* Magenta for criticals.
+		* Yellow for warnings.
+		* Green for information.
+		* Blue for debug messages.
+
+		:param message: The text to print.
+		:param level: The warning level of the message.
+		"""
+		if level == Luna.Logger.Level.ERROR:
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
+		elif level == Luna.Logger.Level.CRITICAL:
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,13) #Magenta.
+		elif level == Luna.Logger.Level.WARNING:
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,14) #Yellow.
+		elif level == Luna.Logger.Level.INFO:
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,10) #Green.
+		elif level == Luna.Logger.Level.DEBUG:
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
+		print(message)
+		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
