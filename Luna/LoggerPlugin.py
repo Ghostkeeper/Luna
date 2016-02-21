@@ -51,7 +51,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		super(Luna.Plugin.Plugin,self).__init__()
 
-	def critical(self,message,title = ""):
+	def critical(self,message,title = "Critical"):
 		"""
 		.. function:: critical(message[,title])
 		Adds a new critical message to the log.
@@ -61,7 +61,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	def debug(self,message,title = ""):
+	def debug(self,message,title = "Debug"):
 		"""
 		.. function:: debug(message[,title])
 		Adds a new debug message to the log.
@@ -71,7 +71,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	def error(self,message,title = ""):
+	def error(self,message,title = "Error"):
 		"""
 		.. function:: error(message[,title])
 		Adds a new error message to the log.
@@ -81,7 +81,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	def info(self,message,title = ""):
+	def info(self,message,title = "Info"):
 		"""
 		.. function:: info(message[,title])
 		Adds a new information message to the log.
@@ -103,7 +103,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	def warning(self,message,title = ""):
+	def warning(self,message,title = "Warning"):
 		"""
 		.. function:: warning(message[,title])
 		Adds a new warning message to the log.
