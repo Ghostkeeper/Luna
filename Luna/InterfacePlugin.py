@@ -33,6 +33,16 @@ class InterfacePlugin(Luna.Plugin.Plugin):
 	``NotImplementedError`` if the function is not implemented).
 	"""
 
+	APIVERSION = 1
+	"""
+	Version number of the Interface plug-in API.
+
+	Each Interface plug-in carries a similar version number which determines the
+	minimum API version required of Luna to allow the plug-in to function. If
+	this version number is lower than the version number of the interface, the
+	interface is not loaded.
+	"""
+
 	def __init__(self):
 		"""
 		.. function:: __init__()

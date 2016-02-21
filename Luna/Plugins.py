@@ -35,15 +35,6 @@ class Plugins(object):
 	unnecessary.
 	"""
 
-	APIVERSION = 1
-	"""
-	Version number of the plug-in API.
-
-	Each plug-in carries a similar version number which determines the minimum
-	API version required of Luna to function. If this version number is lower
-	than the version number in the plug-in, the plug-in is not loaded.
-	"""
-
 	__pluginLocations = []
 	"""
 	List of directories where to look for plug-ins.
@@ -101,12 +92,6 @@ class Plugins(object):
 			if not metadata or not isinstance(metadata,dict): #Metadata not a dictionary.
 				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Metadata of plug-in %s is not a dictionary. Can't load this plug-in.",name)
 				continue
-			if not "api" in metadata:
-				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
-				continue
-			if metadata["api"] > Plugins.APIVERSION:
-				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Plug-in %s is too modern for this version of the application. Can't load this plug-in.",name)
-				continue
 			if not "type" in metadata:
 				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Plug-in %s defines no plug-in type. Can't load this plug-in.",name)
 				continue
@@ -115,6 +100,16 @@ class Plugins(object):
 				continue
 			if not "class" in metadata:
 				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Plug-in %s defines no base class. Can't load this plug-in.",name)
+				continue
+			if not "api" in metadata:
+				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
+				continue
+			try:
+				if metadata["api"] > metadata["class"].APIVERSION:
+					Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Plug-in %s is too modern for this version of the application. Can't load this plug-in.",name)
+					continue
+			except: #Assume that it went wrong because APIVERSION doesn't exist or the class is faulty.
+				Luna.Logger.Logger.log(Luna.Logger.Level.WARNING,"Plug-in %s specifies a class that is not a subclass of Plugin.",name)
 				continue
 			dependencies = [] #If this entry is missing, give a warning but assume that there are no dependencies.
 			if "dependencies" in metadata:
