@@ -32,7 +32,7 @@ def metadata():
 	:returns: Dictionary of metadata.
 	"""
 	return {
-		"api": 1,
+		"api": 2,
 		"type": "Logger",
 		"class": StandardOutModule.StandardOut,
 		"dependencies": [
