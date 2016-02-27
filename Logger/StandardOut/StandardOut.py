@@ -29,7 +29,6 @@ try:
 	hasWinKernel = True
 except ImportError:
 	hasWinKernel = False
-import StandardOut.BufferInfo
 import Luna.Logger #To check against the logger levels.
 import Luna.LoggerPlugin #Superclass.
 
