@@ -29,8 +29,70 @@ try:
 	hasWinKernel = True
 except ImportError:
 	hasWinKernel = False
+import StandardOut.BufferInfo
 import Luna.Logger #To check against the logger levels.
 import Luna.LoggerPlugin #Superclass.
+
+class CTypeCoordinate(ctypes.Structure):
+	"""
+	C-type data structure representing a coordinate pair.
+	
+	This data structure must exactly match the COORD structure as described in
+	the `MSDN documentation
+	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx>`.
+
+	TODO: Move this to a separate file.
+	"""
+	_fields_ = [
+		("X",ctypes.c_short), #Horizontal coordinate.
+		("Y",ctypes.c_short) #Vertical coordinate.
+	]
+	"""
+	The fields in this structure.
+	"""
+
+class CTypeRectangle(ctypes.Structure):
+	"""
+	C-type data structure to representing a rectangle.
+
+	The rectangle consists of a position and a size.
+
+	This data structure must exactly match the SMALL_RECT structure as described
+	in the `MSDN documentation
+	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms686311.aspx>`.
+
+	TODO: Move this to a separate file.
+	"""
+	_fields_ = [
+		("Left",ctypes.c_short), #Horizontal coordinate of left side.
+		("Top",ctypes.c_short), #Vertical coordinate of top side.
+		("Right",ctypes.c_short), #Horizontal coordinate of right side.
+		("Bottom",ctypes.c_short) #Vertical coordinate of bottom side.
+	]
+	"""
+	The fields in this structure.
+	"""
+
+class BufferInfo(ctypes.Structure):
+	"""
+	C-type data structure to store the state of the Windows stdout channel in.
+
+	This data structure must exactly match the CONSOLE_SCREEN_BUFFER_INFO
+	structure as described in the `MSDN documentation
+	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx>`.
+
+	TODO: Move this to a separate file.
+	"""
+	_fields_ = [
+		("dwSize",CTypeCoordinate), #Size of the window (in character rows and columns).
+		("dwCursorPosition",CTypeCoordinate), #Position of the caret.
+		("wAttributes",ctypes.c_ushort), #The text attributes of the output channel, such as colour.
+		("srWindow",CTypeRectangle), #Position and size of the window relative to its parent display (in pixels).
+		("dwMaximumWindowSize",CTypeCoordinate) #Maximum window size given the current font size.
+	]
+	"""
+	The fields in this structure.
+	"""
 
 class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	"""
@@ -194,6 +256,9 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param message: The text to print.
 		:param level: The warning level of the message.
 		"""
+		bufferInfo = BufferInfo()
+		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standardOutHandle,ctypes.byref(bufferInfo)) #Store the old state of the output channel.
+		
 		if level == Luna.Logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
@@ -205,4 +270,4 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		elif level == Luna.Logger.Level.DEBUG:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
 		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,15) #Reset to white. TODO: The default is not always white!
+		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,bufferInfo.wAttributes) #Reset to old state.
