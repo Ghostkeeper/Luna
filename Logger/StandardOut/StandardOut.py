@@ -24,13 +24,13 @@
 
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
-import Luna.Logger #To check against the logger levels.
-import Luna.LoggerPlugin #Superclass.
 try:
 	import ctypes.windll.kernel32 #For access to Windows' console API to change the colours.
 	hasWinKernel = True
 except ImportError:
 	hasWinKernel = False
+import Luna.Logger #To check against the logger levels.
+import Luna.LoggerPlugin #Superclass.
 
 class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 	"""
