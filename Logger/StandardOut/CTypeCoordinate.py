@@ -22,6 +22,12 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides a data structure for the Windows API to put its coordinate data in.
+
+This allows communication with the Windows API.
+"""
+
 import ctypes #To communicate to the Windows API.
 
 class CTypeCoordinate(ctypes.Structure):

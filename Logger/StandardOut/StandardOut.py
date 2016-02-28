@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Implements the logger plug-in interface.
+"""
+
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
 try:

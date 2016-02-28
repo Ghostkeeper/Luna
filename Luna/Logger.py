@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides an API to use logger plug-ins.
+"""
+
 from enum import Enum #To define the log levels.
 import Luna.Plugins #To call all the loggers to log.
 

@@ -22,6 +22,14 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+A plug-in that provides an interface which runs completely automatically.
+
+The purpose of this interface is to require no user interaction at all. It just
+handles the process all on its own, without fuss. This makes it easy to just run
+Luna very quickly in a folder with some files that have to be converted.
+"""
+
 import Automatic.Automatic as AutomaticModule #Prevent mixing up the package name and the module name!
 
 def metadata():

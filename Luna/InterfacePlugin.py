@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides an interface for interface plug-ins.
+"""
+
 import Luna.Plugin #Superclass.
 
 class InterfacePlugin(Luna.Plugin.Plugin):

@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+A logger plug-in that logs to the standard output channel.
+"""
+
 import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
 
 def metadata():

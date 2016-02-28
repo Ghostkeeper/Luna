@@ -22,6 +22,12 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides a data structure for the Windows API to put its buffer info data in.
+
+This allows communication with the Windows API.
+"""
+
 import ctypes #To communicate with the Windows API.
 from . import CTypeCoordinate #To store the state of the console window on Windows.
 from . import CTypeRectangle #To store the state of the console window on Windows.

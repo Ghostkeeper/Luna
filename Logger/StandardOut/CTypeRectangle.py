@@ -22,6 +22,12 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides a data structure for the Windows API to put a rectangle in.
+
+This allows communication with the Windows API.
+"""
+
 import ctypes #To communicate with the Windows API.
 
 class CTypeRectangle(ctypes.Structure):

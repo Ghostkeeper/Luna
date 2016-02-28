@@ -22,4 +22,11 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
-#This file is required for Python to recognise the directory as a package.
+"""
+This package contains the inner workings of Luna.
+
+The core is kept as small as possible. Its main function is to manage the global
+system that must be common knowledge across all plug-ins. This includes the
+plug-in API itself, but could also include things like the internationalisation
+system in the future.
+"""

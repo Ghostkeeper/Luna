@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides a base class for plug-ins.
+"""
+
 class Plugin(object):
 	"""
 	Base class for plug-ins, containing metadata that is common to all plug-ins.

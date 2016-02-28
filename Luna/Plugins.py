@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Handles all administration on plug-ins.
+"""
+
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
 import Luna.Logger #Logging messages.

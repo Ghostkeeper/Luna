@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides a base class for the application, and then starts the application.
+"""
+
 import os #For finding the root directory of Luna.
 import sys #For reading command line arguments.
 import Luna.Logger as Logger

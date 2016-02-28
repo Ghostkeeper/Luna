@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Provides an interface for logger plug-ins.
+"""
+
 import Luna.Logger #To access the log levels.
 import Luna.Plugin #Superclass.
 

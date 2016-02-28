@@ -22,6 +22,10 @@
 #
 #For more information, please refer to <https://unlicense.org/>
 
+"""
+Implements the interface plug-in interface.
+"""
+
 import Luna.InterfacePlugin #Superclass.
 import Luna.Logger
 
