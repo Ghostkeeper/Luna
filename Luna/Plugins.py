@@ -105,6 +105,11 @@ class Plugins(object):
 				Luna.Logger.Logger.warning("Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
 				continue
 			try:
+				int(metadata["api"]) #Checks if the API is a number.
+			except (ValueError,TypeError):
+				Luna.Logger.Logger.warning("The API version number of plug-in %s is not a number: %s",name,str(metadata["api"]))
+				continue
+			try:
 				if metadata["api"] > metadata["class"].APIVERSION:
 					Luna.Logger.Logger.warning("Plug-in %s is too modern for this version of the application. Can't load this plug-in.",name)
 					continue
