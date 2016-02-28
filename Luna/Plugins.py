@@ -97,20 +97,39 @@ def discover():
 		if not "class" in metadata:
 			Luna.Logger.warning("Plug-in %s defines no base class. Can't load this plug-in.",name)
 			continue
-		if not "api" in metadata:
+		try:
+			int(metadata["class"].APIVERSION)
+		except:
+			Luna.Logger.warning("Plug-in %s specifies a class %s that is not a subclass of Plugin. Can't load this plug-in.",name,str(metadata["class"]))
+			continue
+		if not "apiVersions" in metadata:
 			Luna.Logger.warning("Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
 			continue
-		try:
-			int(metadata["api"]) #Checks if the API is a number.
-		except (ValueError,TypeError):
-			Luna.Logger.warning("The API version number of plug-in %s is not a number: %s",name,str(metadata["api"]))
+		if not isinstance(metadata["apiVersions"],dict):
+			Luna.Logger.warning("The API version numbers of plug-in %s is not a dictionary. Can't load this plug-in.",name)
 			continue
-		try:
-			if metadata["api"] > metadata["class"].APIVERSION:
-				Luna.Logger.warning("Plug-in %s is too modern for this version of the application. Can't load this plug-in.",name)
-				continue
-		except: #Assume that it went wrong because APIVERSION doesn't exist or the class is faulty.
-			Luna.Logger.warning("Plug-in %s specifies a class that is not a subclass of Plugin.",name)
+		correctAPIVersionNumbers = True
+		for key,value in metadata["apiVersions"].items(): #Check if the API version number of each plug-in type is within range.
+			try:
+				minAPIVersion,maxAPIVersion = value
+			except TypeError:
+				Luna.Logger.warning("Plug-in %s requires an API version number range %s for %s type plug-ins, but it must be a tuple indicating the minimum and maximum version number.",name,str(value),key.__name__)
+				correctAPIVersionNumbers = False
+				break #Continue the outer loop.
+			try:
+				if key.APIVERSION < minAPIVersion or key.APIVERSION > maxAPIVersion:
+					Luna.Logger.warning("Plug-in %s requires an API version number between %i and %i for %s type plug-ins, but the current version number is %i.",name,minAPIVersion,maxAPIVersion,key.__name__,key.APIVERSION)
+					correctAPIVersionNumbers = False
+					break #Continue the outer loop.
+			except TypeError:
+				Luna.Logger.warning("Plug-in %s specifies a required API version number for %s type plug-ins that is not a number.",name,key.__name__)
+				correctAPIVersionNumbers = False
+				break #Continue the outer loop.
+			except AttributeError: #The key.APIVERSION went wrong.
+				Luna.Logger.warning("Plug-in %s specifies allowed API version numbers for type %s, which is not a plug-in class.",name,str(key))
+				correctAPIVersionNumbers = False
+				break #Continue the outer loop.
+		if not correctAPIVersionNumbers:
 			continue
 		dependencies = [] #If this entry is missing, give a warning but assume that there are no dependencies.
 		if "dependencies" in metadata:

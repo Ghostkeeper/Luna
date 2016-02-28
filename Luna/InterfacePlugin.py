@@ -37,7 +37,7 @@ class InterfacePlugin(Luna.Plugin.Plugin):
 	``NotImplementedError`` if the function is not implemented).
 	"""
 
-	APIVERSION = 1
+	APIVERSION = 2
 	"""
 	Version number of the Interface plug-in API.
 

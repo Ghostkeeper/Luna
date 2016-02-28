@@ -31,6 +31,8 @@ Luna very quickly in a folder with some files that have to be converted.
 """
 
 import Automatic.Automatic as AutomaticModule #Prevent mixing up the package name and the module name!
+import Luna.InterfacePlugin
+import Luna.LoggerPlugin
 
 def metadata():
 	"""
@@ -40,7 +42,10 @@ def metadata():
 	:returns: Dictionary of metadata.
 	"""
 	return {
-		"api": 1,
+		"apiVersions": {
+			Luna.InterfacePlugin.InterfacePlugin: (2,2),
+			Luna.LoggerPlugin.LoggerPlugin: (2,3)
+		},
 		"type": "Interface",
 		"class": AutomaticModule.Automatic,
 		"dependencies": [
