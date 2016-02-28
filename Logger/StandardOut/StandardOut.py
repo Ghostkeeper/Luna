@@ -25,7 +25,7 @@
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
 try:
-	import ctypes.windll.kernel32 #For access to Windows' console API to change the colours.
+	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
 	hasWinKernel = True
 except ImportError:
 	hasWinKernel = False
