@@ -34,7 +34,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 	Superclass for Logger-type plug-ins.
 
 	Any plug-in that wishes to be a logger should derive from this class. It
-	will ensure that the ``log()`` function exists (and that it raises a
+	will ensure that the logging functions exist (and that it raises a
 	``NotImplementedError`` if the function is not implemented).
 	"""
 
