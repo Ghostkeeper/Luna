@@ -75,7 +75,7 @@ def critical(message,*args,title = "Critical"):
 		pair!
 	"""
 	substituted = message % args #Substitute all arguments into the message.
-	loggers = Luna.Plugins.Plugins.getLoggers()
+	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.critical(substituted,title)
 	if not loggers: #There are no loggers.
@@ -94,7 +94,7 @@ def debug(message,*args,title = "Debug"):
 		pair!
 	"""
 	substituted = message % args #Substitute all arguments into the message.
-	loggers = Luna.Plugins.Plugins.getLoggers()
+	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.debug(substituted,title)
 	if not loggers: #There are no loggers.
@@ -113,7 +113,7 @@ def error(message,*args,title = "Error"):
 		pair!
 	"""
 	substituted = message % args #Substitute all arguments into the message.
-	loggers = Luna.Plugins.Plugins.getLoggers()
+	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.error(substituted,title)
 	if not loggers: #There are no loggers.
@@ -132,7 +132,7 @@ def info(message,*args,title = "Information"):
 		pair!
 	"""
 	substituted = message % args #Substitute all arguments into the message.
-	loggers = Luna.Plugins.Plugins.getLoggers()
+	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.info(substituted,title)
 	if not loggers: #There are no loggers.
@@ -156,13 +156,13 @@ def setLogLevels(levels,loggerName = None):
 	"""
 	global __levels
 	if loggerName: #If given a specific logger name, set the log levels only for that logger.
-		plugin = Luna.Plugins.Plugins.getLogger(loggerName)
+		plugin = Luna.Plugins.getLogger(loggerName)
 		if not plugin:
 			warning("Logger %s doesn't exist.",loggerName)
 			return
 		plugin.setLevels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.
-		for plugin in Luna.Plugins.Plugins.getLoggers():
+		for plugin in Luna.Plugins.getLoggers():
 			plugin.setLevels(levels)
 		__levels = levels #Also for the fallback logger.
 
@@ -179,7 +179,7 @@ def warning(message,*args,title = "Warning"):
 		pair!
 	"""
 	substituted = message % args #Substitute all arguments into the message.
-	loggers = Luna.Plugins.Plugins.getLoggers()
+	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.warning(substituted,title)
 	if not loggers: #There are no loggers.
