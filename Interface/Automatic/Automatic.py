@@ -53,5 +53,5 @@ class Automatic(Luna.InterfacePlugin.InterfacePlugin):
 		For now this just prints a message that the Automatic interface is
 		started.
 		"""
-		Luna.Logger.Logger.info("Starting Automatic interface.") #Not implemented yet.
+		Luna.Logger.info("Starting Automatic interface.") #Not implemented yet.
 		return False
