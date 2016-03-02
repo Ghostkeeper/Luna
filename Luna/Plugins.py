@@ -73,7 +73,7 @@ def discover():
 	candidates = __findCandidates() #Makes a list of (id,path) tuples indicating names and folder paths of possible plug-ins.
 	dependencyCandidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. Tuples of (name,type,class,dependencies).
 	for name,folder in candidates:
-		Luna.Logger.debug("Loading plug-in %s from %s.",name,folder)
+		Luna.Logger.debug("Loading plug-in {plugin} from {folder}.",plugin = name,folder = folder)
 		#Loading the plug-in.
 		module = __loadCandidate(name,folder)
 		if not module: #Failed to load module.
@@ -83,50 +83,50 @@ def discover():
 		try:
 			metadata = module.metadata()
 		except Exception as e:
-			Luna.Logger.warning("Failed to load metadata of plug-in %s: %s",name,str(e))
+			Luna.Logger.warning("Failed to load metadata of plug-in {plugin}: {errorMessage}",plugin = name,errorMessage = str(e))
 			continue
 		if not metadata or not isinstance(metadata,dict): #Metadata not a dictionary.
-			Luna.Logger.warning("Metadata of plug-in %s is not a dictionary. Can't load this plug-in.",name)
+			Luna.Logger.warning("Metadata of plug-in {plugin} is not a dictionary. Can't load this plug-in.",plugin = name)
 			continue
 		if not "type" in metadata:
-			Luna.Logger.warning("Plug-in %s defines no plug-in type. Can't load this plug-in.",name)
+			Luna.Logger.warning("Plug-in {plugin} defines no plug-in type. Can't load this plug-in.",plugin = name)
 			continue
 		if __getPlugin(metadata["type"],name):
-			Luna.Logger.warning("Plug-in %s is already loaded.",name)
+			Luna.Logger.warning("Plug-in {plugin} is already loaded.",plugin = name)
 			continue
 		if not "class" in metadata:
-			Luna.Logger.warning("Plug-in %s defines no base class. Can't load this plug-in.",name)
+			Luna.Logger.warning("Plug-in {plugin} defines no base class. Can't load this plug-in.",plugin = name)
 			continue
 		try:
 			int(metadata["class"].APIVERSION)
 		except:
-			Luna.Logger.warning("Plug-in %s specifies a class %s that is not a subclass of Plugin. Can't load this plug-in.",name,str(metadata["class"]))
+			Luna.Logger.warning("Plug-in {plugin} specifies a class {pluginClass} that is not a subclass of Plugin. Can't load this plug-in.",plugin = name,pluginClass = str(metadata["class"]))
 			continue
 		if not "apiVersions" in metadata:
-			Luna.Logger.warning("Metadata of plug-in %s has no API version number. Can't load this plug-in.",name)
+			Luna.Logger.warning("Metadata of plug-in {plugin} has no API version number. Can't load this plug-in.",plugin = name)
 			continue
 		if not isinstance(metadata["apiVersions"],dict):
-			Luna.Logger.warning("The API version numbers of plug-in %s is not a dictionary. Can't load this plug-in.",name)
+			Luna.Logger.warning("The API version numbers of plug-in {plugin} is not a dictionary. Can't load this plug-in.",plugin = name)
 			continue
 		correctAPIVersionNumbers = True
 		for key,value in metadata["apiVersions"].items(): #Check if the API version number of each plug-in type is within range.
 			try:
 				minAPIVersion,maxAPIVersion = value
 			except TypeError:
-				Luna.Logger.warning("Plug-in %s requires an API version number range %s for %s type plug-ins, but it must be a tuple indicating the minimum and maximum version number.",name,str(value),key.__name__)
+				Luna.Logger.warning("Plug-in {plugin} requires an API version number range {range} for {pluginType} type plug-ins, but it must be a tuple indicating the minimum and maximum version number.",plugin = name,range = str(value),pluginType = key.__name__)
 				correctAPIVersionNumbers = False
 				break #Continue the outer loop.
 			try:
 				if key.APIVERSION < minAPIVersion or key.APIVERSION > maxAPIVersion:
-					Luna.Logger.warning("Plug-in %s requires an API version number between %i and %i for %s type plug-ins, but the current version number is %i.",name,minAPIVersion,maxAPIVersion,key.__name__,key.APIVERSION)
+					Luna.Logger.warning("Plug-in {plugin} requires an API version number between {minimum} and {maximum} for {pluginType} type plug-ins, but the current version number is {version}.",plugin = name,minimum = minAPIVersion,maximum = maxAPIVersion,pluginType = key.__name__,version = key.APIVERSION)
 					correctAPIVersionNumbers = False
 					break #Continue the outer loop.
 			except TypeError:
-				Luna.Logger.warning("Plug-in %s specifies a required API version number for %s type plug-ins that is not a number.",name,key.__name__)
+				Luna.Logger.warning("Plug-in {plugin} specifies a required API version number for {pluginType} type plug-ins that is not a number.",plugin = name,pluginType = key.__name__)
 				correctAPIVersionNumbers = False
 				break #Continue the outer loop.
 			except AttributeError: #The key.APIVERSION went wrong.
-				Luna.Logger.warning("Plug-in %s specifies allowed API version numbers for type %s, which is not a plug-in class.",name,str(key))
+				Luna.Logger.warning("Plug-in {plugin} specifies allowed API version numbers for type {pluginType}, which is not a plug-in class.",plugin = name,pluginType = str(key))
 				correctAPIVersionNumbers = False
 				break #Continue the outer loop.
 		if not correctAPIVersionNumbers:
@@ -135,7 +135,7 @@ def discover():
 		if "dependencies" in metadata:
 			dependencies = metadata["dependencies"]
 		else:
-			Luna.Logger.warning("Plug-in %s defines no dependencies. Assuming it has no dependencies.",name)
+			Luna.Logger.warning("Plug-in {plugin} defines no dependencies. Assuming it has no dependencies.",pluginType = name)
 
 		dependencyCandidates.append((name,metadata["type"],metadata["class"],dependencies,module))
 
@@ -144,20 +144,20 @@ def discover():
 	for pluginName,pluginType,pluginClass,pluginDependencies,pluginModule in dependencyCandidates:
 		for dependency in pluginDependencies:
 			if dependency.count("/") != 1:
-				Luna.Logger.warning("Plug-in %s has an invalid dependency %s.",pluginName,dependency)
+				Luna.Logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.",plugin = pluginName,dependency = dependency)
 				continue #With the next dependency.
 			dependencyType,dependencyName = dependency.split("/",1) #Parse the dependency.
 			for dependencyCandidateName,dependencyCandidateType,_,_,_ in dependencyCandidates: #See if that dependency is present.
 				if dependencyName == dependencyCandidateName and dependencyType == dependencyCandidateType:
 					break
 			else: #Dependency was not found.
-				Luna.Logger.warning("Plug-in %s is missing dependency %s!",pluginName,dependency)
+				Luna.Logger.warning("Plug-in {plugin} is missing dependency {dependency}!",pluginName,dependency)
 				break
 		else: #All dependencies are resolved!
 			try:
 				pluginInstance = pluginClass() #Actually construct an instance of the plug-in.
 			except Exception as e:
-				Luna.Logger.warning("Initialising plug-in %s failed: %s",pluginName,str(e))
+				Luna.Logger.warning("Initialising plug-in {plugin} failed: {errorMessage}",plugin = pluginName,errorMessage = str(e))
 				raise e
 				continue #With next plug-in.
 			__plugins[(pluginType,pluginName)] = pluginInstance
@@ -216,7 +216,7 @@ def __findCandidates():
 	candidates = []
 	for location in __pluginLocations:
 		if not os.path.isdir(location): #Invalid plug-in location.
-			Luna.Logger.warning("Plug-in location not valid: %s",location)
+			Luna.Logger.warning("Plug-in location not valid: {location}",location = location)
 			continue
 		for pluginFolder in os.listdir(location):
 			name = pluginFolder #The name of the folder becomes the plug-in's actual name.
@@ -243,22 +243,22 @@ def __loadCandidate(name,folder):
 		wrong, ``None`` is returned.
 	"""
 	if "." in name:
-		Luna.Logger.warning("Can't load plug-in %s: Invalid plug-in name; periods are forbidden.",name)
+		Luna.Logger.warning("Can't load plug-in {plugin}: Invalid plug-in name; periods are forbidden.",plugin = name)
 		return None
 	try:
 		file,path,description = imp.find_module(name,[folder])
 	except Exception as e:
-		Luna.Logger.warning("Failed to find module of plug-in in %s: %s",folder,str(e))
+		Luna.Logger.warning("Failed to find module of plug-in in {plugin}: {errorMessage}",plugin = folder,errorMessage = str(e))
 		return None
 	try:
 		module = imp.load_module(name,file,path,description)
 	except Exception as e:
-		Luna.Logger.warning("Failed to load plug-in %s: %s",name,str(e))
+		Luna.Logger.warning("Failed to load plug-in {plugin}: {errorMessage}",plugin = name,errorMessage = str(e))
 		raise e
 		return None
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
-			Luna.Logger.warning("Plug-in %s is a file: %s",name,str(file))
+			Luna.Logger.warning("Plug-in {plugin} is a file: {filename}",plugin = name,filename = str(file))
 			file.close()
 	return module
 

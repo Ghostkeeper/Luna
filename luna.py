@@ -57,7 +57,7 @@ class Luna(object):
 			interfaceName = sys.argv[1]
 		interface = Plugins.getInterface(interfaceName)
 		if not interface:
-			Logger.error("Could not load the interface %s. Aborting.",interfaceName)
+			Logger.error("Could not load the interface {interface}. Aborting.",interface = interfaceName)
 			return False
 		interface.start()
 

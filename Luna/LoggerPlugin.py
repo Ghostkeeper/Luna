@@ -38,7 +38,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 	``NotImplementedError`` if the function is not implemented).
 	"""
 
-	APIVERSION = 3
+	APIVERSION = 4
 	"""
 	Version number of the Logger plug-in API.
 

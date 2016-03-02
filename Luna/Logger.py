@@ -62,76 +62,108 @@ class Level(Enum):
 	Information that might be useful for a debugger to know.
 	"""
 
-def critical(message,*args,title = "Critical"):
+def critical(*args,**kwargs):
 	"""
-	.. function:: critical(message[,args][,title = "Message title"])
+	.. function:: critical(message[,title][,key = value]*)
 	Logs a new critical message with all loggers.
 
-	:param message: The message body.
-	:param args: Extra arguments that are filled into the message body.
-		These are filled in place of characters preceded by a %-symbol.
-	:param title: The title of the message, if any. Due to the Python syntax
-		for parameters, this parameter must be specified as a key-value
-		pair!
+	:param args: Positional arguments. Requires at least one argument. The first
+		argument is the message of the entry. The second argument, if it exists,
+		is a title for the entry. The other arguments are ignored.
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+		The value of a key-word argument will be put in place of the key
+		surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
 	"""
-	substituted = message % args #Substitute all arguments into the message.
+	if len(args) < 1: #Not enough arguments.
+		raise TypeError("critical() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
+	message = args[0]
+	if len(args) >= 2:
+		title = args[1]
+	else:
+		title = "CRITICAL"
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.critical(substituted,title)
 	if not loggers: #There are no loggers.
 		__fallbackCritical(substituted)
 
-def debug(message,*args,title = "Debug"):
+def debug(*args,**kwargs):
 	"""
-	.. function:: debug(message[,args][,title = "Message title"])
+	.. function:: debug(message[,title][,key = value]*)
 	Logs a new debug message with all loggers.
 
-	:param message: The message body.
-	:param args: Extra arguments that are filled into the message body.
-		These are filled in place of characters preceded by a %-symbol.
-	:param title: The title of the message, if any. Due to the Python syntax
-		for parameters, this parameter must be specified as a key-value
-		pair!
+	:param args: Positional arguments. Requires at least one argument. The first
+		argument is the message of the entry. The second argument, if it exists,
+		is a title for the entry. The other arguments are ignored.
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+		The value of a key-word argument will be put in place of the key
+		surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
 	"""
-	substituted = message % args #Substitute all arguments into the message.
+	if len(args) < 1: #Not enough arguments.
+		raise TypeError("debug() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
+	message = args[0]
+	if len(args) >= 2:
+		title = args[1]
+	else:
+		title = "DEBUG"
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.debug(substituted,title)
 	if not loggers: #There are no loggers.
 		__fallbackDebug(substituted)
 
-def error(message,*args,title = "Error"):
+def error(*args,**kwargs):
 	"""
-	.. function:: error(message[,args][,title = "Message title"])
+	.. function:: error(message[,title][,key = value]*)
 	Logs a new error message with all loggers.
 
-	:param message: The message body.
-	:param args: Extra arguments that are filled into the message body.
-		These are filled in place of characters preceded by a %-symbol.
-	:param title: The title of the message, if any. Due to the Python syntax
-		for parameters, this parameter must be specified as a key-value
-		pair!
+	:param args: Positional arguments. Requires at least one argument. The first
+		argument is the message of the entry. The second argument, if it exists,
+		is a title for the entry. The other arguments are ignored.
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+		The value of a key-word argument will be put in place of the key
+		surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
 	"""
-	substituted = message % args #Substitute all arguments into the message.
+	if len(args) < 1: #Not enough arguments.
+		raise TypeError("error() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
+	message = args[0]
+	if len(args) >= 2:
+		title = args[1]
+	else:
+		title = "ERROR"
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.error(substituted,title)
 	if not loggers: #There are no loggers.
 		__fallbackError(substituted)
 
-def info(message,*args,title = "Information"):
+def info(*args,**kwargs):
 	"""
-	.. function:: info(message[,args][,title = "Message title"])
+	.. function:: info(message[,title][,key = value]*)
 	Logs a new information message with all loggers.
 
-	:param message: The message body.
-	:param args: Extra arguments that are filled into the message body.
-		These are filled in place of characters preceded by a %-symbol.
-	:param title: The title of the message, if any. Due to the Python syntax
-		for parameters, this parameter must be specified as a key-value
-		pair!
+	:param args: Positional arguments. Requires at least one argument. The first
+		argument is the message of the entry. The second argument, if it exists,
+		is a title for the entry. The other arguments are ignored.
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+		The value of a key-word argument will be put in place of the key
+		surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
 	"""
-	substituted = message % args #Substitute all arguments into the message.
+	if len(args) < 1: #Not enough arguments.
+		raise TypeError("info() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
+	message = args[0]
+	if len(args) >= 2:
+		title = args[1]
+	else:
+		title = "INFO"
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.info(substituted,title)
@@ -158,7 +190,7 @@ def setLogLevels(levels,loggerName = None):
 	if loggerName: #If given a specific logger name, set the log levels only for that logger.
 		plugin = Luna.Plugins.getLogger(loggerName)
 		if not plugin:
-			warning("Logger %s doesn't exist.",loggerName)
+			warning("Logger {name} doesn't exist.",name = loggerName)
 			return
 		plugin.setLevels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.
@@ -166,19 +198,27 @@ def setLogLevels(levels,loggerName = None):
 			plugin.setLevels(levels)
 		__levels = levels #Also for the fallback logger.
 
-def warning(message,*args,title = "Warning"):
+def warning(*args,**kwargs):
 	"""
-	.. function:: warning(message[,args][,title = "Message title"])
+	.. function:: warning(message[,title][,key = value])
 	Logs a new warning message with all loggers.
 
-	:param message: The message body.
-	:param args: Extra arguments that are filled into the message body.
-		These are filled in place of characters preceded by a %-symbol.
-	:param title: The title of the message, if any. Due to the Python syntax
-		for parameters, this parameter must be specified as a key-value
-		pair!
+	:param args: Positional arguments. Requires at least one argument. The first
+		argument is the message of the entry. The second argument, if it exists,
+		is a title for the entry. The other arguments are ignored.
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+		The value of a key-word argument will be put in place of the key
+		surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
 	"""
-	substituted = message % args #Substitute all arguments into the message.
+	if len(args) < 1: #Not enough arguments.
+		raise TypeError("warning() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
+	message = args[0]
+	if len(args) >= 2:
+		title = args[1]
+	else:
+		title = "WARNING"
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
 		logger.warning(substituted,title)
