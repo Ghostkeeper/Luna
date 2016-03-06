@@ -31,6 +31,7 @@ For a safe model system, every model should follow the following rules:
 - All functions that change the data must have the ``setter`` decorator.
 """
 
+from functools import wraps #To retain the documentation and name of the wrapped functions by these decorators.
 from weakref import WeakKeyDictionary,WeakSet #To automatically remove listeners and signallers if their class instances are removed.
 
 __listeners = WeakKeyDictionary()
@@ -57,8 +58,11 @@ def signal(setter):
 	global __listeners
 	if not setter in __listeners: #Make an entry to track listeners of this function.
 		__listeners[setter] = WeakSet()
+	@wraps(setter)
 	def newSetter(*args,**kwargs):
 		setter(*args,**kwargs)
 		for listener in __listeners[setter]: #Call all listeners.
 			listener()
 	return newSetter
+
+def listen
