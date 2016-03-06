@@ -64,5 +64,3 @@ def signal(setter):
 		for listener in __listeners[setter]: #Call all listeners.
 			listener()
 	return newSetter
-
-def listen
