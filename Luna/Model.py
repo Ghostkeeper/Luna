@@ -47,12 +47,12 @@ class instances are removed.
 
 def signal(setter):
 	"""
-	.. function:: signal(setterFunction)
+	.. function:: signal(setter)
 	Decorator indicating that a function can be registered with listeners.
 
 	This decorator should be used for any method that changes the data in the
 	model.
-	:param setterFunction: The function to allow registering listeners with.
+	:param setter: The function to allow registering listeners with.
 	:return: A new function that calls all listeners after calling the setter.
 	"""
 	global __listeners
