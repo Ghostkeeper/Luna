@@ -44,7 +44,7 @@ set will automatically get garbage collected once all strong references to their
 class instances are removed.
 """
 
-def setter(setterFunction):
+def signal(setter):
 	"""
 	.. function:: signal(setterFunction)
 	Decorator indicating that a function can be registered with listeners.
@@ -55,10 +55,10 @@ def setter(setterFunction):
 	:return: A new function that calls all listeners after calling the setter.
 	"""
 	global __listeners
-	if not setterFunction in __listeners: #Make an entry to track listeners of this function.
-		__listeners[setterFunction] = WeakSet()
+	if not setter in __listeners: #Make an entry to track listeners of this function.
+		__listeners[setter] = WeakSet()
 	def newSetter(*args,**kwargs):
-		setterFunction(*args,**kwargs)
-		for listener in __listeners[setterFunction]: #Call all listeners.
+		setter(*args,**kwargs)
+		for listener in __listeners[setter]: #Call all listeners.
 			listener()
 	return newSetter
