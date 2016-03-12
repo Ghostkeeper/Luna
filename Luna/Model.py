@@ -56,7 +56,10 @@ def model(originalClass):
 	def newInit(self,*args,**kwargs): #Create a new __init__ function.
 		self.__listeners = {}
 		for member in dir(self): #Add a signal for all static members.
-			self.__listeners[member] = [] #List of functions that need to be called when setting the member
+			#We're creating a WeakKeyDictionary that contains lists of methods.
+			#These are keyed by the instance of the method, which is a weak reference.
+			#So if the instance is removed, the methods are removed too.
+			self.__listeners[member] = WeakKeyDictionary() #Keyed by instance, values are lists of functions.
 		originalInit(self,*args,**kwargs)
 	originalClass.__init__ = newInit #Replace the old __init__ with the new one.
 
@@ -67,9 +70,10 @@ def model(originalClass):
 		if name == "__listeners": #Don't want this to be triggered before the listener construction has been set up.
 			return
 		if not name in self.__listeners: #Attribute added dynamically. Add a signal for it.
-			self.__listeners[name] = []
-		for listener in self.__listeners[name]: #Call anything that listens to this member.
-			listener()
+			self.__listeners[name] = WeakKeyDictionary()
+		for instance in self.__listeners[name]: #Call anything that listens to this member.
+			for listener in self.__listeners[name][instance]:
+				listener()
 	originalClass.__setattr__ = newSetAttr #Replace the old __setattr__ with the new one.
 
 	def listenTo(self,member,function):
@@ -90,7 +94,10 @@ def model(originalClass):
 			warning("Listener function {function} must not have any arguments.",function = str(function))
 			return
 
-		self.__listeners[member].append(function) #Add this function as listener.
+		if not function.__self__ in self.__listeners[member]:
+			self.__listeners[member][function.__self__] = []
+
+		self.__listeners[member][function.__self__].append(function) #Add this function as listener.
 	originalClass.listenTo = listenTo #Add the listenTo method.
 
 	return originalClass #Return a modified class.
