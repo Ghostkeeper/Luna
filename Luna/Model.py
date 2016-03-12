@@ -25,10 +25,13 @@
 """
 Provides a system for the model part of the model-view-presenter paradigm.
 
-For a safe model system, every model should follow the following rules:
-- All data must be private inside a class (with field names starting with two
-  underscores).
-- All functions that change the data must have the ``setter`` decorator.
+To use the model system properly, the following code changes are required:
+- Give all classes that are part of the model the ``@model`` decorator.
+- To let the view update whenever the model is changed, call the ``listenTo``
+  function of the model. Supply the member of the model that contains the data,
+  and a reference to the function in the view that will update the view.
+- The listening functions of the view must have no parameters other than
+  ``self``. Otherwise they can't be called by the signalling system.
 """
 
 from functools import wraps #To retain the documentation and name of the wrapped functions by these decorators.
