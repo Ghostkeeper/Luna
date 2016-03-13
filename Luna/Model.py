@@ -40,10 +40,29 @@ from weakref import WeakKeyDictionary,WeakSet #To automatically remove listeners
 
 from Luna.Logger import warning
 
+class __StaticFunctionObject:
+	"""
+	Placeholder class to register static functions with.
+
+	It must be possible to make a weak reference to the object that static
+	functions are registered with. Therefore we create this class to be able to
+	make a placeholder instance that is weakly referenced.
+	"""
+
+__static = __StaticFunctionObject()
+"""
+Instance to be used as key for static functions to keep them listed in the
+WeakKeyDictionary of the listeners.
+
+If a function has no __self__, it will get listed under this instance in the
+listener dictionaries. Since this instance is never garbage collected, the entry
+is never removed from the list of listeners.
+"""
+
 def model(originalClass):
 	"""
 	.. function:: model(originalClass)
-	Modifies a class such that it becomes part of the model.
+	Decorator that modifies a class such that it becomes part of the model.
 
 	This adds signals for each of the class' members, and a ``listenTo`` method.
 	Using the ``listenTo`` method, a different function can be registered to be
@@ -97,10 +116,15 @@ def model(originalClass):
 			warning("Listener function {function} must not have any arguments.",function = str(function))
 			return
 
-		if not function.__self__ in self.__listeners[member]:
-			self.__listeners[member][function.__self__] = []
+		if "__self__" not in dir(function): #Function is static. There is no self.
+			instance = __static
+		else:
+			instance = function.__self__
 
-		self.__listeners[member][function.__self__].append(function) #Add this function as listener.
+		if not instance in self.__listeners[member]:
+			self.__listeners[member][instance] = []
+
+		self.__listeners[member][instance].append(function) #Add this function as listener.
 	originalClass.listenTo = listenTo #Add the listenTo method.
 
 	return originalClass #Return a modified class.
