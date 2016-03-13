@@ -36,7 +36,7 @@ To use the model system properly, the following code changes are required:
 
 from functools import wraps #To retain the documentation and name of the wrapped functions by these decorators.
 from inspect import getargspec #Getting the number of arguments of a function, and setting up listeners for every member.
-from weakref import WeakKeyDictionary,WeakSet #To automatically remove listeners and signallers if their class instances are removed.
+from weakref import WeakKeyDictionary #To automatically remove listeners and signallers if their class instances are removed.
 
 from Luna.Logger import warning
 
