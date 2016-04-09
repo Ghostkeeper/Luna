@@ -1347,7 +1347,6 @@ class __SubModel(combineMetaTypes(__SubModelType)):
 		.. function:: signal()
 		Signals this class that one of its children has been modified.
 		"""
-		print("Signal: " + str(self.__wrapped__) + "!")
 		if object.__getattribute__(self,"__parent"):
 			object.__getattribute__(self,"__parent").signal()
 
