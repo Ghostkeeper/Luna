@@ -6,7 +6,7 @@
 #software, either in source code form or as a compiled binary, for any purpose,
 #commercial or non-commercial, and by any means.
 #
-#In jurisdictions that recognize copyright laws, the author or authors of this
+#In jurisdictions that recognise copyright laws, the author or authors of this
 #software dedicate any and all copyright interest in the software to the public
 #domain. We make this dedication for the benefit of the public at large and to
 #the detriment of our heirs and successors. We intend this dedication to be an
@@ -15,12 +15,12 @@
 #
 #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 #IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
 #AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 #ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-#For more information, please refer to <https://unlicense.org/>
+#For more information, please refer to <https://unlicense.org/>.
 
 """
 Provides a base class for plug-ins.
