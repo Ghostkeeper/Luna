@@ -23,25 +23,10 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-A logger plug-in that logs to the standard output channel.
+This package contains the inner workings of Luna.
+
+The core is kept as small as possible. Its main function is to manage the global
+system that must be common knowledge across all plug-ins. This includes the
+plug-in API itself, but could also include things like the internationalisation
+system in the future.
 """
-
-import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
-import luna.logger_plugin
-
-def metadata():
-	"""
-	.. function:: metadata()
-	Provides the metadata for the StandardOut plug-in.
-
-	:returns: Dictionary of metadata.
-	"""
-	return {
-		"apiVersions": {
-			luna.logger_plugin.LoggerPlugin:(4, 4)
-		},
-		"type": "Logger",
-		"class": StandardOutModule.StandardOut,
-		"dependencies": [
-		]
-	}

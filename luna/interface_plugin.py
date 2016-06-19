@@ -23,35 +23,47 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-Implements the interface plug-in interface.
+Provides an interface for interface plug-ins.
 """
 
-import luna.interface_plugin #Superclass.
-import luna.logger
+import luna.plugin #Superclass.
 
-class Automatic(luna.interface_plugin.InterfacePlugin):
+class InterfacePlugin(luna.plugin.Plugin):
 	"""
-	An interface that allows no control by the user.
+	Superclass for Interface-type plug-ins.
 
-	This interface is designed to work without any user input. It automatically
-	converts any files in the same folder it can to the output files using the
-	default settings.
+	Any plug-in that wishes to be an interface should derive from this class. It
+	will ensure that the ``start()`` function exists (and that it raises a
+	``NotImplementedError`` if the function is not implemented).
+	"""
+
+	APIVERSION = 2
+	"""
+	Version number of the Interface plug-in API.
+
+	Each Interface plug-in carries a similar version number which determines the
+	minimum API version required of Luna to allow the plug-in to function. If
+	this version number is lower than the version number of the interface, the
+	interface is not loaded.
 	"""
 
 	def __init__(self):
 		"""
 		.. function:: __init__()
-		Creates a new instance of the Automatic interface.
+		Creates a new instance of the Interface plug-in.
 		"""
-		super(luna.interface_plugin.InterfacePlugin, self).__init__()
+		super(luna.plugin.Plugin, self).__init__()
 
 	def start(self):
 		"""
 		.. function:: start()
-		Starts the Automatic interface.
+		Starts interfacing.
 
-		For now this just prints a message that the Automatic interface is
-		started.
+		This method should regulate the process of conversion. That is, it
+		should find out where to load the input from (e.g. by asking the user),
+		how to convert the input to the output (e.g. by evaluating the settings)
+		and where to write the output (e.g. by reading the command line
+		arguments). This is not limited to one conversion step, of course. An
+		interface may keep running indefinitely until the user wants it to stop.
 		"""
-		luna.logger.info("Starting Automatic interface.") #Not implemented yet.
-		return False
+		raise NotImplementedError()

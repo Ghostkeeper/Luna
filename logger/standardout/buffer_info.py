@@ -23,25 +23,30 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-A logger plug-in that logs to the standard output channel.
+Provides a data structure for the Windows API to put its buffer info data in.
+
+This allows communication with the Windows API.
 """
 
-import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
-import luna.logger_plugin
+import ctypes #To communicate with the Windows API.
+from . import c_type_coordinate #To store the state of the console window on Windows.
+from . import c_type_rectangle #To store the state of the console window on Windows.
 
-def metadata():
+class BufferInfo(ctypes.Structure):
 	"""
-	.. function:: metadata()
-	Provides the metadata for the StandardOut plug-in.
+	C-type data structure to store the state of the Windows stdout channel in.
 
-	:returns: Dictionary of metadata.
+	This data structure must exactly match the CONSOLE_SCREEN_BUFFER_INFO
+	structure as described in the `MSDN documentation
+	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx>`.
 	"""
-	return {
-		"apiVersions": {
-			luna.logger_plugin.LoggerPlugin:(4, 4)
-		},
-		"type": "Logger",
-		"class": StandardOutModule.StandardOut,
-		"dependencies": [
-		]
-	}
+	_fields_ = [
+		("dwSize", c_type_coordinate.CTypeCoordinate), #Size of the window (in character rows and columns).
+		("dwCursorPosition", c_type_coordinate.CTypeCoordinate), #Position of the caret.
+		("wAttributes", ctypes.c_ushort), #The text attributes of the output channel, such as colour.
+		("srWindow", c_type_rectangle.CTypeRectangle), #Position and size of the window relative to its parent display (in pixels).
+		("dwMaximumWindowSize", c_type_coordinate.CTypeCoordinate) #Maximum window size given the current font size.
+	]
+	"""
+	The fields in this structure.
+	"""

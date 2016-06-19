@@ -26,10 +26,10 @@
 Provides an interface for logger plug-ins.
 """
 
-import Luna.Logger #To access the log levels.
-import Luna.Plugin #Superclass.
+import luna.logger #To access the log levels.
+import luna.plugin #Superclass.
 
-class LoggerPlugin(Luna.Plugin.Plugin):
+class LoggerPlugin(luna.plugin.Plugin):
 	"""
 	Superclass for Logger-type plug-ins.
 
@@ -53,7 +53,7 @@ class LoggerPlugin(Luna.Plugin.Plugin):
 		.. function:: __init__()
 		Creates a new instance of the Logger plug-in.
 		"""
-		super(Luna.Plugin.Plugin, self).__init__()
+		super(luna.plugin.Plugin, self).__init__()
 
 	def critical(self, message, title = "Critical"):
 		"""

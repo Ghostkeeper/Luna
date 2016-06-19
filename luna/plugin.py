@@ -23,47 +23,21 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-Provides an interface for interface plug-ins.
+Provides a base class for plug-ins.
 """
 
-import Luna.Plugin #Superclass.
-
-class InterfacePlugin(Luna.Plugin.Plugin):
+class Plugin(object):
 	"""
-	Superclass for Interface-type plug-ins.
-
-	Any plug-in that wishes to be an interface should derive from this class. It
-	will ensure that the ``start()`` function exists (and that it raises a
-	``NotImplementedError`` if the function is not implemented).
-	"""
-
-	APIVERSION = 2
-	"""
-	Version number of the Interface plug-in API.
-
-	Each Interface plug-in carries a similar version number which determines the
-	minimum API version required of Luna to allow the plug-in to function. If
-	this version number is lower than the version number of the interface, the
-	interface is not loaded.
+	Base class for plug-ins, containing metadata that is common to all plug-ins.
 	"""
 
 	def __init__(self):
 		"""
 		.. function:: __init__()
-		Creates a new instance of the Interface plug-in.
-		"""
-		super(Luna.Plugin.Plugin,self).__init__()
+		Creates a new instance of the plug-in.
 
-	def start(self):
+		This initialises some metadata of the plug-in.
 		"""
-		.. function:: start()
-		Starts interfacing.
-
-		This method should regulate the process of conversion. That is, it
-		should find out where to load the input from (e.g. by asking the user),
-		how to convert the input to the output (e.g. by evaluating the settings)
-		and where to write the output (e.g. by reading the command line
-		arguments). This is not limited to one conversion step, of course. An
-		interface may keep running indefinitely until the user wants it to stop.
-		"""
-		raise NotImplementedError()
+		self.type = "Uninitialised"
+		self.name = "Uninitialised"
+		self.dependencies = []
