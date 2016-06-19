@@ -158,7 +158,6 @@ def discover():
 				pluginInstance = pluginClass() #Actually construct an instance of the plug-in.
 			except Exception as e:
 				Luna.Logger.warning("Initialising plug-in {plugin} failed: {errorMessage}", plugin = pluginName, errorMessage = str(e))
-				raise e
 				continue #With next plug-in.
 			__plugins[(pluginType, pluginName)] = pluginInstance
 
