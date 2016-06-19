@@ -5,7 +5,7 @@ project(Luna)
 find_package(PythonInterp 3.4.0 REQUIRED)
 
 #Validation target.
-set(VALIDATE_PYLINT_EXECUTABLE PYLINT-NOTFOUND CACHE FILEPATH "Path to the PyLint executable.")
+set(VALIDATE_PYLINT_EXECUTABLE pylint CACHE FILEPATH "Path to the PyLint executable.")
 set(validateCommands) #List of commands to validate the code.
 set(validatePythonFiles) #List of Python files to validate with PyLint.
 file(GLOB_RECURSE pythonSources *.py)
