@@ -38,7 +38,7 @@ def metadata():
 	"""
 	return {
 		"apiVersions": {
-			Luna.LoggerPlugin.LoggerPlugin: (4,4)
+			Luna.LoggerPlugin.LoggerPlugin: (4, 4)
 		},
 		"type": "Logger",
 		"class": StandardOutModule.StandardOut,

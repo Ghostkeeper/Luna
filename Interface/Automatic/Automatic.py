@@ -43,7 +43,7 @@ class Automatic(Luna.InterfacePlugin.InterfacePlugin):
 		.. function:: __init__()
 		Creates a new instance of the Automatic interface.
 		"""
-		super(Luna.InterfacePlugin.InterfacePlugin,self).__init__()
+		super(Luna.InterfacePlugin.InterfacePlugin, self).__init__()
 
 	def start(self):
 		"""

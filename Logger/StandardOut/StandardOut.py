@@ -28,6 +28,7 @@ Implements the logger plug-in interface.
 
 import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
+
 try:
 	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
 	hasWinKernel = True
@@ -47,16 +48,16 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		.. function:: __init__()
 		Creates a new instance of the StandardOut logger.
 		"""
-		(Luna.LoggerPlugin.LoggerPlugin,self).__init__()
-		self.__levels = [Luna.Logger.Level.ERROR,Luna.Logger.Level.CRITICAL,Luna.Logger.Level.WARNING,Luna.Logger.Level.INFO] #The importance levels that are logged by default.
+		(Luna.LoggerPlugin.LoggerPlugin, self).__init__()
+		self.__levels = [Luna.Logger.Level.ERROR, Luna.Logger.Level.CRITICAL, Luna.Logger.Level.WARNING, Luna.Logger.Level.INFO] #The importance levels that are logged by default.
 		self.__standardOutHandle = None
 		if hasWinKernel: #Windows bash.
 			self.__standardOutHandle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 			self.__defaultConsoleAttributes = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
-	def critical(self,message,title = "Critical"):
+	def critical(self, message, title = "Critical"):
 		"""
-		.. function:: critical(message[,title])
+		.. function:: critical(message[, title])
 		Logs a new critical message.
 
 		A timestamp is added alongside the message.
@@ -65,16 +66,16 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param title: A header for the message. This is ignored.
 		"""
 		if Luna.Logger.Level.CRITICAL in self.__levels: #I'm configured to display this message.
-			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
+			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
 			if hasWinKernel:
-				self.__colourPrintWin32(formatted,Luna.Logger.Level.CRITICAL)
+				self.__colourPrintWin32(formatted, Luna.Logger.Level.CRITICAL)
 			else:
-				self.__colourPrintAnsi(formatted,Luna.Logger.Level.CRITICAL)
+				self.__colourPrintAnsi(formatted, Luna.Logger.Level.CRITICAL)
 
-	def debug(self,message,title = "Debug"):
+	def debug(self, message, title = "Debug"):
 		"""
-		.. function:: debug(message[,title])
+		.. function:: debug(message[, title])
 		Logs a new debug message.
 
 		A timestamp is added alongside the message.
@@ -83,16 +84,16 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param title: A header for the message. This is ignored.
 		"""
 		if Luna.Logger.Level.DEBUG in self.__levels: #I'm configured to display this message.
-			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
+			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
 			if hasWinKernel:
-				self.__colourPrintWin32(formatted,Luna.Logger.Level.DEBUG)
+				self.__colourPrintWin32(formatted, Luna.Logger.Level.DEBUG)
 			else:
-				self.__colourPrintAnsi(formatted,Luna.Logger.Level.DEBUG)
+				self.__colourPrintAnsi(formatted, Luna.Logger.Level.DEBUG)
 
-	def error(self,message,title = "Error"):
+	def error(self, message, title = "Error"):
 		"""
-		.. function:: error(message[,title])
+		.. function:: error(message[, title])
 		Logs a new error message.
 
 		A timestamp is added alongside the message.
@@ -101,16 +102,16 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param title: A header for the message. This is ignored.
 		"""
 		if Luna.Logger.Level.ERROR in self.__levels: #I'm configured to display this message.
-			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
+			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
 			if hasWinKernel:
-				self.__colourPrintWin32(formatted,Luna.Logger.Level.ERROR)
+				self.__colourPrintWin32(formatted, Luna.Logger.Level.ERROR)
 			else:
-				self.__colourPrintAnsi(formatted,Luna.Logger.Level.ERROR)
+				self.__colourPrintAnsi(formatted, Luna.Logger.Level.ERROR)
 
-	def info(self,message,title = "Information"):
+	def info(self, message, title = "Information"):
 		"""
-		.. function:: info(message[,title])
+		.. function:: info(message[, title])
 		Logs a new debug message.
 
 		A timestamp is added alongside the message.
@@ -119,14 +120,14 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param title: A header for the message. This is ignored.
 		"""
 		if Luna.Logger.Level.INFO in self.__levels: #I'm configured to display this message.
-			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
+			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
 			if hasWinKernel:
-				self.__colourPrintWin32(formatted,Luna.Logger.Level.INFO)
+				self.__colourPrintWin32(formatted, Luna.Logger.Level.INFO)
 			else:
-				self.__colourPrintAnsi(formatted,Luna.Logger.Level.INFO)
+				self.__colourPrintAnsi(formatted, Luna.Logger.Level.INFO)
 
-	def setLevels(self,levels):
+	def setLevels(self, levels):
 		"""
 		.. function:: setLevels(levels)
 		Changes which log levels are logged.
@@ -138,9 +139,9 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		"""
 		self.__levels = levels
 
-	def warning(self,message,title = "Debug"):
+	def warning(self, message, title = "Debug"):
 		"""
-		.. function:: warning(message[,title])
+		.. function:: warning(message[, title])
 		Logs a new warning message.
 
 		A timestamp is added alongside the message.
@@ -149,16 +150,16 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param title: A header for the message. This is ignored.
 		"""
 		if Luna.Logger.Level.WARNING in self.__levels: #I'm configured to display this message.
-			formatted = datetime.datetime.strftime(datetime.datetime.now(),"[%H:%M:%S] ") #Format the date and time.
+			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
 			if hasWinKernel:
-				self.__colourPrintWin32(formatted,Luna.Logger.Level.WARNING)
+				self.__colourPrintWin32(formatted, Luna.Logger.Level.WARNING)
 			else:
-				self.__colourPrintAnsi(formatted,Luna.Logger.Level.WARNING)
+				self.__colourPrintAnsi(formatted, Luna.Logger.Level.WARNING)
 
-	def __colourPrintAnsi(self,message,level):
+	def __colourPrintAnsi(self, message, level):
 		"""
-		.. function:: __colourPrintAnsi(message,level)
+		.. function:: __colourPrintAnsi(message, level)
 		Prints a message with colour-coding in ANSI-based terminals, such as the
 		console of Linux.
 
@@ -184,9 +185,9 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 			ansiColour = '\033[34m' #Blue.
 		print(ansiColour + message + '\033[m') #Start code, then message, then revert to default colour.
 
-	def __colourPrintWin32(self,message,level):
+	def __colourPrintWin32(self, message, level):
 		"""
-		.. function:: __colourPrintWin32(message,level)
+		.. function:: __colourPrintWin32(message, level)
 		Prints a message with colour-coding in Windows Bash.
 
 		The colour coding is based on the level of the message:
@@ -200,17 +201,17 @@ class StandardOut(Luna.LoggerPlugin.LoggerPlugin):
 		:param level: The warning level of the message.
 		"""
 		bufferInfo = BufferInfo.BufferInfo()
-		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standardOutHandle,ctypes.byref(bufferInfo)) #Store the old state of the output channel.
+		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standardOutHandle, ctypes.byref(bufferInfo)) #Store the old state of the output channel.
 		
 		if level == Luna.Logger.Level.ERROR:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,12) #Red.
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 12) #Red.
 		elif level == Luna.Logger.Level.CRITICAL:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,13) #Magenta.
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 13) #Magenta.
 		elif level == Luna.Logger.Level.WARNING:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,14) #Yellow.
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 14) #Yellow.
 		elif level == Luna.Logger.Level.INFO:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,10) #Green.
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 10) #Green.
 		elif level == Luna.Logger.Level.DEBUG:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,9) #Blue.
+			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 9) #Blue.
 		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle,bufferInfo.wAttributes) #Reset to old state.
+		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, bufferInfo.wAttributes) #Reset to old state.

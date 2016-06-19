@@ -39,8 +39,8 @@ class CTypeCoordinate(ctypes.Structure):
 	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx>`.
 	"""
 	_fields_ = [
-		("X",ctypes.c_short), #Horizontal coordinate.
-		("Y",ctypes.c_short) #Vertical coordinate.
+		("X", ctypes.c_short), #Horizontal coordinate.
+		("Y", ctypes.c_short) #Vertical coordinate.
 	]
 	"""
 	The fields in this structure.

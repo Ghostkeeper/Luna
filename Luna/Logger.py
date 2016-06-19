@@ -62,9 +62,9 @@ class Level(Enum):
 	Information that might be useful for a debugger to know.
 	"""
 
-def critical(*args,**kwargs):
+def critical(*args, **kwargs):
 	"""
-	.. function:: critical(message[,title][,key = value]*)
+	.. function:: critical(message[, title][, key = value]*)
 	Logs a new critical message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -85,13 +85,13 @@ def critical(*args,**kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
-		logger.critical(substituted,title)
+		logger.critical(substituted, title)
 	if not loggers: #There are no loggers.
 		__fallbackCritical(substituted)
 
-def debug(*args,**kwargs):
+def debug(*args, **kwargs):
 	"""
-	.. function:: debug(message[,title][,key = value]*)
+	.. function:: debug(message[, title][, key = value]*)
 	Logs a new debug message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -112,13 +112,13 @@ def debug(*args,**kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
-		logger.debug(substituted,title)
+		logger.debug(substituted, title)
 	if not loggers: #There are no loggers.
 		__fallbackDebug(substituted)
 
-def error(*args,**kwargs):
+def error(*args, **kwargs):
 	"""
-	.. function:: error(message[,title][,key = value]*)
+	.. function:: error(message[, title][, key = value]*)
 	Logs a new error message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -139,13 +139,13 @@ def error(*args,**kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
-		logger.error(substituted,title)
+		logger.error(substituted, title)
 	if not loggers: #There are no loggers.
 		__fallbackError(substituted)
 
-def info(*args,**kwargs):
+def info(*args, **kwargs):
 	"""
-	.. function:: info(message[,title][,key = value]*)
+	.. function:: info(message[, title][, key = value]*)
 	Logs a new information message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -166,13 +166,13 @@ def info(*args,**kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
-		logger.info(substituted,title)
+		logger.info(substituted, title)
 	if not loggers: #There are no loggers.
 		__fallbackInfo(substituted)
 
-def setLogLevels(levels,loggerName = None):
+def setLogLevels(levels, loggerName = None):
 	"""
-	.. function:: setLogLevels(levels[,loggerName])
+	.. function:: setLogLevels(levels[, loggerName])
 	Sets the log levels that are logged by the loggers.
 
 	The logger(s) will only acquire log messages with importance levels that
@@ -190,7 +190,7 @@ def setLogLevels(levels,loggerName = None):
 	if loggerName: #If given a specific logger name, set the log levels only for that logger.
 		plugin = Luna.Plugins.getLogger(loggerName)
 		if not plugin:
-			warning("Logger {name} doesn't exist.",name = loggerName)
+			warning("Logger {name} doesn't exist.", name = loggerName)
 			return
 		plugin.setLevels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.
@@ -198,9 +198,9 @@ def setLogLevels(levels,loggerName = None):
 			plugin.setLevels(levels)
 		__levels = levels #Also for the fallback logger.
 
-def warning(*args,**kwargs):
+def warning(*args, **kwargs):
 	"""
-	.. function:: warning(message[,title][,key = value])
+	.. function:: warning(message[, title][, key = value])
 	Logs a new warning message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -221,11 +221,11 @@ def warning(*args,**kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = Luna.Plugins.getLoggers()
 	for logger in loggers:
-		logger.warning(substituted,title)
+		logger.warning(substituted, title)
 	if not loggers: #There are no loggers.
 		__fallbackWarning(substituted)
 
-__levels = [Level.ERROR,Level.CRITICAL,Level.WARNING,Level.INFO]
+__levels = [Level.ERROR, Level.CRITICAL, Level.WARNING, Level.INFO]
 """
 The default log levels to log for the fallback logger.
 """
@@ -244,7 +244,7 @@ def __fallbackCritical(message):
 	global __levels
 	if Level.CRITICAL not in __levels: #I'm configured not to log this.
 		return
-	print("[CRITICAL]",message)
+	print("[CRITICAL]", message)
 
 def __fallbackDebug(message):
 	"""
@@ -260,7 +260,7 @@ def __fallbackDebug(message):
 	global __levels
 	if Level.DEBUG not in __levels: #I'm configured not to log this.
 		return
-	print("[DEBUG]",message)
+	print("[DEBUG]", message)
 
 def __fallbackError(message):
 	"""
@@ -276,7 +276,7 @@ def __fallbackError(message):
 	global __levels
 	if Level.ERROR not in __levels: #I'm configured not to log this.
 		return
-	print("[ERROR]",message)
+	print("[ERROR]", message)
 
 def __fallbackInfo(message):
 	"""
@@ -292,7 +292,7 @@ def __fallbackInfo(message):
 	global __levels
 	if Level.INFO not in __levels: #I'm configured not to log this.
 		return
-	print("[INFO]",message)
+	print("[INFO]", message)
 
 def __fallbackWarning(message):
 	"""
@@ -308,4 +308,4 @@ def __fallbackWarning(message):
 	global __levels
 	if Level.WARNING not in __levels: #I'm configured not to log this.
 		return
-	print("[WARNING]",message)
+	print("[WARNING]", message)

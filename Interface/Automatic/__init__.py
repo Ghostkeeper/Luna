@@ -43,8 +43,8 @@ def metadata():
 	"""
 	return {
 		"apiVersions": {
-			Luna.InterfacePlugin.InterfacePlugin: (2,2),
-			Luna.LoggerPlugin.LoggerPlugin: (4,4)
+			Luna.InterfacePlugin.InterfacePlugin: (2, 2),
+			Luna.LoggerPlugin.LoggerPlugin: (4, 4)
 		},
 		"type": "Interface",
 		"class": AutomaticModule.Automatic,

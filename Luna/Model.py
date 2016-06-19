@@ -52,21 +52,21 @@ def model(originalClass):
 	#Replace the initialisation to add initialisation of the dictionaries of listeners.
 	originalInit = originalClass.__init__
 	@functools.wraps(originalClass.__init__)
-	def newInit(self,*args,**kwargs):
+	def newInit(self, *args, **kwargs):
 		self.__listening = False
 		self.__attributeListeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
 		self.__instanceListeners = set() #Set of listeners that listen to ALL changes in the instance.
 		self.__listening = True
-		originalInit(self,*args,**kwargs)
+		originalInit(self, *args, **kwargs)
 	originalClass.__init__ = newInit
 
 	#Replace all methods that could change the instance.
-	changingFunctions = ["__delattr__","__delitem__","__iadd__","__iand__","__ifloordiv__","__ilshift__","__imatmul__","__imod__","__imul__","__ior__","__ipow__","__irshift__","__isub__","__itruediv__","__ixor__","__setitem__","append"] #Not __setattr__! It'll be replaced with a special function.
+	changingFunctions = ["__delattr__", "__delitem__", "__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__", "__setitem__", "append"] #Not __setattr__! It'll be replaced with a special function.
 	for functionName in [functionName for functionName in changingFunctions if hasattr(originalClass,functionName)]:
-		oldFunction = getattr(originalClass,functionName)
+		oldFunction = getattr(originalClass, functionName)
 		@functools.wraps(oldFunction)
-		def newFunction(self,*args,**kwargs):
-			result = oldFunction(self,*args,**kwargs)
+		def newFunction(self, *args, **kwargs):
+			result = oldFunction(self, *args, **kwargs)
 			if not self.__listening:
 				return result
 			for listener in self.__instanceListeners:
@@ -78,13 +78,13 @@ def model(originalClass):
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
 			return result
-		setattr(originalClass,functionName,newFunction) #Replace the function with a hooked function.
+		setattr(originalClass, functionName, newFunction) #Replace the function with a hooked function.
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
 	oldSetattr = originalClass.__setattr__
 	@functools.wraps(oldSetattr)
-	def newSetattr(self,name,value):
-		oldSetattr(self,name,value)
+	def newSetattr(self, name, value):
+		oldSetattr(self, name, value)
 		if not self.__listening:
 			return
 		for listener in self.__instanceListeners: #Instance listeners always need to be called.
@@ -106,9 +106,9 @@ def model(originalClass):
 						raise
 	originalClass.__setattr__ = newSetattr
 
-	def listen(self,listener,attribute = None):
+	def listen(self, listener, attribute = None):
 		"""
-		.. function:: listen(listener[,attribute])
+		.. function:: listen(listener[, attribute])
 		Causes a listener to be called when the instance or an attribute of it
 		changes.
 
@@ -126,7 +126,7 @@ def model(originalClass):
 		this attribute is changed. Must be a str if provided.
 		"""
 		#Take a weak reference to the listener.
-		if inspect.ismethod(listener) and hasattr(listener,"__self__"): #Is a bound method.
+		if inspect.ismethod(listener) and hasattr(listener, "__self__"): #Is a bound method.
 			listener = weakref.WeakMethod(listener) #Then we use the special WeakMethod that destroys the reference if the instance this method is bound to is destroyed.
 		else:
 			listener = weakref.ref(listener)

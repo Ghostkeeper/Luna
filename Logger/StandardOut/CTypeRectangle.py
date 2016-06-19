@@ -41,10 +41,10 @@ class CTypeRectangle(ctypes.Structure):
 	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms686311.aspx>`.
 	"""
 	_fields_ = [
-		("Left",ctypes.c_short), #Horizontal coordinate of left side.
-		("Top",ctypes.c_short), #Vertical coordinate of top side.
-		("Right",ctypes.c_short), #Horizontal coordinate of right side.
-		("Bottom",ctypes.c_short) #Vertical coordinate of bottom side.
+		("Left", ctypes.c_short), #Horizontal coordinate of left side.
+		("Top", ctypes.c_short), #Vertical coordinate of top side.
+		("Right", ctypes.c_short), #Horizontal coordinate of right side.
+		("Bottom", ctypes.c_short) #Vertical coordinate of bottom side.
 	]
 	"""
 	The fields in this structure.

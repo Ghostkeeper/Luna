@@ -41,11 +41,11 @@ class BufferInfo(ctypes.Structure):
 	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx>`.
 	"""
 	_fields_ = [
-		("dwSize",CTypeCoordinate.CTypeCoordinate), #Size of the window (in character rows and columns).
-		("dwCursorPosition",CTypeCoordinate.CTypeCoordinate), #Position of the caret.
-		("wAttributes",ctypes.c_ushort), #The text attributes of the output channel, such as colour.
-		("srWindow",CTypeRectangle.CTypeRectangle), #Position and size of the window relative to its parent display (in pixels).
-		("dwMaximumWindowSize",CTypeCoordinate.CTypeCoordinate) #Maximum window size given the current font size.
+		("dwSize", CTypeCoordinate.CTypeCoordinate), #Size of the window (in character rows and columns).
+		("dwCursorPosition", CTypeCoordinate.CTypeCoordinate), #Position of the caret.
+		("wAttributes", ctypes.c_ushort), #The text attributes of the output channel, such as colour.
+		("srWindow", CTypeRectangle.CTypeRectangle), #Position and size of the window relative to its parent display (in pixels).
+		("dwMaximumWindowSize", CTypeCoordinate.CTypeCoordinate) #Maximum window size given the current font size.
 	]
 	"""
 	The fields in this structure.
