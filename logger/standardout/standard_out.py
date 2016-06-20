@@ -53,8 +53,8 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		self.__levels = [luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO] #The importance levels that are logged by default.
 		self.__standard_out_handle = None
 		if has_win_kernel: #Windows bash.
-			self.__standard_out_handle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
-			self.__default_console_attributes = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(-11)
+			self.__standard_out_handle = windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
+			self.__default_console_attributes = windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
 	def critical(self, message, title="Critical"):
 		"""
@@ -205,17 +205,17 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		:param level: The warning level of the message.
 		"""
 		buffer_state = buffer_info.BufferInfo()
-		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel.
+		windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel.
 
 		if level == luna.logger.Level.ERROR:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12) #Red.
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12) #Red.
 		elif level == luna.logger.Level.CRITICAL:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 13) #Magenta.
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 13) #Magenta.
 		elif level == luna.logger.Level.WARNING:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 14) #Yellow.
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 14) #Yellow.
 		elif level == luna.logger.Level.INFO:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 10) #Green.
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 10) #Green.
 		elif level == luna.logger.Level.DEBUG:
-			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9) #Blue.
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9) #Blue.
 		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+		windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
