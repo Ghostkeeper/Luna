@@ -39,7 +39,7 @@ import weakref #To automatically remove listeners if their class instances are r
 
 def model(original_class):
 	"""
-	.. function:: model(originalClass)
+	.. function:: model(original_class)
 	Decorator that modifies a class such that it becomes part of the model.
 
 	This adds a ``listen`` function to the class, which can be used to listen to
@@ -51,6 +51,7 @@ def model(original_class):
 	"""
 	#Replace the initialisation to add initialisation of the dictionaries of listeners.
 	original_init = original_class.__init__
+
 	@functools.wraps(original_class.__init__)
 	def new_init(self, *args, **kwargs):
 		self.__listening = False
@@ -64,6 +65,7 @@ def model(original_class):
 	changing_functions = ["__delattr__", "__delitem__", "__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__", "__setitem__", "append"] #Not __setattr__! It'll be replaced with a special function.
 	for function_name in [function_name for function_name in changing_functions if hasattr(original_class, function_name)]:
 		old_function = getattr(original_class, function_name)
+
 		@functools.wraps(old_function)
 		def new_function(self, *args, **kwargs):
 			result = old_function(self, *args, **kwargs)
@@ -82,6 +84,7 @@ def model(original_class):
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
 	old_setattr = original_class.__setattr__
+
 	@functools.wraps(old_setattr)
 	def new_setattr(self, name, value):
 		old_setattr(self, name, value)
@@ -108,7 +111,7 @@ def model(original_class):
 
 	def listen(self, listener, attribute=None):
 		"""
-		.. function:: listen(listener[, attribute])
+		.. function:: listen(self, listener[, attribute])
 		Causes a listener to be called when the instance or an attribute of it
 		changes.
 
@@ -120,6 +123,7 @@ def model(original_class):
 		attribute's attribute is changed, no listeners will be called. Only
 		changes to the contents of this instance itself will trigger a callback.
 
+		:param self: The instance to listen to for changes.
 		:param listener: A callable object to call when any or all of the
 		attributes in this instance changes.
 		:param attribute: If provided, the listener will only be called when
@@ -132,7 +136,7 @@ def model(original_class):
 			listener = weakref.ref(listener)
 
 		if type(attribute) is str: #We are listening to a specific attribute.
-			if not attribute in self.__attribute_listeners:
+			if attribute not in self.__attribute_listeners:
 				self.__attribute_listeners[attribute] = set()
 			self.__attribute_listeners[attribute].add(listener)
 		else: #We are listening to all changes.

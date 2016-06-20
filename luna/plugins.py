@@ -88,21 +88,21 @@ def discover():
 		if not metadata or not isinstance(metadata, dict): #Metadata not a dictionary.
 			luna.logger.warning("Metadata of plug-in {plugin} is not a dictionary. Can't load this plug-in.", plugin=name)
 			continue
-		if not "type" in metadata:
+		if "type" not in metadata:
 			luna.logger.warning("Plug-in {plugin} defines no plug-in type. Can't load this plug-in.", plugin=name)
 			continue
 		if __get_plugin(metadata["type"], name):
 			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=name)
 			continue
-		if not "class" in metadata:
+		if "class" not in metadata:
 			luna.logger.warning("Plug-in {plugin} defines no base class. Can't load this plug-in.", plugin=name)
 			continue
 		try:
 			int(metadata["class"].APIVERSION)
-		except:
+		except AttributeError:
 			luna.logger.warning("Plug-in {plugin} specifies a class {plugin_class} that is not a subclass of Plugin. Can't load this plug-in.", plugin=name, plugin_class=str(metadata["class"]))
 			continue
-		if not "apiVersions" in metadata:
+		if "apiVersions" not in metadata:
 			luna.logger.warning("Metadata of plug-in {plugin} has no API version number. Can't load this plug-in.", plugin=name)
 			continue
 		if not isinstance(metadata["apiVersions"], dict):

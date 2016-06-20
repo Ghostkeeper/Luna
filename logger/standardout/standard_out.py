@@ -48,7 +48,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		.. function:: __init__()
 		Creates a new instance of the StandardOut logger.
 		"""
-		(luna.logger_plugin.LoggerPlugin, self).__init__()
+		super().__init__()
 		self.__levels = [luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO] #The importance levels that are logged by default.
 		self.__standard_out_handle = None
 		if has_win_kernel: #Windows bash.

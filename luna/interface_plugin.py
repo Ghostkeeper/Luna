@@ -52,7 +52,7 @@ class InterfacePlugin(luna.plugin.Plugin):
 		.. function:: __init__()
 		Creates a new instance of the Interface plug-in.
 		"""
-		super(luna.plugin.Plugin, self).__init__()
+		super().__init__()
 
 	def start(self):
 		"""
