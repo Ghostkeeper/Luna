@@ -174,16 +174,16 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		:param level: The warning level of the message.
 		"""
 		if level == luna.logger.Level.ERROR:
-			ansiColour = '\033[38m' #Red.
+			ansi_colour = '\033[38m' #Red.
 		elif level == luna.logger.Level.CRITICAL:
-			ansiColour = '\033[35m' #Magenta.
+			ansi_colour = '\033[35m' #Magenta.
 		elif level == luna.logger.Level.WARNING:
-			ansiColour = '\033[33m' #Yellow.
+			ansi_colour = '\033[33m' #Yellow.
 		elif level == luna.logger.Level.INFO:
-			ansiColour = '\033[32m' #Green.
+			ansi_colour = '\033[32m' #Green.
 		elif level == luna.logger.Level.DEBUG:
-			ansiColour = '\033[34m' #Blue.
-		print(ansiColour + message + '\033[m') #Start code, then message, then revert to default colour.
+			ansi_colour = '\033[34m' #Blue.
+		print(ansi_colour + message + '\033[m') #Start code, then message, then revert to default colour.
 
 	def __colourPrintWin32(self, message, level):
 		"""
