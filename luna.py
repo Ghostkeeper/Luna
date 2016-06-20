@@ -31,7 +31,7 @@ import sys #For reading command line arguments.
 import luna.logger
 import luna.plugins #To initiate the plug-in loading.
 
-class Luna(object):
+class Luna:
 	"""
 	Base instance of the application.
 	"""

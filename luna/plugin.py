@@ -26,7 +26,7 @@
 Provides a base class for plug-ins.
 """
 
-class Plugin(object):
+class Plugin:
 	"""
 	Base class for plug-ins, containing metadata that is common to all plug-ins.
 	"""
