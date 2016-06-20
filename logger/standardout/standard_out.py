@@ -202,7 +202,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		"""
 		bufferInfo = buffer_info.BufferInfo()
 		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standardOutHandle, ctypes.byref(bufferInfo)) #Store the old state of the output channel.
-		
+
 		if level == luna.logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standardOutHandle, 12) #Red.
 		elif level == luna.logger.Level.CRITICAL:
