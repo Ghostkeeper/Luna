@@ -151,7 +151,7 @@ def discover():
 				if dependencyName == dependencyCandidateName and dependencyType == dependencyCandidateType:
 					break
 			else: #Dependency was not found.
-				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", pluginName, dependency)
+				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin = pluginName, dependency = dependency)
 				break
 		else: #All dependencies are resolved!
 			try:
