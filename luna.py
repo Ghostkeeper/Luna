@@ -28,8 +28,8 @@ Provides a base class for the application, and then starts the application.
 
 import os #For finding the root directory of Luna.
 import sys #For reading command line arguments.
-import luna.logger as Logger
-import luna.plugins as Plugins #To initiate the plug-in loading.
+import luna.logger
+import luna.plugins #To initiate the plug-in loading.
 
 class Luna(object):
 	"""
@@ -47,17 +47,17 @@ class Luna(object):
 		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
 		"""
 		baseDir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
-		Plugins.addPluginLocation(os.path.join(baseDir, "Interface"))
-		Plugins.addPluginLocation(os.path.join(baseDir, "Logger"))
-		Plugins.discover()
-		Logger.setLogLevels([Logger.Level.ERROR, Logger.Level.CRITICAL, Logger.Level.WARNING, Logger.Level.INFO, Logger.Level.DEBUG])
+		luna.plugins.addPluginLocation(os.path.join(baseDir, "Interface"))
+		luna.plugins.addPluginLocation(os.path.join(baseDir, "Logger"))
+		luna.plugins.discover()
+		luna.logger.setLogLevels([luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO, luna.logger.Level.DEBUG])
 
 		interfaceName = "Automatic" #Default to Automatic interface.
 		if len(sys.argv) >= 2:
 			interfaceName = sys.argv[1]
-		interface = Plugins.getInterface(interfaceName)
+		interface = luna.plugins.getInterface(interfaceName)
 		if not interface:
-			Logger.error("Could not load the interface {interface}. Aborting.", interface = interfaceName)
+			luna.logger.error("Could not load the interface {interface}. Aborting.", interface = interfaceName)
 			return False
 		interface.start()
 
