@@ -182,7 +182,7 @@ def set_log_levels(levels, logger_name=None):
 	logger. If not given a name, the log levels are set for all loggers.
 
 	:param levels: A list of log levels that the logger(s) will log.
-	:param loggerName: The identifier of a logger plug-in if setting the
+	:param logger_name: The identifier of a logger plug-in if setting the
 		levels for a specific logger, or None if setting the levels for all
 		loggers.
 	"""
