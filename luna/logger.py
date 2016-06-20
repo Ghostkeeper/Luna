@@ -64,7 +64,7 @@ class Level(Enum):
 
 def critical(*args, **kwargs):
 	"""
-	.. function:: critical(message[, title][, key = value]*)
+	.. function:: critical(message[, title][, key=value]*)
 	Logs a new critical message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -91,7 +91,7 @@ def critical(*args, **kwargs):
 
 def debug(*args, **kwargs):
 	"""
-	.. function:: debug(message[, title][, key = value]*)
+	.. function:: debug(message[, title][, key=value]*)
 	Logs a new debug message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -118,7 +118,7 @@ def debug(*args, **kwargs):
 
 def error(*args, **kwargs):
 	"""
-	.. function:: error(message[, title][, key = value]*)
+	.. function:: error(message[, title][, key=value]*)
 	Logs a new error message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -145,7 +145,7 @@ def error(*args, **kwargs):
 
 def info(*args, **kwargs):
 	"""
-	.. function:: info(message[, title][, key = value]*)
+	.. function:: info(message[, title][, key=value]*)
 	Logs a new information message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
@@ -170,7 +170,7 @@ def info(*args, **kwargs):
 	if not loggers: #There are no loggers.
 		__fallback_info(substituted)
 
-def set_log_levels(levels, logger_name = None):
+def set_log_levels(levels, logger_name=None):
 	"""
 	.. function:: setLogLevels(levels[, loggerName])
 	Sets the log levels that are logged by the loggers.
@@ -190,7 +190,7 @@ def set_log_levels(levels, logger_name = None):
 	if logger_name: #If given a specific logger name, set the log levels only for that logger.
 		plugin = luna.plugins.get_logger(logger_name)
 		if not plugin:
-			warning("Logger {name} doesn't exist.", name = logger_name)
+			warning("Logger {name} doesn't exist.", name=logger_name)
 			return
 		plugin.set_levels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.
@@ -200,7 +200,7 @@ def set_log_levels(levels, logger_name = None):
 
 def warning(*args, **kwargs):
 	"""
-	.. function:: warning(message[, title][, key = value])
+	.. function:: warning(message[, title][, key=value])
 	Logs a new warning message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first

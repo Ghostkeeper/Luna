@@ -55,7 +55,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			self.__standard_out_handle = ctypes.windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 			self.__default_console_attributes = ctypes.windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
-	def critical(self, message, title = "Critical"):
+	def critical(self, message, title="Critical"):
 		"""
 		.. function:: critical(message[, title])
 		Logs a new critical message.
@@ -73,7 +73,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.CRITICAL)
 
-	def debug(self, message, title = "Debug"):
+	def debug(self, message, title="Debug"):
 		"""
 		.. function:: debug(message[, title])
 		Logs a new debug message.
@@ -91,7 +91,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.DEBUG)
 
-	def error(self, message, title = "Error"):
+	def error(self, message, title="Error"):
 		"""
 		.. function:: error(message[, title])
 		Logs a new error message.
@@ -109,7 +109,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.ERROR)
 
-	def info(self, message, title = "Information"):
+	def info(self, message, title="Information"):
 		"""
 		.. function:: info(message[, title])
 		Logs a new debug message.
@@ -139,7 +139,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		"""
 		self.__levels = levels
 
-	def warning(self, message, title = "Debug"):
+	def warning(self, message, title="Debug"):
 		"""
 		.. function:: warning(message[, title])
 		Logs a new warning message.

@@ -106,7 +106,7 @@ def model(original_class):
 						raise
 	original_class.__setattr__ = new_setattr
 
-	def listen(self, listener, attribute = None):
+	def listen(self, listener, attribute=None):
 		"""
 		.. function:: listen(listener[, attribute])
 		Causes a listener to be called when the instance or an attribute of it

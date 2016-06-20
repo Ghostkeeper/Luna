@@ -57,7 +57,7 @@ class Luna:
 			interface_name = sys.argv[1]
 		interface = luna.plugins.get_interface(interface_name)
 		if not interface:
-			luna.logger.error("Could not load the interface {interface}. Aborting.", interface = interface_name)
+			luna.logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
 			return False
 		interface.start()
 
