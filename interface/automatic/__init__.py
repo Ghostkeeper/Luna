@@ -46,7 +46,7 @@ def metadata():
 			luna.interface_plugin.InterfacePlugin: (2, 2),
 			luna.logger_plugin.LoggerPlugin:       (4, 4)
 		},
-		"type": "Interface",
+		"type": "interface",
 		"class": automatic_module.Automatic,
 		"dependencies": [
 			"Logger/StandardOut"

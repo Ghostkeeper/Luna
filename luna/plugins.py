@@ -169,7 +169,7 @@ def getInterface(name):
 	:param name: The name of the interface plug-in to get.
 	:returns: The specified interface, or ``None`` if it doesn't exist.
 	"""
-	return __getPlugin("Interface", name)
+	return __getPlugin("interface", name)
 
 def getInterfaces():
 	"""
@@ -178,7 +178,7 @@ def getInterfaces():
 
 	:returns: A list of all interface plug-ins.
 	"""
-	return __getAllPluginsOfType("Interface")
+	return __getAllPluginsOfType("interface")
 
 def getLogger(name):
 	"""
@@ -188,7 +188,7 @@ def getLogger(name):
 	:param name: The name of the logger plug-in to get.
 	:returns: The specified logger, or ``None`` if it doesn't exist.
 	"""
-	return __getPlugin("Logger", name)
+	return __getPlugin("logger", name)
 
 def getLoggers():
 	"""
@@ -197,7 +197,7 @@ def getLoggers():
 
 	:returns: A list of all logger plug-ins.
 	"""
-	return __getAllPluginsOfType("Logger")
+	return __getAllPluginsOfType("logger")
 
 def __findCandidates():
 	"""

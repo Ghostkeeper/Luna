@@ -26,7 +26,7 @@
 A logger plug-in that logs to the standard output channel.
 """
 
-import StandardOut.StandardOut as StandardOutModule #Prevent mixing up the package name and the module name!
+import standardout.standard_out as standard_out_module #Prevent mixing up the package name and the module name!
 import luna.logger_plugin
 
 def metadata():
@@ -40,8 +40,8 @@ def metadata():
 		"apiVersions": {
 			luna.logger_plugin.LoggerPlugin:(4, 4)
 		},
-		"type": "Logger",
-		"class": StandardOutModule.StandardOut,
+		"type": "logger",
+		"class": standard_out_module.StandardOut,
 		"dependencies": [
 		]
 	}
