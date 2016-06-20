@@ -202,8 +202,8 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		:param message: The text to print.
 		:param level: The warning level of the message.
 		"""
-		bufferInfo = buffer_info.BufferInfo()
-		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(bufferInfo)) #Store the old state of the output channel.
+		buffer_info = buffer_info.BufferInfo()
+		ctypes.windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_info)) #Store the old state of the output channel.
 
 		if level == luna.logger.Level.ERROR:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12) #Red.
@@ -216,4 +216,4 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		elif level == luna.logger.Level.DEBUG:
 			ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9) #Blue.
 		print(message)
-		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, bufferInfo.wAttributes) #Reset to old state.
+		ctypes.windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_info.wAttributes) #Reset to old state.
