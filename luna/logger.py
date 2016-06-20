@@ -83,11 +83,11 @@ def critical(*args, **kwargs):
 	else:
 		title = "CRITICAL"
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = luna.plugins.getLoggers()
+	loggers = luna.plugins.get_loggers()
 	for logger in loggers:
 		logger.critical(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallbackCritical(substituted)
+		__fallback_critical(substituted)
 
 def debug(*args, **kwargs):
 	"""
@@ -110,11 +110,11 @@ def debug(*args, **kwargs):
 	else:
 		title = "DEBUG"
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = luna.plugins.getLoggers()
+	loggers = luna.plugins.get_loggers()
 	for logger in loggers:
 		logger.debug(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallbackDebug(substituted)
+		__fallback_debug(substituted)
 
 def error(*args, **kwargs):
 	"""
@@ -137,11 +137,11 @@ def error(*args, **kwargs):
 	else:
 		title = "ERROR"
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = luna.plugins.getLoggers()
+	loggers = luna.plugins.get_loggers()
 	for logger in loggers:
 		logger.error(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallbackError(substituted)
+		__fallback_error(substituted)
 
 def info(*args, **kwargs):
 	"""
@@ -164,13 +164,13 @@ def info(*args, **kwargs):
 	else:
 		title = "INFO"
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = luna.plugins.getLoggers()
+	loggers = luna.plugins.get_loggers()
 	for logger in loggers:
 		logger.info(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallbackInfo(substituted)
+		__fallback_info(substituted)
 
-def setLogLevels(levels, logger_name = None):
+def set_log_levels(levels, logger_name = None):
 	"""
 	.. function:: setLogLevels(levels[, loggerName])
 	Sets the log levels that are logged by the loggers.
@@ -188,14 +188,14 @@ def setLogLevels(levels, logger_name = None):
 	"""
 	global __levels
 	if logger_name: #If given a specific logger name, set the log levels only for that logger.
-		plugin = luna.plugins.getLogger(logger_name)
+		plugin = luna.plugins.get_logger(logger_name)
 		if not plugin:
 			warning("Logger {name} doesn't exist.", name = logger_name)
 			return
-		plugin.setLevels(levels)
+		plugin.set_levels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.
-		for plugin in luna.plugins.getLoggers():
-			plugin.setLevels(levels)
+		for plugin in luna.plugins.get_loggers():
+			plugin.set_levels(levels)
 		__levels = levels #Also for the fallback logger.
 
 def warning(*args, **kwargs):
@@ -219,18 +219,18 @@ def warning(*args, **kwargs):
 	else:
 		title = "WARNING"
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = luna.plugins.getLoggers()
+	loggers = luna.plugins.get_loggers()
 	for logger in loggers:
 		logger.warning(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallbackWarning(substituted)
+		__fallback_warning(substituted)
 
 __levels = [Level.ERROR, Level.CRITICAL, Level.WARNING, Level.INFO]
 """
 The default log levels to log for the fallback logger.
 """
 
-def __fallbackCritical(message):
+def __fallback_critical(message):
 	"""
 	.. function:: __fallbackCritical(message)
 	Logs a critical message to the standard output.
@@ -246,7 +246,7 @@ def __fallbackCritical(message):
 		return
 	print("[CRITICAL]", message)
 
-def __fallbackDebug(message):
+def __fallback_debug(message):
 	"""
 	.. function:: __fallbackDebug(message)
 	Logs a debug message to the standard output.
@@ -262,7 +262,7 @@ def __fallbackDebug(message):
 		return
 	print("[DEBUG]", message)
 
-def __fallbackError(message):
+def __fallback_error(message):
 	"""
 	.. function:: __fallbackError(message)
 	Logs an error message to the standard output.
@@ -278,7 +278,7 @@ def __fallbackError(message):
 		return
 	print("[ERROR]", message)
 
-def __fallbackInfo(message):
+def __fallback_info(message):
 	"""
 	.. function:: __fallbackInfo(message)
 	Logs an information message to the standard output.
@@ -294,7 +294,7 @@ def __fallbackInfo(message):
 		return
 	print("[INFO]", message)
 
-def __fallbackWarning(message):
+def __fallback_warning(message):
 	"""
 	.. function:: __fallbackWarning(message)
 	Logs a warning message to the standard output.

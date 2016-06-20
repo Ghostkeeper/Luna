@@ -47,15 +47,15 @@ class Luna(object):
 		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
 		"""
 		base_dir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
-		luna.plugins.addPluginLocation(os.path.join(base_dir, "interface"))
-		luna.plugins.addPluginLocation(os.path.join(base_dir, "logger"))
+		luna.plugins.add_plugin_location(os.path.join(base_dir, "interface"))
+		luna.plugins.add_plugin_location(os.path.join(base_dir, "logger"))
 		luna.plugins.discover()
-		luna.logger.setLogLevels([luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO, luna.logger.Level.DEBUG])
+		luna.logger.set_log_levels([luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO, luna.logger.Level.DEBUG])
 
 		interface_name = "automatic" #Default to Automatic interface.
 		if len(sys.argv) >= 2:
 			interface_name = sys.argv[1]
-		interface = luna.plugins.getInterface(interface_name)
+		interface = luna.plugins.get_interface(interface_name)
 		if not interface:
 			luna.logger.error("Could not load the interface {interface}. Aborting.", interface = interface_name)
 			return False

@@ -43,7 +43,7 @@ The plug-ins are indexed by tuples as keys, of the form (<type>, <name>),
 where <type> is the plug-in type and <name> the identifier of the plug-in.
 """
 
-def addPluginLocation(location):
+def add_plugin_location(location):
 	"""
 	.. function:: addPluginLocation(location)
 	Adds a location to the list of locations where the application looks for
@@ -70,12 +70,12 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	candidates = __findCandidates() #Makes a list of (id, path) tuples indicating names and folder paths of possible plug-ins.
+	candidates = __find_candidates() #Makes a list of (id, path) tuples indicating names and folder paths of possible plug-ins.
 	dependency_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. Tuples of (name, type, class, dependencies).
 	for name, folder in candidates:
 		luna.logger.debug("Loading plug-in {plugin} from {folder}.", plugin = name, folder = folder)
 		#Loading the plug-in.
-		module = __loadCandidate(name, folder)
+		module = __load_candidate(name, folder)
 		if not module: #Failed to load module.
 			continue
 
@@ -91,7 +91,7 @@ def discover():
 		if not "type" in metadata:
 			luna.logger.warning("Plug-in {plugin} defines no plug-in type. Can't load this plug-in.", plugin = name)
 			continue
-		if __getPlugin(metadata["type"], name):
+		if __get_plugin(metadata["type"], name):
 			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin = name)
 			continue
 		if not "class" in metadata:
@@ -161,7 +161,7 @@ def discover():
 				continue #With next plug-in.
 			__plugins[(plugin_type, plugin_name)] = plugin_instance
 
-def getInterface(name):
+def get_interface(name):
 	"""
 	.. function:: getInterface(name)
 	Gets an interface plug-in with the specified name, if it exists.
@@ -169,18 +169,18 @@ def getInterface(name):
 	:param name: The name of the interface plug-in to get.
 	:returns: The specified interface, or ``None`` if it doesn't exist.
 	"""
-	return __getPlugin("interface", name)
+	return __get_plugin("interface", name)
 
-def getInterfaces():
+def get_interfaces():
 	"""
 	.. function:: getInterfaces()
 	Gets all interface plug-ins.
 
 	:returns: A list of all interface plug-ins.
 	"""
-	return __getAllPluginsOfType("interface")
+	return __get_all_plugins_of_type("interface")
 
-def getLogger(name):
+def get_logger(name):
 	"""
 	.. function:: getLogger(name)
 	Gets a logger plug-in with the specified name, if it exists.
@@ -188,18 +188,18 @@ def getLogger(name):
 	:param name: The name of the logger plug-in to get.
 	:returns: The specified logger, or ``None`` if it doesn't exist.
 	"""
-	return __getPlugin("logger", name)
+	return __get_plugin("logger", name)
 
-def getLoggers():
+def get_loggers():
 	"""
 	.. function:: getLoggers()
 	Gets all logger plug-ins.
 
 	:returns: A list of all logger plug-ins.
 	"""
-	return __getAllPluginsOfType("logger")
+	return __get_all_plugins_of_type("logger")
 
-def __findCandidates():
+def __find_candidates():
 	"""
 	.. function:: __findCandidates()
 	Finds candidates for what looks like might be plug-ins.
@@ -227,7 +227,7 @@ def __findCandidates():
 				candidates.append((name, location))
 	return candidates
 
-def __loadCandidate(name, folder):
+def __load_candidate(name, folder):
 	"""
 	.. function:: __loadCandidate(name, folder)
 	Loads a plug-in candidate as a Python package.
@@ -260,7 +260,7 @@ def __loadCandidate(name, folder):
 			file.close()
 	return module
 
-def __getAllPluginsOfType(type):
+def __get_all_plugins_of_type(type):
 	"""
 	.. function:: __getAllPluginsOfType(type)
 	Gets all plug-ins with the specified type.
@@ -274,7 +274,7 @@ def __getAllPluginsOfType(type):
 			result.append(__plugins[(candidate_type, candidate_name)])
 	return result
 
-def __getPlugin(type, name):
+def __get_plugin(type, name):
 	"""
 	.. function:: __getPlugin(type, name)
 	Gets a plug-in of the specified type and the specified name, if it

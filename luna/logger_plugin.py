@@ -95,9 +95,9 @@ class LoggerPlugin(luna.plugin.Plugin):
 		"""
 		raise NotImplementedError() #A subclass must implement this.
 
-	def setLevels(self, levels):
+	def set_levels(self, levels):
 		"""
-		.. function:: setLevels(levels)
+		.. function:: set_levels(levels)
 		Changes which log levels are logged.
 
 		After this function is called, the log should only acquire messages with
