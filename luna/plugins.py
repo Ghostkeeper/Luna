@@ -253,7 +253,7 @@ def __loadCandidate(name, folder):
 		module = imp.load_module(name, file, path, description)
 	except Exception as e:
 		luna.logger.warning("Failed to load plug-in {plugin}: {error_message}", plugin = name, error_message = str(e))
-		raise e
+		raise
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
 			luna.logger.warning("Plug-in {plugin} is a file: {filename}", plugin = name, filename = str(file))
