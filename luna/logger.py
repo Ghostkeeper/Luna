@@ -200,7 +200,7 @@ def set_log_levels(levels, logger_name=None):
 
 def warning(*args, **kwargs):
 	"""
-	.. function:: warning(message[, title][, key=value])
+	.. function:: warning(message[, title][, key=value]*)
 	Logs a new warning message with all loggers.
 
 	:param args: Positional arguments. Requires at least one argument. The first
