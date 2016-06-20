@@ -49,6 +49,6 @@ def metadata():
 		"type": "interface",
 		"class": automatic_module.Automatic,
 		"dependencies": [
-			"Logger/StandardOut"
+			"logger/standardout"
 		]
 	}
