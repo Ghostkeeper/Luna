@@ -183,6 +183,8 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			ansi_colour = '\033[32m' #Green.
 		elif level == luna.logger.Level.DEBUG:
 			ansi_colour = '\033[34m' #Blue.
+		else:
+			ansi_colour = '\033[m' #Default colour.
 		print(ansi_colour + message + '\033[m') #Start code, then message, then revert to default colour.
 
 	def __colourPrintWin32(self, message, level):
