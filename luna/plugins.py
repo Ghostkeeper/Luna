@@ -135,7 +135,7 @@ def discover():
 		if "dependencies" in metadata:
 			dependencies = metadata["dependencies"]
 		else:
-			luna.logger.warning("Plug-in {plugin} defines no dependencies. Assuming it has no dependencies.", pluginType = name)
+			luna.logger.warning("Plug-in {plugin} defines no dependencies. Assuming it has no dependencies.", plugin = name)
 
 		dependency_candidates.append((name, metadata["type"], metadata["class"], dependencies, module))
 
