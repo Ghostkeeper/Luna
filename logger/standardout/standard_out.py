@@ -33,6 +33,7 @@ try:
 	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
 	has_win_kernel = True
 except ImportError:
+	windll = None
 	has_win_kernel = False
 import luna.logger #To check against the logger levels.
 import luna.logger_plugin #Superclass.
