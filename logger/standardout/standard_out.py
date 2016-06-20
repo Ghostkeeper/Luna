@@ -158,7 +158,8 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.WARNING)
 
-	def __colour_print_ansi(self, message, level):
+	@classmethod
+	def __colour_print_ansi(cls, message, level):
 		"""
 		.. function:: __colourPrintAnsi(message, level)
 		Prints a message with colour-coding in ANSI-based terminals, such as the
