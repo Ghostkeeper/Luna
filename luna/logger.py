@@ -170,7 +170,7 @@ def info(*args, **kwargs):
 	if not loggers: #There are no loggers.
 		__fallbackInfo(substituted)
 
-def setLogLevels(levels, loggerName = None):
+def setLogLevels(levels, logger_name = None):
 	"""
 	.. function:: setLogLevels(levels[, loggerName])
 	Sets the log levels that are logged by the loggers.
@@ -187,10 +187,10 @@ def setLogLevels(levels, loggerName = None):
 		loggers.
 	"""
 	global __levels
-	if loggerName: #If given a specific logger name, set the log levels only for that logger.
-		plugin = luna.plugins.getLogger(loggerName)
+	if logger_name: #If given a specific logger name, set the log levels only for that logger.
+		plugin = luna.plugins.getLogger(logger_name)
 		if not plugin:
-			warning("Logger {name} doesn't exist.", name = loggerName)
+			warning("Logger {name} doesn't exist.", name = logger_name)
 			return
 		plugin.setLevels(levels)
 	else: #If not given any specific logger name, set the log levels for all loggers.

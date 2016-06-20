@@ -37,7 +37,7 @@ import functools #To retain the documentation and name of the wrapped functions 
 import inspect #To check if listeners are bound methods, so we need to make a different type of reference then.
 import weakref #To automatically remove listeners if their class instances are removed.
 
-def model(originalClass):
+def model(original_class):
 	"""
 	.. function:: model(originalClass)
 	Decorator that modifies a class such that it becomes part of the model.
@@ -46,65 +46,65 @@ def model(originalClass):
 	any or all changes to the class. This intended to be used by a viewer to
 	update its view of the model towards the user.
 
-	:param originalClass: The class to turn into a part of the model.
+	:param original_class: The class to turn into a part of the model.
 	:return: The same class, transformed to allow listening to its members.
 	"""
 	#Replace the initialisation to add initialisation of the dictionaries of listeners.
-	originalInit = originalClass.__init__
-	@functools.wraps(originalClass.__init__)
-	def newInit(self, *args, **kwargs):
+	original_init = original_class.__init__
+	@functools.wraps(original_class.__init__)
+	def new_init(self, *args, **kwargs):
 		self.__listening = False
-		self.__attributeListeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
-		self.__instanceListeners = set() #Set of listeners that listen to ALL changes in the instance.
+		self.__attribute_listeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
+		self.__instance_listeners = set() #Set of listeners that listen to ALL changes in the instance.
 		self.__listening = True
-		originalInit(self, *args, **kwargs)
-	originalClass.__init__ = newInit
+		original_init(self, *args, **kwargs)
+	original_class.__init__ = new_init
 
 	#Replace all methods that could change the instance.
-	changingFunctions = ["__delattr__", "__delitem__", "__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__", "__setitem__", "append"] #Not __setattr__! It'll be replaced with a special function.
-	for functionName in [functionName for functionName in changingFunctions if hasattr(originalClass, functionName)]:
-		oldFunction = getattr(originalClass, functionName)
-		@functools.wraps(oldFunction)
-		def newFunction(self, *args, **kwargs):
-			result = oldFunction(self, *args, **kwargs)
+	changing_functions = ["__delattr__", "__delitem__", "__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__", "__setitem__", "append"] #Not __setattr__! It'll be replaced with a special function.
+	for function_name in [function_name for function_name in changing_functions if hasattr(original_class, function_name)]:
+		old_function = getattr(original_class, function_name)
+		@functools.wraps(old_function)
+		def new_function(self, *args, **kwargs):
+			result = old_function(self, *args, **kwargs)
 			if not self.__listening:
 				return result
-			for listener in self.__instanceListeners:
+			for listener in self.__instance_listeners:
 				try:
 					listener()()
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
-						self.__instanceListeners.remove(listener)
+						self.__instance_listeners.remove(listener)
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
 			return result
-		setattr(originalClass, functionName, newFunction) #Replace the function with a hooked function.
+		setattr(original_class, function_name, new_function) #Replace the function with a hooked function.
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
-	oldSetattr = originalClass.__setattr__
-	@functools.wraps(oldSetattr)
-	def newSetattr(self, name, value):
-		oldSetattr(self, name, value)
+	old_setattr = original_class.__setattr__
+	@functools.wraps(old_setattr)
+	def new_setattr(self, name, value):
+		old_setattr(self, name, value)
 		if not self.__listening:
 			return
-		for listener in self.__instanceListeners: #Instance listeners always need to be called.
+		for listener in self.__instance_listeners: #Instance listeners always need to be called.
 			try:
 				listener()()
 			except TypeError:
 				if not listener: #Garbage collection nicked it!
-					self.__instanceListeners.remove(listener)
+					self.__instance_listeners.remove(listener)
 				else: #An actual TypeError raised by the listener. Need to pass this on.
 					raise
-		if name in self.__attributeListeners:
-			for listener in self.__attributeListeners[name]:
+		if name in self.__attribute_listeners:
+			for listener in self.__attribute_listeners[name]:
 				try:
 					listener()()
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
-						self.__attributeListeners[name].remove(listener)
+						self.__attribute_listeners[name].remove(listener)
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
-	originalClass.__setattr__ = newSetattr
+	original_class.__setattr__ = new_setattr
 
 	def listen(self, listener, attribute = None):
 		"""
@@ -132,11 +132,11 @@ def model(originalClass):
 			listener = weakref.ref(listener)
 
 		if type(attribute) is str: #We are listening to a specific attribute.
-			if not attribute in self.__attributeListeners:
-				self.__attributeListeners[attribute] = set()
-			self.__attributeListeners[attribute].add(listener)
+			if not attribute in self.__attribute_listeners:
+				self.__attribute_listeners[attribute] = set()
+			self.__attribute_listeners[attribute].add(listener)
 		else: #We are listening to all changes.
-			self.__instanceListeners.add(listener)
-	originalClass.listen = listen
+			self.__instance_listeners.add(listener)
+	original_class.listen = listen
 
-	return originalClass
+	return original_class
