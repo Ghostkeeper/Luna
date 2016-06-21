@@ -139,7 +139,7 @@ def discover():
 		dependency_candidates.append((name, metadata["type"], metadata["class"], dependencies, module))
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
-	for plugin_name, plugin_type, plugin_class, plugin_dependencies, plugin_module in dependency_candidates:
+	for plugin_name, plugin_type, plugin_class, plugin_dependencies, _ in dependency_candidates:
 		for dependency in plugin_dependencies:
 			if dependency.count("/") != 1:
 				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=plugin_name, dependency=dependency)
