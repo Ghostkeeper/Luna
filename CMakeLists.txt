@@ -6,8 +6,8 @@ find_package(PythonInterp 3.4.0 REQUIRED)
 
 #Finding/requiring Python modules.
 function(find_python_module module)
-	string(TOUPPER ${module} module_normalised)
-	if(NOT PY_${module_normalised})
+	string(TOUPPER ${module} module_uppercase)
+	if(NOT PYTHON_${module_uppercase})
 		if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
 			set(${module}_FIND_REQUIRED TRUE)
 		endif()
@@ -20,10 +20,10 @@ function(find_python_module module)
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 		if(NOT _${module}_status)
-			set(PY_${module_normalised} ${_${module}_location} CACHE FILEPATH "Location of Python module ${module}")
+			set(PYTHON_${module_uppercase} ${_${module}_location} CACHE FILEPATH "Location of Python module ${module}.")
 		endif(NOT _${module}_status)
-	endif(NOT PY_${module_normalised})
-	find_package_handle_standard_args(PY_${module} DEFAULT_MSG PY_${module_normalised})
+	endif(NOT PYTHON_${module_uppercase})
+	find_package_handle_standard_args(PYTHON_${module} DEFAULT_MSG PYTHON_${module_uppercase})
 endfunction(find_python_module)
 
 #Tests
