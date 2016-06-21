@@ -54,6 +54,14 @@ def model(original_class):
 
 	@functools.wraps(original_class.__init__)
 	def new_init(self, *args, **kwargs):
+		"""
+		.. function:: new_init(...)
+		Initialises the model such that lists of listeners are tracked.
+
+		:param self: The model instance.
+		:param args: Positional arguments passed to the model's __init__.
+		:param kwargs: Key-word arguments passed to the model's __init__.
+		"""
 		self.__listening = False
 		self.__attribute_listeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
 		self.__instance_listeners = set() #Set of listeners that listen to ALL changes in the instance.
@@ -68,6 +76,17 @@ def model(original_class):
 
 		@functools.wraps(old_function)
 		def new_function(self, *args, **kwargs):
+			"""
+			.. function:: new_function(...)
+			Changes the model and calls the instance listeners of the model.
+
+			:param self: The model instance.
+			:param args: Positional arguments passed to the function that
+			changes the model.
+			:param kwargs: Key-word arguments passed to the function that
+			changes the model.
+			:return: The result of the function that changed the model.
+			"""
 			result = old_function(self, *args, **kwargs)
 			if not self.__listening:
 				return result
@@ -87,6 +106,17 @@ def model(original_class):
 
 	@functools.wraps(old_setattr)
 	def new_setattr(self, name, value):
+		"""
+		.. function:: new_setattr(name, value)
+		Changes an attribute of the model and calls the listeners of the model.
+
+		It calls the attribute listeners of the changed attribute, and all
+		instance listeners.
+
+		:param self: The model instance.
+		:param name: The name of the attribute to change.
+		:param value: The new value of the attribute.
+		"""
 		old_setattr(self, name, value)
 		if not self.__listening:
 			return
