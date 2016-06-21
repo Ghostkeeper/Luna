@@ -257,7 +257,7 @@ def __load_candidate(name, folder):
 			file.close()
 	return module
 
-def __get_all_plugins_of_type(type):
+def __get_all_plugins_of_type(plugin_type):
 	"""
 	.. function:: __getAllPluginsOfType(type)
 	Gets all plug-ins with the specified type.
@@ -266,11 +266,11 @@ def __get_all_plugins_of_type(type):
 	"""
 	result = []
 	for (candidate_type, candidate_name) in __plugins:
-		if type == candidate_type:
+		if plugin_type == candidate_type:
 			result.append(__plugins[(candidate_type, candidate_name)])
 	return result
 
-def __get_plugin(type, name):
+def __get_plugin(plugin_type, name):
 	"""
 	.. function:: __getPlugin(type, name)
 	Gets a plug-in of the specified type and the specified name, if it
@@ -280,6 +280,6 @@ def __get_plugin(type, name):
 	:param name: The name of the plug-in to get.
 	:returns: The plug-in, or ``None`` if it doesn't exist.
 	"""
-	if (type, name) in __plugins:
-		return __plugins[(type, name)]
+	if (plugin_type, name) in __plugins:
+		return __plugins[(plugin_type, name)]
 	return None #Plug-in couldn't be found.
