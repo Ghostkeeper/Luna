@@ -31,8 +31,8 @@ option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
 	enable_testing()
 
-	#Code style validation test.
+	#Code style validation.
 	find_python_module(pylint REQUIRED)
 	file(GLOB_RECURSE python_files *.py)
-	add_test(NAME CodeStyleValidation COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${python_files})
+	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${python_files})
 endif(BUILD_TESTING)
