@@ -31,10 +31,10 @@ import ctypes #For printing in colour on Windows machines.
 
 try:
 	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
-	has_win_kernel = True
+	_has_win_kernel = True
 except ImportError:
 	windll = None
-	has_win_kernel = False
+	_has_win_kernel = False
 import luna.logger #To check against the logger levels.
 import luna.logger_plugin #Superclass.
 from . import buffer_info #To store the state of the console on Windows.
@@ -52,7 +52,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		super().__init__()
 		self.__levels = [luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO] #The importance levels that are logged by default.
 		self.__standard_out_handle = None
-		if has_win_kernel: #Windows bash.
+		if _has_win_kernel: #Windows bash.
 			self.__standard_out_handle = windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 			self.__default_console_attributes = windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
@@ -69,7 +69,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		if luna.logger.Level.CRITICAL in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if has_win_kernel:
+			if _has_win_kernel:
 				self.__colour_print_win32(formatted, luna.logger.Level.CRITICAL)
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.CRITICAL)
@@ -87,7 +87,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		if luna.logger.Level.DEBUG in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if has_win_kernel:
+			if _has_win_kernel:
 				self.__colour_print_win32(formatted, luna.logger.Level.DEBUG)
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.DEBUG)
@@ -105,7 +105,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		if luna.logger.Level.ERROR in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if has_win_kernel:
+			if _has_win_kernel:
 				self.__colour_print_win32(formatted, luna.logger.Level.ERROR)
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.ERROR)
@@ -123,7 +123,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		if luna.logger.Level.INFO in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if has_win_kernel:
+			if _has_win_kernel:
 				self.__colour_print_win32(formatted, luna.logger.Level.INFO)
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.INFO)
@@ -153,7 +153,7 @@ class StandardOut(luna.logger_plugin.LoggerPlugin):
 		if luna.logger.Level.WARNING in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if has_win_kernel:
+			if _has_win_kernel:
 				self.__colour_print_win32(formatted, luna.logger.Level.WARNING)
 			else:
 				self.__colour_print_ansi(formatted, luna.logger.Level.WARNING)
