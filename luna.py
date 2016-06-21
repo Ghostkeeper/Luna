@@ -36,6 +36,14 @@ class Luna:
 	Base instance of the application.
 	"""
 
+	DEFAULT_INTERFACE = "automatic"
+	"""
+	The default interface to start with, unless instructed otherwise.
+
+	If this interface does not exist, an error is thrown and the application
+	closes.
+	"""
+
 	def run(self):
 		"""
 		.. function:: run()
@@ -52,7 +60,7 @@ class Luna:
 		luna.plugins.discover()
 		luna.logger.set_log_levels([luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO, luna.logger.Level.DEBUG])
 
-		interface_name = "automatic" #Default to Automatic interface.
+		interface_name = self.DEFAULT_INTERFACE
 		if len(sys.argv) >= 2:
 			interface_name = sys.argv[1]
 		interface = luna.plugins.get_interface(interface_name)
