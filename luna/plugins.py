@@ -51,7 +51,6 @@ def add_plugin_location(location):
 
 	:param location: The location to add to the location list.
 	"""
-	global __plugin_locations
 	if location:
 		__plugin_locations.append(location)
 
@@ -140,7 +139,6 @@ def discover():
 		dependency_candidates.append((name, metadata["type"], metadata["class"], dependencies, module))
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
-	global __plugins
 	for plugin_name, plugin_type, plugin_class, plugin_dependencies, plugin_module in dependency_candidates:
 		for dependency in plugin_dependencies:
 			if dependency.count("/") != 1:
@@ -211,7 +209,6 @@ def __find_candidates():
 		respectively the name of the plug-in and the path to the plug-in's
 		folder.
 	"""
-	global __plugin_locations
 	candidates = []
 	for location in __plugin_locations:
 		if not os.path.isdir(location): #Invalid plug-in location.
@@ -267,7 +264,6 @@ def __get_all_plugins_of_type(type):
 
 	:returns: A list of all plug-ins of the specified plug-in type.
 	"""
-	global __plugins
 	result = []
 	for (candidate_type, candidate_name) in __plugins:
 		if type == candidate_type:
@@ -284,7 +280,6 @@ def __get_plugin(type, name):
 	:param name: The name of the plug-in to get.
 	:returns: The plug-in, or ``None`` if it doesn't exist.
 	"""
-	global __plugins
 	if (type, name) in __plugins:
 		return __plugins[(type, name)]
 	return None #Plug-in couldn't be found.
