@@ -65,5 +65,5 @@ class Luna:
 
 #Launches Luna if called from the command line.
 if __name__ == "__main__":
-	application = Luna()
-	application.run()
+	_application = Luna()
+	_application.run()
