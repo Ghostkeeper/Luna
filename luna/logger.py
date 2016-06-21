@@ -27,6 +27,7 @@ Provides an API to use logger plug-ins.
 """
 
 from enum import Enum #To define the log levels.
+import luna.logger_fallback #To get a fallback method to log on if no loggers exist.
 import luna.plugins #To call all the loggers to log.
 
 class Level(Enum):
@@ -87,7 +88,7 @@ def critical(*args, **kwargs):
 	for logger in loggers:
 		logger.critical(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallback_critical(substituted)
+		luna.logger_fallback.LoggerFallback.get_instance().critical(substituted)
 
 def debug(*args, **kwargs):
 	"""
@@ -114,7 +115,7 @@ def debug(*args, **kwargs):
 	for logger in loggers:
 		logger.debug(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallback_debug(substituted)
+		luna.logger_fallback.LoggerFallback.get_instance().debug(substituted)
 
 def error(*args, **kwargs):
 	"""
@@ -141,7 +142,7 @@ def error(*args, **kwargs):
 	for logger in loggers:
 		logger.error(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallback_error(substituted)
+		luna.logger_fallback.LoggerFallback.get_instance().error(substituted)
 
 def info(*args, **kwargs):
 	"""
@@ -168,7 +169,7 @@ def info(*args, **kwargs):
 	for logger in loggers:
 		logger.info(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallback_info(substituted)
+		luna.logger_fallback.LoggerFallback.get_instance().info(substituted)
 
 def set_log_levels(levels, logger_name=None):
 	"""
@@ -186,7 +187,6 @@ def set_log_levels(levels, logger_name=None):
 		levels for a specific logger, or None if setting the levels for all
 		loggers.
 	"""
-	global __levels
 	if logger_name: #If given a specific logger name, set the log levels only for that logger.
 		plugin = luna.plugins.get_logger(logger_name)
 		if not plugin:
@@ -196,7 +196,7 @@ def set_log_levels(levels, logger_name=None):
 	else: #If not given any specific logger name, set the log levels for all loggers.
 		for plugin in luna.plugins.get_loggers():
 			plugin.set_levels(levels)
-		__levels = levels #Also for the fallback logger.
+		luna.logger_fallback.LoggerFallback.get_instance().set_levels(levels) #Also for the fallback logger.
 
 def warning(*args, **kwargs):
 	"""
@@ -223,89 +223,4 @@ def warning(*args, **kwargs):
 	for logger in loggers:
 		logger.warning(substituted, title)
 	if not loggers: #There are no loggers.
-		__fallback_warning(substituted)
-
-__levels = [Level.ERROR, Level.CRITICAL, Level.WARNING, Level.INFO]
-"""
-The default log levels to log for the fallback logger.
-"""
-
-def __fallback_critical(message):
-	"""
-	.. function:: __fallbackCritical(message)
-	Logs a critical message to the standard output.
-
-	This way of logging is meant to be kept very simple. It is used only
-	when there are no other logging methods available, still providing a way
-	of debugging if something goes wrong before any loggers are loaded.
-
-	:param message: The message to log.
-	"""
-	global __levels
-	if Level.CRITICAL not in __levels: #I'm configured not to log this.
-		return
-	print("[CRITICAL]", message)
-
-def __fallback_debug(message):
-	"""
-	.. function:: __fallbackDebug(message)
-	Logs a debug message to the standard output.
-
-	This way of logging is meant to be kept very simple. It is used only
-	when there are no other logging methods available, still providing a way
-	of debugging if something goes wrong before any loggers are loaded.
-
-	:param message: The message to log.
-	"""
-	global __levels
-	if Level.DEBUG not in __levels: #I'm configured not to log this.
-		return
-	print("[DEBUG]", message)
-
-def __fallback_error(message):
-	"""
-	.. function:: __fallbackError(message)
-	Logs an error message to the standard output.
-
-	This way of logging is meant to be kept very simple. It is used only
-	when there are no other logging methods available, still providing a way
-	of debugging if something goes wrong before any loggers are loaded.
-
-	:param message: The message to log.
-	"""
-	global __levels
-	if Level.ERROR not in __levels: #I'm configured not to log this.
-		return
-	print("[ERROR]", message)
-
-def __fallback_info(message):
-	"""
-	.. function:: __fallbackInfo(message)
-	Logs an information message to the standard output.
-
-	This way of logging is meant to be kept very simple. It is used only
-	when there are no other logging methods available, still providing a way
-	of debugging if something goes wrong before any loggers are loaded.
-
-	:param message: The message to log.
-	"""
-	global __levels
-	if Level.INFO not in __levels: #I'm configured not to log this.
-		return
-	print("[INFO]", message)
-
-def __fallback_warning(message):
-	"""
-	.. function:: __fallbackWarning(message)
-	Logs a warning message to the standard output.
-
-	This way of logging is meant to be kept very simple. It is used only
-	when there are no other logging methods available, still providing a way
-	of debugging if something goes wrong before any loggers are loaded.
-
-	:param message: The message to log.
-	"""
-	global __levels
-	if Level.WARNING not in __levels: #I'm configured not to log this.
-		return
-	print("[WARNING]", message)
+		luna.logger_fallback.LoggerFallback.get_instance().warning(substituted)
