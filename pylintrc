@@ -115,10 +115,10 @@ inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
 
 # Regular expression matching correct class attribute names
-class-attribute-rgx=([a-z_][a-z0-9_]*|(__.*__))$
+class-attribute-rgx=([a-z_][a-z0-9_]*|([A-Z_]+)|(__.*__))$
 
 # Naming hint for class attribute names
-class-attribute-name-hint=([a-z_][a-z0-9_]*|(__.*__))$
+class-attribute-name-hint=([a-z_][a-z0-9_]*|([A-Z_]+)|(__.*__))$
 
 # Regular expression matching correct method names
 method-rgx=[a-z_][a-z0-9_]*$
