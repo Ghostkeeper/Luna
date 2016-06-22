@@ -33,7 +33,7 @@ To use the model system properly, the following code changes are required:
 - The listener must be callable without any parameters.
 """
 
-import functools #To retain the documentation and name of the wrapped functions by these decorators.
+import functools #To copy documentation to function wrappers and for partial function calls.
 import inspect #To check if listeners are bound methods, so we need to make a different type of reference then.
 import weakref #To automatically remove listeners if their class instances are removed.
 
@@ -75,11 +75,12 @@ def model(original_class):
 		old_function = getattr(original_class, function_name)
 
 		@functools.wraps(old_function)
-		def new_function(self, *args, **kwargs):
+		def new_function(old_function, self, *args, **kwargs):
 			"""
 			.. function:: new_function(...)
 			Changes the model and calls the instance listeners of the model.
 
+			:param old_function: The function that changes the model.
 			:param self: The model instance.
 			:param args: Positional arguments passed to the function that
 			changes the model.
@@ -99,7 +100,7 @@ def model(original_class):
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
 			return result
-		setattr(original_class, function_name, new_function) #Replace the function with a hooked function.
+		setattr(original_class, function_name, functools.partial(new_function, old_function)) #Replace the function with a hooked function.
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
 	old_setattr = original_class.__setattr__
