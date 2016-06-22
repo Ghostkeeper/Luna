@@ -62,6 +62,8 @@ def model(original_class):
 		:param args: Positional arguments passed to the model's __init__.
 		:param kwargs: Key-word arguments passed to the model's __init__.
 		"""
+		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
+		#pylint: disable=protected-access
 		self.__listening = False
 		self.__attribute_listeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
 		self.__instance_listeners = set() #Set of listeners that listen to ALL changes in the instance.
@@ -89,6 +91,8 @@ def model(original_class):
 			:return: The result of the function that changed the model.
 			"""
 			result = old_function(self, *args, **kwargs)
+			#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
+			#pylint: disable=protected-access
 			if not self.__listening:
 				return result
 			for listener in self.__instance_listeners:
@@ -119,6 +123,8 @@ def model(original_class):
 		:param value: The new value of the attribute.
 		"""
 		old_setattr(self, name, value)
+		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
+		#pylint: disable=protected-access
 		if not self.__listening:
 			return
 		for listener in self.__instance_listeners: #Instance listeners always need to be called.
@@ -166,6 +172,8 @@ def model(original_class):
 		else:
 			listener = weakref.ref(listener)
 
+		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
+		#pylint: disable=protected-access
 		if type(attribute) is str: #We are listening to a specific attribute.
 			if attribute not in self.__attribute_listeners:
 				self.__attribute_listeners[attribute] = set()
