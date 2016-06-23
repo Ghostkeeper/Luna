@@ -1,2 +1,2 @@
 # Luna
-Converter application to prepare images for a laser cutter
+This is an application that facilitates recoding from one encoding to another. Work in progress, of course.
