@@ -49,6 +49,8 @@ def add_plugin_location(location):
 	Adds a location to the list of locations where the application looks for
 	plug-ins.
 
+	It looks recursively through all subfolders of the specified folder.
+
 	:param location: The location to add to the location list.
 	"""
 	if location:
