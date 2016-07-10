@@ -208,19 +208,17 @@ def __find_candidates():
 	A candidate is a folder inside a plug-in location, which has a file
 	``__init__.py``. The file is not yet executed at this point.
 
-	:returns: A list of tuples of the form (<name>, <path>), containing
+	:returns: A set of tuples of the form (<name>, <path>), containing
 	respectively the name of the plug-in and the path to the plug-in's folder.
 	"""
-	candidates = []
+	candidates = set()
 	for location in __plugin_locations:
-		for plugin_folder in os.listdir(location):
-			name = plugin_folder #The name of the folder becomes the plug-in's actual name.
-			plugin_folder = os.path.join(location, plugin_folder)
-			if not os.path.isdir(plugin_folder): #os.listdir gets both files and folders. We want only folders at this level.
+		for root, directories, files in os.walk(location, followlinks=True):
+			if "__init__.py" not in files: #The directory must have an __init__.py file.
 				continue
-			init_script = os.path.join(plugin_folder, "__init__.py") #Plug-in must have an init script.
-			if os.path.exists(init_script) and (os.path.isfile(init_script) or os.path.islink(init_script)):
-				candidates.append((name, location))
+			directories[:] = [] #Remove all subdirectories. We aren't going to look in submodules.
+			identity = os.path.basename(root) #The name of the folder becomes the plug-in's identity.
+			candidates.add((identity, location))
 	return candidates
 
 def __load_candidate(name, folder):
