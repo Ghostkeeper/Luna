@@ -53,8 +53,9 @@ def add_plugin_location(location):
 
 	:param location: The location to add to the location list.
 	"""
-	if location:
-		__plugin_locations.append(location)
+	if not location or not os.path.isdir(location): #Invalid plug-in location.
+		raise NotADirectoryError("Plug-in location is not a path: {location}".format(location=location))
+	__plugin_locations.append(location)
 
 def discover():
 	"""
@@ -208,14 +209,10 @@ def __find_candidates():
 	``__init__.py``. The file is not yet executed at this point.
 
 	:returns: A list of tuples of the form (<name>, <path>), containing
-		respectively the name of the plug-in and the path to the plug-in's
-		folder.
+	respectively the name of the plug-in and the path to the plug-in's folder.
 	"""
 	candidates = []
 	for location in __plugin_locations:
-		if not os.path.isdir(location): #Invalid plug-in location.
-			luna.logger.warning("Plug-in location not valid: {location}", location=location)
-			continue
 		for plugin_folder in os.listdir(location):
 			name = plugin_folder #The name of the folder becomes the plug-in's actual name.
 			plugin_folder = os.path.join(location, plugin_folder)
