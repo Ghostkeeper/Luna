@@ -45,7 +45,7 @@ The plug-ins are indexed by tuples as keys, of the form (<type>, <identity>),
 where <type> is the plug-in type and <identity> the identifier of the plug-in.
 """
 
-__DependencyCandidate = collections.namedtuple("NamedCandidate", "identity type plugin_class dependencies")
+__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity type plugin_class dependencies")
 """
 Represents a candidate dependency. We could run the __init__ of this candidate,
 but we haven't resolved dependencies yet or instantiated the plug-in object.
