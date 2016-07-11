@@ -26,8 +26,10 @@
 Handles all administration on plug-ins.
 """
 
+import collections #For namedtuple.
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
+
 import luna.logger #Logging messages.
 
 __plugin_locations = []
@@ -39,8 +41,21 @@ __plugins = {}
 """
 Dictionary holding all plug-ins.
 
-The plug-ins are indexed by tuples as keys, of the form (<type>, <name>),
-where <type> is the plug-in type and <name> the identifier of the plug-in.
+The plug-ins are indexed by tuples as keys, of the form (<type>, <identity>),
+where <type> is the plug-in type and <identity> the identifier of the plug-in.
+"""
+
+__DependencyCandidate = collections.namedtuple("NamedCandidate", "identity type plugin_class dependencies")
+"""
+Represents a candidate dependency. We could run the __init__ of this candidate,
+but we haven't resolved dependencies yet or instantiated the plug-in object.
+
+This is a named tuple consisting of the following fields:
+* identity: An unique identifier for the plug-in.
+* type: The plug-in type.
+* plugin_class: The class that implements the abstract base class of the
+specified plug-in type.
+* dependencies: A list of plug-in identities on which this plug-in depends.
 """
 
 def add_plugin_location(location):
@@ -72,8 +87,8 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	candidates = __find_candidates() #Makes a list of (id, path) tuples indicating names and folder paths of possible plug-ins.
-	dependency_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. Tuples of (name, type, class, dependencies).
+	candidates = __find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
+	dependency_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. List of __DependencyCandidate instances.
 	for name, folder in candidates:
 		luna.logger.debug("Loading plug-in {plugin} from {folder}.", plugin=name, folder=folder)
 		#Loading the plug-in.
@@ -139,28 +154,29 @@ def discover():
 		else:
 			luna.logger.warning("Plug-in {plugin} defines no dependencies. Assuming it has no dependencies.", plugin=name)
 
-		dependency_candidates.append((name, metadata["type"], metadata["class"], dependencies, module))
+		dependency_candidates.append(__DependencyCandidate(identity=name, type=metadata["type"], plugin_class=metadata["class"], dependencies=dependencies))
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
-	for plugin_name, plugin_type, plugin_class, plugin_dependencies, _ in dependency_candidates:
-		for dependency in plugin_dependencies:
+	#for plugin_name, plugin_type, plugin_class, plugin_dependencies, _ in dependency_candidates:
+	for candidate in dependency_candidates:
+		for dependency in candidate.dependencies:
 			if dependency.count("/") != 1:
-				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=plugin_name, dependency=dependency)
+				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				continue #With the next dependency.
 			dependency_type, dependency_name = dependency.split("/", 1) #Parse the dependency.
 			for dependency_candidate_name, dependency_candidate_type, _, _, _ in dependency_candidates: #See if that dependency is present.
 				if dependency_name == dependency_candidate_name and dependency_type == dependency_candidate_type:
 					break
 			else: #Dependency was not found.
-				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin=plugin_name, dependency=dependency)
+				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
 			try:
-				plugin_instance = plugin_class() #Actually construct an instance of the plug-in.
+				plugin_instance = candidate.plugin_class() #Actually construct an instance of the plug-in.
 			except Exception as e:
-				luna.logger.warning("Initialising plug-in {plugin} failed: {error_message}", plugin=plugin_name, error_message=str(e))
+				luna.logger.warning("Initialising plug-in {plugin} failed: {error_message}", plugin=candidate.itentity, error_message=str(e))
 				continue #With next plug-in.
-			__plugins[(plugin_type, plugin_name)] = plugin_instance
+			__plugins[(candidate.type, candidate.identity)] = plugin_instance
 
 def get_interface(name):
 	"""
