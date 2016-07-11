@@ -163,11 +163,11 @@ def discover():
 				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				continue #With the next dependency.
 			dependency_type, dependency_name = dependency.split("/", 1) #Parse the dependency.
-			for candidate in dependency_candidates:
-				if dependency_name == candidate.name and dependency_type == candidate.type:
+			for dependency_candidate in dependency_candidates:
+				if dependency_name == dependency_candidate.name and dependency_type == dependency_candidate.type:
 					break
 			else: #Dependency was not found.
-				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin=candidate.identity, dependency=dependency)
+				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin=candidate.identity, dependency=dependency_name)
 				break
 		else: #All dependencies are resolved!
 			try:
