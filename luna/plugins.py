@@ -192,6 +192,7 @@ def discover():
 				except Exception as e:
 					luna.logger.error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
+			luna.logger.info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
 def get_interface(name):
 	"""
