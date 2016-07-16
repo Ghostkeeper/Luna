@@ -139,8 +139,8 @@ def discover():
 			except MetadataValidationError as e:
 				luna.logger.warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
 				continue
-			plugin_type = __PluginType(**metadata["type"]) #All metadata for type maps directly to this named tuple.
-			self.__plugin_types[metadata["type_name"]] = plugin_type
+			plugin_type = __PluginType(api=metadata["type"]["api"], interface=metadata["type"]["interface"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
+			__plugin_types[metadata["type"]["type_name"]] = plugin_type
 
 		unresolved_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"]))
 
