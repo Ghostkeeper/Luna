@@ -98,6 +98,9 @@ def discover():
 		module = __load_candidate(identity, folder)
 		if not module: #Failed to load module.
 			continue
+		if __get_plugin(identity):
+			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
+			continue
 
 		#Parsing the metadata.
 		try:
@@ -109,9 +112,6 @@ def discover():
 			__validate_metadata_global(metadata)
 		except MetadataValidationError as e:
 			luna.logger.warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
-			continue
-		if __get_plugin(identity):
-			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
