@@ -185,12 +185,13 @@ def discover():
 				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
-			try:
-				plugin_instance = candidate.plugin_class() #Actually construct an instance of the plug-in.
-			except Exception as e:
-				luna.logger.warning("Initialising plug-in {plugin} failed: {error_message}", plugin=candidate.itentity, error_message=str(e))
-				continue #With next plug-in.
-			__plugins[candidate.identity] = plugin_instance
+			candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types to register the plug-in at.
+			for candidate_type in candidate_types:
+				try:
+					__plugin_types[candidate_type].register(candidate.metadata)
+				except Exception as e:
+					luna.logger.error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
+					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
 
 def get_interface(name):
 	"""
