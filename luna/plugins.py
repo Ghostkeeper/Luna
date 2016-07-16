@@ -113,6 +113,12 @@ def discover():
 		if __get_plugin(identity):
 			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
 			continue
+		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
+			try:
+				__validate_metadata_type(metadata)
+			except MetadataValidationError as e:
+				luna.logger.warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+				continue
 
 		dependency_candidates.append(__DependencyCandidate(identity=identity, type=metadata["type"], plugin_class=metadata["class"], dependencies=dependencies))
 
@@ -276,3 +282,29 @@ def __validate_metadata_global(metadata):
 			raise MetadataValidationError("The plug-in class is not a subclass of luna.plugin.Plugin.")
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("Metadata is not a dictionary.")
+
+def __validate_metadata_type(metadata):
+	"""
+	.. function:: __validate_metadata_type(metadata)
+	Checks if the metadata of a plug-in type plug-in is correct.
+
+	If it is incorrect, an exception is raised. At this point, the metadata must
+	already be validated as plug-in metadata.
+
+	:param metadata: A dictionary containing the metadata of the plug-in.
+	:raises MetadataValidationError: The metadata is invalid.
+	"""
+	if "type" not in metadata:
+		raise MetadataValidationError("This is not a plug-in type plug-in.")
+	try:
+		required_fields = {"api", "interface", "register"}
+		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
+			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
+		if not issubclass(metadata["type"]["api"], object):
+			raise MetadataValidationError("The API must be a class.")
+		if not issubclass(metadata["type"]["interface"], object):
+			raise MetadataValidationError("The interface must be a class.")
+		if not "__call__" in dir(metadata["type"]["register"]):
+			raise MetadataValidationError("The register must be callable.")
+	except (AttributeError, TypeError):
+		raise MetadataValidationError("The type section is not a dictionary.")
