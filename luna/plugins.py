@@ -40,10 +40,7 @@ List of directories where to look for plug-ins.
 
 __plugins = {}
 """
-Dictionary holding all plug-ins.
-
-The plug-ins are indexed by tuples as keys, of the form (<type>, <identity>),
-where <type> is the plug-in type and <identity> the identifier of the plug-in.
+Dictionary holding all plug-ins, indexed by their identity.
 """
 
 __DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity type plugin_class dependencies")
@@ -113,7 +110,7 @@ def discover():
 		except MetadataValidationError as e:
 			luna.logger.warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
 			continue
-		if __get_plugin(metadata["type"], identity):
+		if __get_plugin(identity):
 			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
 			continue
 
@@ -138,7 +135,7 @@ def discover():
 			except Exception as e:
 				luna.logger.warning("Initialising plug-in {plugin} failed: {error_message}", plugin=candidate.itentity, error_message=str(e))
 				continue #With next plug-in.
-			__plugins[(candidate.type, candidate.identity)] = plugin_instance
+			__plugins[candidate.identity] = plugin_instance
 
 def get_interface(name):
 	"""
@@ -148,7 +145,7 @@ def get_interface(name):
 	:param name: The name of the interface plug-in to get.
 	:returns: The specified interface, or ``None`` if it doesn't exist.
 	"""
-	return __get_plugin("interface", name)
+	return __get_plugin(name)
 
 def get_interfaces():
 	"""
@@ -167,7 +164,7 @@ def get_logger(name):
 	:param name: The name of the logger plug-in to get.
 	:returns: The specified logger, or ``None`` if it doesn't exist.
 	"""
-	return __get_plugin("logger", name)
+	return __get_plugin(name)
 
 def get_loggers():
 	"""
@@ -246,18 +243,16 @@ def __get_all_plugins_of_type(plugin_type):
 			result.append(__plugins[(candidate_type, candidate_identity)])
 	return result
 
-def __get_plugin(plugin_type, identity):
+def __get_plugin(identity):
 	"""
-	.. function:: __getPlugin(type, identity)
-	Gets a plug-in of the specified type and the specified identity, if it
-	exists.
+	.. function:: __getPlugin(identity)
+	Gets the plug-in with the specified identity, if it exists.
 
-	:param type: The plug-in type of the plug-in to get.
 	:param identity: The identity of the plug-in to get.
 	:returns: The plug-in, or ``None`` if it doesn't exist.
 	"""
-	if (plugin_type, identity) in __plugins:
-		return __plugins[(plugin_type, identity)]
+	if identity in __plugins:
+		return __plugins[identity]
 	return None #Plug-in couldn't be found.
 
 def __validate_metadata_global(metadata):
