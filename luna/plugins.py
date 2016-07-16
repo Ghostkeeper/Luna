@@ -51,7 +51,7 @@ __plugins = {}
 Dictionary holding all plug-ins, indexed by their identity.
 """
 
-__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity plugin_class dependencies")
+__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity metadata dependencies")
 """
 Represents a candidate dependency.
 
@@ -60,9 +60,7 @@ dependencies yet or instantiated the plug-in object.
 
 This is a named tuple consisting of the following fields:
 * identity: An unique identifier for the plug-in.
-* type: The plug-in type.
-* plugin_class: The class that implements the abstract base class of the
-specified plug-in type.
+* metadata: The metadata of the plug-in.
 * dependencies: A list of plug-in identities on which this plug-in depends.
 """
 
@@ -144,7 +142,7 @@ def discover():
 			plugin_type = __PluginType(**metadata["type"]) #All metadata for type maps directly to this named tuple.
 			self.__plugin_types[metadata["type_name"]] = plugin_type
 
-		dependency_candidates.append(__DependencyCandidate(identity=identity, type=metadata["type"], plugin_class=metadata["class"], dependencies=dependencies))
+		dependency_candidates.append(__DependencyCandidate(identity=identity, metadata=metadata, dependencies=dependencies))
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
 	for candidate in dependency_candidates:
