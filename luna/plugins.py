@@ -116,7 +116,7 @@ def discover():
 	function.
 	"""
 	candidates = __find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
-	unresolved_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. List of __UnresolvedCandidate instances.
+	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of __UnresolvedCandidate instances.
 	for identity, folder in candidates:
 		luna.logger.debug("Loading plug-in {plugin} from {folder}.", plugin=identity, folder=folder)
 		#Loading the plug-in.
@@ -147,7 +147,19 @@ def discover():
 			plugin_type = __PluginType(api=metadata["type"]["api"], interface=metadata["type"]["interface"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
 			__plugin_types[metadata["type"]["type_name"]] = plugin_type
 
-		unresolved_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"]))
+		unvalidated_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
+
+	unresolved_candidates = [] #Third stage of candidates. We could validate their metadata but haven't resolved their dependencies yet. List of __UnresolvedCandidate instances.
+	for candidate in unvalidated_candidates:
+		candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types this candidate proposes to implement.
+		for candidate_type in candidate_types:
+			try:
+				__plugin_types[candidate_type].validate_metadata(candidate.metadata)
+			except Exception as e:
+				luna.logger.warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
+				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't properly implement their interfaces.
+		else: #All types got validated properly.
+			unresolved_candidates.append(candidate) #Goes on to the third stage.
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
 	for candidate in unresolved_candidates:
