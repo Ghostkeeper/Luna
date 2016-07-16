@@ -51,12 +51,12 @@ __plugins = {}
 Dictionary holding all plug-ins, indexed by their identity.
 """
 
-__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity metadata dependencies")
+__UnresolvedCandidate = collections.namedtuple("__UnresolvedCandidate", "identity metadata dependencies")
 """
-Represents a candidate dependency.
+Represents a candidate plug-in whose dependencies haven't yet been resolved.
 
-We could run the __init__ of this candidate, but we haven't resolved
-dependencies yet or instantiated the plug-in object.
+We could run the __init__ of this candidate and get its metadata, but we haven't
+resolved dependencies yet or registered the plug-in with its type.
 
 This is a named tuple consisting of the following fields:
 * identity: An unique identifier for the plug-in.
@@ -111,7 +111,7 @@ def discover():
 	function.
 	"""
 	candidates = __find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
-	dependency_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. List of __DependencyCandidate instances.
+	unresolved_candidates = [] #Second stage of candidates. We could load these but haven't resolved dependencies yet. List of __UnresolvedCandidate instances.
 	for identity, folder in candidates:
 		luna.logger.debug("Loading plug-in {plugin} from {folder}.", plugin=identity, folder=folder)
 		#Loading the plug-in.
@@ -142,16 +142,16 @@ def discover():
 			plugin_type = __PluginType(**metadata["type"]) #All metadata for type maps directly to this named tuple.
 			self.__plugin_types[metadata["type_name"]] = plugin_type
 
-		dependency_candidates.append(__DependencyCandidate(identity=identity, metadata=metadata, dependencies=dependencies))
+		unresolved_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"]))
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
-	for candidate in dependency_candidates:
+	for candidate in unresolved_candidates:
 		for dependency in candidate.dependencies:
 			if dependency.count("/") != 1:
 				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				continue #With the next dependency.
 			dependency_type, dependency_identity = dependency.split("/", 1) #Parse the dependency.
-			for dependency_candidate in dependency_candidates:
+			for dependency_candidate in unresolved_candidates:
 				if dependency_identity == dependency_candidate.identity and dependency_type == dependency_candidate.type:
 					break
 			else: #Dependency was not found.
