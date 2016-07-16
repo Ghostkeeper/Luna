@@ -31,6 +31,7 @@ import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
 
 import luna.logger #Logging messages.
+import luna.plugin #Checking if plug-ins provide the correct class.
 
 __plugin_locations = []
 """
@@ -57,6 +58,11 @@ This is a named tuple consisting of the following fields:
 specified plug-in type.
 * dependencies: A list of plug-in identities on which this plug-in depends.
 """
+
+class MetadataValidationError(Exception):
+	"""
+	Marker exception to indicate that the metadata of a plug-in is invalid.
+	"""
 
 def add_plugin_location(location):
 	"""
@@ -102,57 +108,14 @@ def discover():
 		except Exception as e:
 			luna.logger.warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 			continue
-		if not metadata or not isinstance(metadata, dict): #Metadata not a dictionary.
-			luna.logger.warning("Metadata of plug-in {plugin} is not a dictionary. Can't load this plug-in.", plugin=identity)
-			continue
-		if "type" not in metadata:
-			luna.logger.warning("Plug-in {plugin} defines no plug-in type. Can't load this plug-in.", plugin=identity)
+		try:
+			__validate_metadata_global(metadata)
+		except MetadataValidationError as e:
+			luna.logger.warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
 			continue
 		if __get_plugin(metadata["type"], identity):
 			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
 			continue
-		if "class" not in metadata:
-			luna.logger.warning("Plug-in {plugin} defines no base class. Can't load this plug-in.", plugin=identity)
-			continue
-		try:
-			int(metadata["class"].APIVERSION)
-		except AttributeError:
-			luna.logger.warning("Plug-in {plugin} specifies a class {plugin_class} that is not a subclass of Plugin. Can't load this plug-in.", plugin=identity, plugin_class=str(metadata["class"]))
-			continue
-		if "apiVersions" not in metadata:
-			luna.logger.warning("Metadata of plug-in {plugin} has no API version number. Can't load this plug-in.", plugin=identity)
-			continue
-		if not isinstance(metadata["apiVersions"], dict):
-			luna.logger.warning("The API version numbers of plug-in {plugin} is not a dictionary. Can't load this plug-in.", plugin=identity)
-			continue
-		correct_api_version_numbers = True
-		for key, value in metadata["apiVersions"].items(): #Check if the API version number of each plug-in type is within range.
-			try:
-				min_api_version, max_api_version = value
-			except TypeError:
-				luna.logger.warning("Plug-in {plugin} requires an API version number range {range} for {plugin_type} type plug-ins, but it must be a tuple indicating the minimum and maximum version number.", plugin=identity, range=str(value), plugin_type=key.__name__)
-				correct_api_version_numbers = False
-				break #Continue the outer loop.
-			try:
-				if key.APIVERSION < min_api_version or key.APIVERSION > max_api_version:
-					luna.logger.warning("Plug-in {plugin} requires an API version number between {minimum} and {maximum} for {plugin_type} type plug-ins, but the current version number is {version}.", plugin=identity, minimum=min_api_version, maximum=max_api_version, plugin_type=key.__name__, version=key.APIVERSION)
-					correct_api_version_numbers = False
-					break #Continue the outer loop.
-			except TypeError:
-				luna.logger.warning("Plug-in {plugin} specifies a required API version number for {plugin_type} type plug-ins that is not a number.", plugin=identity, plugin_type=key.__name__)
-				correct_api_version_numbers = False
-				break #Continue the outer loop.
-			except AttributeError: #The key.APIVERSION went wrong.
-				luna.logger.warning("Plug-in {plugin} specifies allowed API version numbers for type {plugin_type}, which is not a plug-in class.", plugin=identity, plugin_type=str(key))
-				correct_api_version_numbers = False
-				break #Continue the outer loop.
-		if not correct_api_version_numbers:
-			continue
-		dependencies = [] #If this entry is missing, give a warning but assume that there are no dependencies.
-		if "dependencies" in metadata:
-			dependencies = metadata["dependencies"]
-		else:
-			luna.logger.warning("Plug-in {plugin} defines no dependencies. Assuming it has no dependencies.", plugin=identity)
 
 		dependency_candidates.append(__DependencyCandidate(identity=identity, type=metadata["type"], plugin_class=metadata["class"], dependencies=dependencies))
 
@@ -296,3 +259,25 @@ def __get_plugin(plugin_type, identity):
 	if (plugin_type, identity) in __plugins:
 		return __plugins[(plugin_type, identity)]
 	return None #Plug-in couldn't be found.
+
+def __validate_metadata_global(metadata):
+	"""
+	.. function:: __validate_metadata_global(metadata)
+	Checks if the global part of the metadata of a plug-in is correct.
+
+	If it is incorrect, an exception is raised.
+
+	The global part of the metadata includes the part of metadata that is common
+	among all plug-ins.
+
+	:param metadata: A dictionary containing the metadata of the plug-in.
+	:raises MetadataValidationError: The metadata is invalid.
+	"""
+	required_fields = {"name", "description", "type", "version", "class"}
+	try:
+		if not required_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
+			raise MetadataValidationError("Required fields missing: " + str(required_fields - metadata.keys()))
+		if not issubclass(metadata["class"], luna.plugin.Plugin):
+			raise MetadataValidationError("The plug-in class is not a subclass of luna.plugin.Plugin.")
+	except (AttributeError, TypeError):
+		raise MetadataValidationError("Metadata is not a dictionary.")
