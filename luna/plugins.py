@@ -146,16 +146,26 @@ def discover():
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
 	for candidate in unresolved_candidates:
-		for dependency in candidate.dependencies:
-			if dependency.count("/") != 1:
-				luna.logger.warning("Plug-in {plugin} has an invalid dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
-				continue #With the next dependency.
-			dependency_type, dependency_identity = dependency.split("/", 1) #Parse the dependency.
+		for dependency, requirements in candidate.dependencies.items():
 			for dependency_candidate in unresolved_candidates:
-				if dependency_identity == dependency_candidate.identity and dependency_type == dependency_candidate.type:
+				if dependency == dependency_candidate.identity:
+					try:
+						if "version_min" in requirements and dependency_candidate.metadata["version"] < requirements["version_min"]:
+							luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_min} or later.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"]))
+							continue
+					except TypeError: #Unorderable types.
+						luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_min} or later, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"], version=str(dependency_candidate.metadata["version"])))
+						continue
+					try:
+						if "version_max" in requirements and dependency_candidate.metadata["version"] > requirements["version_max"]:
+							luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"]))
+							continue
+					except TypeError: #Unorderable types.
+						luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"], version=str(dependency_candidate.metadata["version"])))
+						continue
 					break
 			else: #Dependency was not found.
-				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}!", plugin=candidate.identity, dependency=dependency_identity)
+				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
 			try:
