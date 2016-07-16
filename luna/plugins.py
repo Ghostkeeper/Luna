@@ -51,6 +51,11 @@ __plugins = {}
 Dictionary holding all plug-ins, indexed by their identity.
 """
 
+__required_metadata_fields = {"dependencies", "description", "name", "version"}
+"""
+Fields that must be present in every plug-in's metadata.
+"""
+
 __UnresolvedCandidate = collections.namedtuple("__UnresolvedCandidate", "identity metadata dependencies")
 """
 Represents a candidate plug-in whose dependencies haven't yet been resolved.
@@ -306,11 +311,10 @@ def __validate_metadata_global(metadata):
 	:param metadata: A dictionary containing the metadata of the plug-in.
 	:raises MetadataValidationError: The metadata is invalid.
 	"""
-	required_fields = {"dependencies", "description", "name", "version"}
 	allowed_requirements = {"version_max", "version_min"}
 	try:
-		if not required_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
-			raise MetadataValidationError("Required fields missing: " + str(required_fields - metadata.keys()))
+		if not __required_metadata_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
+			raise MetadataValidationError("Required fields missing: " + str(__required_metadata_fields - metadata.keys()))
 		for plugin, requirements in metadata["dependencies"].items(): #Raises AttributeError if not a dictionary.
 			if not requirements.keys() <= allowed_requirements:
 				raise MetadataValidationError("Unknown plug-in dependency requirements " + str(requirements.keys() - allowed_requirements) + ".")
