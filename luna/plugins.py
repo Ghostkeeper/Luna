@@ -302,8 +302,8 @@ def __validate_metadata_type(metadata):
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
 		if not issubclass(metadata["type"]["api"], object):
 			raise MetadataValidationError("The API must be a class.")
-		if not issubclass(metadata["type"]["interface"], object):
-			raise MetadataValidationError("The interface must be a class.")
+		if not "_abc_registry" in dir(metadata["type"]["interface"]):
+			raise MetadataValidationError("The interface must be an abstract base class.")
 		if not "__call__" in dir(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
 	except (AttributeError, TypeError):
