@@ -296,12 +296,14 @@ def __validate_metadata_global(metadata):
 	:param metadata: A dictionary containing the metadata of the plug-in.
 	:raises MetadataValidationError: The metadata is invalid.
 	"""
-	required_fields = {"name", "description", "version", "class"}
+	required_fields = {"dependencies", "description", "name", "version"}
+	allowed_requirements = {"version_max", "version_min"}
 	try:
 		if not required_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
 			raise MetadataValidationError("Required fields missing: " + str(required_fields - metadata.keys()))
-		if not issubclass(metadata["class"], luna.plugin.Plugin):
-			raise MetadataValidationError("The plug-in class is not a subclass of luna.plugin.Plugin.")
+		for plugin, requirements in metadata["dependencies"].items(): #Raises AttributeError if not a dictionary.
+			if not requirements.keys() <= allowed_requirements:
+				raise MetadataValidationError("Unknown plug-in dependency requirements " + str(requirements.keys() - allowed_requirements) + ".")
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("Metadata is not a dictionary.")
 
