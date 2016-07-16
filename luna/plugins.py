@@ -38,6 +38,14 @@ __plugin_locations = []
 List of directories where to look for plug-ins.
 """
 
+__plugin_types = {}
+"""
+Dictionary of all plug-in types.
+
+The keys are the type names of the plug-in types. The values are the plug-in
+types as named tuples.
+"""
+
 __plugins = {}
 """
 Dictionary holding all plug-ins, indexed by their identity.
@@ -45,8 +53,10 @@ Dictionary holding all plug-ins, indexed by their identity.
 
 __DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity type plugin_class dependencies")
 """
-Represents a candidate dependency. We could run the __init__ of this candidate,
-but we haven't resolved dependencies yet or instantiated the plug-in object.
+Represents a candidate dependency.
+
+We could run the __init__ of this candidate, but we haven't resolved
+dependencies yet or instantiated the plug-in object.
 
 This is a named tuple consisting of the following fields:
 * identity: An unique identifier for the plug-in.
@@ -54,6 +64,18 @@ This is a named tuple consisting of the following fields:
 * plugin_class: The class that implements the abstract base class of the
 specified plug-in type.
 * dependencies: A list of plug-in identities on which this plug-in depends.
+"""
+
+__PluginType = collections.namedtuple("__PluginType", "api interface register validate_metadata")
+"""
+Represents a plug-in type plug-in.
+
+This is a named tuple consisting of the following fields:
+* api: The class that provides the API for the plug-ins of this type.
+* interface: The interface that plug-ins of this type must implement.
+* register: The function that plug-ins of this type must register with.
+* validate_metadata: The function that verifies that the metadata is valid for
+this type.
 """
 
 class MetadataValidationError(Exception):
@@ -119,6 +141,8 @@ def discover():
 			except MetadataValidationError as e:
 				luna.logger.warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
 				continue
+			plugin_type = __PluginType(**metadata["type"]) #All metadata for type maps directly to this named tuple.
+			self.__plugin_types[metadata["type_name"]] = plugin_type
 
 		dependency_candidates.append(__DependencyCandidate(identity=identity, type=metadata["type"], plugin_class=metadata["class"], dependencies=dependencies))
 
@@ -297,13 +321,15 @@ def __validate_metadata_type(metadata):
 	if "type" not in metadata:
 		raise MetadataValidationError("This is not a plug-in type plug-in.")
 	try:
-		required_fields = {"api", "interface", "register"}
+		required_fields = {"type_name", "api", "interface", "register", "validate_metadata"}
 		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
 		if not "_abc_registry" in dir(metadata["type"]["interface"]):
 			raise MetadataValidationError("The interface must be an abstract base class.")
-		if not "__call__" in dir(metadata["type"]["register"]):
+		if not callable(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
+		if not callable(metadata["type"]["validate_metadata"]):
+			raise MetadataValidationError("The metadata validator must be callable.")
 		if metadata["dependencies"]:
 			raise MetadataValidationError("Type plug-ins may not have dependencies.")
 	except (AttributeError, TypeError):
