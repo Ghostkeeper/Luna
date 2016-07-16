@@ -37,11 +37,17 @@ def metadata():
 	:returns: Dictionary of metadata.
 	"""
 	return {
-		"apiVersions": {
-			luna.logger_plugin.LoggerPlugin: (4, 4)
+		"name": "Standard Out",
+		"description": "Outputs log messages through standard out.",
+		"version": 5,
+		"dependencies": {
+			"loggertype": {
+				"version_min": 1,
+				"version_max": 1
+			},
 		},
-		"type": "logger",
-		"class": standardout.standard_out.StandardOut,
-		"dependencies": [
-		]
+
+		"logger": {
+			"implementation": standardout.standard_out.StandardOut
+		},
 	}

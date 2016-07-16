@@ -42,13 +42,21 @@ def metadata():
 	:returns: Dictionary of metadata.
 	"""
 	return {
-		"apiVersions": {
-			luna.interface_plugin.InterfacePlugin: (2, 2),
-			luna.logger_plugin.LoggerPlugin:       (4, 4)
+		"name": "Automatic",
+		"description": "An interface that automatically converts data without user interaction.",
+		"version": 3,
+		"dependencies": {
+			"interfacetype": {
+				"version_min": 3,
+				"version_max": 3
+			},
+			"standardout": {
+				"version_min": 5,
+				"version_max": 5
+			}
 		},
-		"type": "interface",
-		"class": automatic_module.Automatic,
-		"dependencies": [
-			"logger/standardout"
-		]
+
+		"interface": {
+			"implementation": automatic_module.Automatic
+		},
 	}
