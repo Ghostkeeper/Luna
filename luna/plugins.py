@@ -304,5 +304,7 @@ def __validate_metadata_type(metadata):
 			raise MetadataValidationError("The interface must be an abstract base class.")
 		if not "__call__" in dir(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
+		if metadata["dependencies"]:
+			raise MetadataValidationError("Type plug-ins may not have dependencies.")
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("The type section is not a dictionary.")
