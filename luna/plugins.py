@@ -51,7 +51,7 @@ __plugins = {}
 Dictionary holding all plug-ins, indexed by their identity.
 """
 
-__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity type plugin_class dependencies")
+__DependencyCandidate = collections.namedtuple("__DependencyCandidate", "identity plugin_class dependencies")
 """
 Represents a candidate dependency.
 
@@ -298,7 +298,7 @@ def __validate_metadata_global(metadata):
 	:param metadata: A dictionary containing the metadata of the plug-in.
 	:raises MetadataValidationError: The metadata is invalid.
 	"""
-	required_fields = {"name", "description", "type", "version", "class"}
+	required_fields = {"name", "description", "version", "class"}
 	try:
 		if not required_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
 			raise MetadataValidationError("Required fields missing: " + str(required_fields - metadata.keys()))
