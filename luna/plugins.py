@@ -300,8 +300,6 @@ def __validate_metadata_type(metadata):
 		required_fields = {"api", "interface", "register"}
 		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
-		if not issubclass(metadata["type"]["api"], object):
-			raise MetadataValidationError("The API must be a class.")
 		if not "_abc_registry" in dir(metadata["type"]["interface"]):
 			raise MetadataValidationError("The interface must be an abstract base class.")
 		if not "__call__" in dir(metadata["type"]["register"]):
