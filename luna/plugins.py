@@ -210,6 +210,21 @@ def discover():
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
+def interface(plugin_type):
+	"""
+	.. function:: interface(plugin_type)
+	Gets the interface that plug-ins of the specified type must implement.
+
+	Note that this returns a class, not an instantiation of the class.
+
+	:param plugin_type: The plug-in type to get the interface of.
+	:return: The interface of the specified plug-in type as a class.
+	:raises ImportError: The specified plug-in type is unknown.
+	"""
+	if plugin_type not in __plugin_types:
+		raise ImportError("No interface known for \"{type}\".".format(type=plugin_type))
+	return __plugin_types[plugin_type].interface
+
 def __find_candidates():
 	"""
 	.. function:: __findCandidates()
