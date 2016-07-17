@@ -337,8 +337,12 @@ def __validate_metadata_type(metadata):
 			raise MetadataValidationError("The interface must be an abstract base class.")
 		if not callable(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
+		if metadata["type"]["register"].__code__.co_argcount != 2:
+			raise MetadataValidationError("The register function must take exactly two arguments: The plug-in's identity and its metadata.")
 		if not callable(metadata["type"]["validate_metadata"]):
 			raise MetadataValidationError("The metadata validator must be callable.")
+		if metadata["type"]["validate_metadata"].__code__.co_argcount != 1:
+			raise MetadataValidationError("The metadata validation function must take exactly one argument: The plug-in's metadata.")
 		if metadata["dependencies"]:
 			raise MetadataValidationError("Type plug-ins may not have dependencies.")
 	except (AttributeError, TypeError):
