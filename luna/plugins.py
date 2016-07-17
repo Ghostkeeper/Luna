@@ -263,21 +263,33 @@ def __load_candidate(identity, folder):
 		wrong, ``None`` is returned.
 	"""
 	if "." in identity:
-		api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
+		try:
+			api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
+		except ImportError: #Logger type module isn't loaded yet.
+			print("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity))
 		return None
 	try:
 		file, path, description = imp.find_module(identity, [folder])
 	except Exception as e:
-		api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=folder, error_message=str(e))
+		try:
+			api("logger").warning("Failed to find module of plug-in in {plugin}: {message}", plugin=folder, error_message=str(e))
+		except ImportError: #Logger type module isn't loaded yet.
+			print("Failed to find module of plug-in in {plugin}: {message}".format(plugin=folder, message=str(e)))
 		return None
 	try:
 		module = imp.load_module(identity, file, path, description)
 	except Exception as e:
-		api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+		try:
+			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+		except ImportError: #Logger type module isn't loaded yet.
+			print("Failed to load plug-in {plugin}: {message}".format(plugin=identity, message=str(e)))
 		raise
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
-			api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+			try:
+				api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+			except ImportError: #Logger type module isn't loaded yet.
+				print("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			file.close()
 	return module
 
