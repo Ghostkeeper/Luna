@@ -29,6 +29,7 @@ This allows communication with the Windows API.
 """
 
 import ctypes #To communicate with the Windows API.
+
 from . import c_type_coordinate #To store the state of the console window on Windows.
 from . import c_type_rectangle #To store the state of the console window on Windows.
 

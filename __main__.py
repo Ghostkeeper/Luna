@@ -54,8 +54,7 @@ class Luna:
 		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
 		"""
 		base_dir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
-		luna.plugins.add_plugin_location(os.path.join(base_dir, "interface"))
-		luna.plugins.add_plugin_location(os.path.join(base_dir, "logger"))
+		luna.plugins.add_plugin_location(os.path.join(base_dir, "plugins"))
 		luna.plugins.discover()
 		logger = luna.plugins.api("logger")
 		logger.set_log_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])

@@ -26,8 +26,8 @@
 Implements the logger plug-in interface.
 """
 
-import datetime #For putting timestamps alongside each message.
 import ctypes #For printing in colour on Windows machines.
+import datetime #For putting timestamps alongside each message.
 
 try:
 	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
