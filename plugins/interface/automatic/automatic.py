@@ -26,10 +26,9 @@
 Implements the interface plug-in interface.
 """
 
-import luna.interface_plugin #Superclass.
-import luna.logger
+import luna.plugins #To get the interface we must implement and access to the logging API.
 
-class Automatic(luna.interface_plugin.InterfacePlugin):
+class Automatic(luna.plugins.interface("interface")):
 	"""
 	An interface that allows no control by the user.
 
@@ -53,5 +52,5 @@ class Automatic(luna.interface_plugin.InterfacePlugin):
 		For now this just prints a message that the Automatic interface is
 		started.
 		"""
-		luna.logger.info("Starting Automatic interface.") #Not implemented yet.
+		luna.plugins.api("logger").info("Starting Automatic interface.") #Not implemented yet.
 		return False
