@@ -32,8 +32,6 @@ be converted.
 """
 
 import automatic.automatic as automatic_module #Prevent mixing up the package name and the module name!
-import luna.interface_plugin
-import luna.logger_plugin
 
 def metadata():
 	"""
