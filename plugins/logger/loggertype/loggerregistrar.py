@@ -32,9 +32,9 @@ be called upon to log something.
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
 import loggertype.logger #To check if a logger implements the logger interface.
 
-__loggers = []
+__loggers = {}
 """
-The loggers that have been registered here so far.
+The loggers that have been registered here so far, keyed by their identities.
 """
 
 def get_all_loggers():
@@ -42,20 +42,24 @@ def get_all_loggers():
 	.. function:: get_all_loggers()
 	Gets all loggers that have been registered here so far.
 
-	:return: A list of loggers.
+	:return: A generator of loggers.
 	"""
-	return __loggers
+	return __loggers.values()
 
-def register(metadata):
+def register(identity, metadata):
 	"""
-	.. function:: register(metadata)
+	.. function:: register(identity, metadata)
 	Registers a new logger plug-in to log with.
 
 	This expects the metadata to already be verified as a logger's metadata.
 
+	:param identity: The identity of the plug-in to register.
 	:param metadata: The metadata of a logger plug-in.
 	"""
-	__loggers.append(metadata["logger"]["implementation"]())
+	if identity in __loggers:
+		luna.plugins.api("logger").warning("Logger {logger} is already registered.", logger=identity)
+		return
+	__loggers[identity] = metadata["logger"]["implementation"]()
 
 def validate_metadata(metadata):
 	"""

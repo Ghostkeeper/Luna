@@ -204,7 +204,7 @@ def discover():
 			candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types to register the plug-in at.
 			for candidate_type in candidate_types:
 				try:
-					__plugin_types[candidate_type].register(candidate.metadata)
+					__plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
 				except Exception as e:
 					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
