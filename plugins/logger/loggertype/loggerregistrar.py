@@ -22,8 +22,60 @@
 #
 #For more information, please refer to <https://unlicense.org/>.
 
+"""
+Keeps track of all logger plug-ins.
+
+Logger plug-ins need to register here. Their implementations are stored and may
+be called upon to log something.
+"""
+
+import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
+import loggertype.logger #To check if a logger implements the logger interface.
+
+__loggers = []
+"""
+The loggers that have been registered here so far.
+"""
+
+def get_all_loggers():
+	"""
+	.. function:: get_all_loggers()
+	Gets all loggers that have been registered here so far.
+
+	:return: A list of loggers.
+	"""
+	return __loggers
+
 def register(metadata):
-	pass #TODO
+	"""
+	.. function:: register(metadata)
+	Registers a new logger plug-in to log with.
+
+	This expects the metadata to already be verified as a logger's metadata.
+
+	:param metadata: The metadata of a logger plug-in.
+	"""
+	__loggers.append(metadata["logger"]["implementation"]())
 
 def validate_metadata(metadata):
-	pass #TODO
+	"""
+	.. function:: validate_metadata(metadata)
+	Validates whether the specified metadata is valid for logger plug-ins.
+
+	Logger's metadata must have a "logger" field, which contains an
+	"implementation" field. This field must contain a class which inherits from
+	the Logger interface.
+
+	:param metadata: The metadata to validate.
+	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
+	"""
+	if "logger" not in metadata:
+		raise luna.plugins.MetadataValidationError("This is not a logger plug-in.")
+	required_fields = {"implementation"}
+	try:
+		if not required_fields <= metadata["logger"].keys():
+			raise luna.plugins.MetadataValidationError("The logger specifies no implementation.")
+		if not issubclass(metadata["logger"]["implementation"], loggertype.logger.Logger):
+			raise luna.plugins.MetadataValidationError("The logger interface is not implemented.")
+	except (AttributeError, TypeError): #Not a dictionary.
+		raise luna.plugins.MetadataValidationError("The logger metadata is not a dictionary.")
