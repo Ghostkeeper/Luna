@@ -27,7 +27,6 @@ A logger plug-in that logs to the standard output channel.
 """
 
 import standardout.standard_out
-import luna.logger_plugin
 
 def metadata():
 	"""
