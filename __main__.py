@@ -62,8 +62,12 @@ class Luna:
 		interface_name = self.DEFAULT_INTERFACE
 		if len(sys.argv) >= 2:
 			interface_name = sys.argv[1]
-		if not luna.plugins.api("interface").exists(interface_name):
-			logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
+		try:
+			if not luna.plugins.api("interface").exists(interface_name):
+				logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
+				return False
+		except ImportError:
+			logger.error("Could not load the interface plug-in type. Aborting.")
 			return False
 		luna.plugins.api("interface").start(interface_name)
 		luna.plugins.api("interface").join(interface_name)
