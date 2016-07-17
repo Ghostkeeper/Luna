@@ -35,12 +35,12 @@ class Luna:
 	Base instance of the application.
 	"""
 
-	DEFAULT_INTERFACE = "automatic"
+	DEFAULT_USER_INTERFACE = "automatic"
 	"""
-	The default interface to start with, unless instructed otherwise.
+	The default user interface to start with, unless instructed otherwise.
 
-	If this interface does not exist, an error is thrown and the application
-	closes.
+	If this user interface does not exist, an error is thrown and the
+	application closes.
 	"""
 
 	def run(self):
@@ -48,7 +48,7 @@ class Luna:
 		.. function:: run()
 		Starts the application.
 
-		This process will start the plug-in registering, and then selects an
+		This process will start the plug-in registering, and then selects a user
 		interface based on the command line arguments.
 
 		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
@@ -59,18 +59,18 @@ class Luna:
 		logger = luna.plugins.api("logger")
 		logger.set_log_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
 
-		interface_name = self.DEFAULT_INTERFACE
+		user_interface_name = self.DEFAULT_INTERFACE
 		if len(sys.argv) >= 2:
-			interface_name = sys.argv[1]
+			user_interface_name = sys.argv[1]
 		try:
-			if not luna.plugins.api("interface").exists(interface_name):
-				logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
+			if not luna.plugins.api("userinterface").exists(user_interface_name):
+				logger.error("Could not load the user interface {userinterface}. Aborting.", userinterface=user_interface_name)
 				return False
 		except ImportError:
-			logger.error("Could not load the interface plug-in type. Aborting.")
+			logger.error("Could not load the user interface plug-in type. Aborting.")
 			return False
-		luna.plugins.api("interface").start(interface_name)
-		luna.plugins.api("interface").join(interface_name)
+		luna.plugins.api("userinterface").start(user_interface_name)
+		luna.plugins.api("userinterface").join(user_interface_name)
 		return True #Success.
 
 #Launches Luna if called from the command line.

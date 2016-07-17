@@ -23,11 +23,12 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-A plug-in that provides an interface which runs completely automatically.
+A plug-in that provides a user interface which runs completely automatically.
 
-The purpose of this interface is to require no user interaction at all. It just
-handles the process all on its own, without fuss. This makes it easy to just run
-Luna very quickly in a folder with some files that have to be converted.
+The purpose of this user interface is to require no user interaction at all. It
+just handles the process all on its own, without fuss. This makes it easy to
+just run the application very quickly in a folder with some files that have to
+be converted.
 """
 
 import automatic.automatic as automatic_module #Prevent mixing up the package name and the module name!
@@ -43,7 +44,7 @@ def metadata():
 	"""
 	return {
 		"name": "Automatic",
-		"description": "An interface that automatically converts data without user interaction.",
+		"description": "A user interface that automatically converts data without user interaction.",
 		"version": 3,
 		"dependencies": {
 			"interfacetype": {
@@ -56,7 +57,7 @@ def metadata():
 			}
 		},
 
-		"interface": {
+		"userinterface": {
 			"implementation": automatic_module.Automatic
 		},
 	}

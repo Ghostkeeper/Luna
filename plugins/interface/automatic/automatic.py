@@ -23,24 +23,24 @@
 #For more information, please refer to <https://unlicense.org/>.
 
 """
-Implements the interface plug-in interface.
+Implements the user interface plug-in interface.
 """
 
 import luna.plugins #To get the interface we must implement and access to the logging API.
 
-class Automatic(luna.plugins.interface("interface")):
+class Automatic(luna.plugins.interface("userinterface")):
 	"""
-	An interface that allows no control by the user.
+	A user interface that allows no control by the user.
 
-	This interface is designed to work without any user input. It automatically
-	converts any files in the same folder it can to the output files using the
-	default settings.
+	This user interface is designed to work without any user input. It
+	automatically converts any files in the same folder it can to the output
+	files using the default settings.
 	"""
 
 	def __init__(self):
 		"""
 		.. function:: __init__()
-		Creates a new instance of the Automatic interface.
+		Creates a new instance of the Automatic user interface.
 		"""
 		super().__init__()
 
