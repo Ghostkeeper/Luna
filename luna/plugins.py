@@ -30,8 +30,6 @@ import collections #For namedtuple.
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
 
-import luna.plugin #Checking if plug-ins provide the correct class.
-
 __plugin_locations = []
 """
 List of directories where to look for plug-ins.
@@ -43,11 +41,6 @@ Dictionary of all plug-in types.
 
 The keys are the type names of the plug-in types. The values are the plug-in
 types as named tuples.
-"""
-
-__plugins = {}
-"""
-Dictionary holding all plug-ins, indexed by their identity.
 """
 
 __required_metadata_fields = {"dependencies", "description", "name", "version"}
@@ -271,31 +264,6 @@ def __load_candidate(identity, folder):
 			api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			file.close()
 	return module
-
-def __get_all_plugins_of_type(plugin_type):
-	"""
-	.. function:: __getAllPluginsOfType(type)
-	Gets all plug-ins with the specified type.
-
-	:returns: A list of all plug-ins of the specified plug-in type.
-	"""
-	result = []
-	for (candidate_type, candidate_identity) in __plugins:
-		if plugin_type == candidate_type:
-			result.append(__plugins[(candidate_type, candidate_identity)])
-	return result
-
-def __get_plugin(identity):
-	"""
-	.. function:: __getPlugin(identity)
-	Gets the plug-in with the specified identity, if it exists.
-
-	:param identity: The identity of the plug-in to get.
-	:returns: The plug-in, or ``None`` if it doesn't exist.
-	"""
-	if identity in __plugins:
-		return __plugins[identity]
-	return None #Plug-in couldn't be found.
 
 def __validate_metadata_global(metadata):
 	"""
