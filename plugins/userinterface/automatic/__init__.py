@@ -45,7 +45,7 @@ def metadata():
 		"description": "A user interface that automatically converts data without user interaction.",
 		"version": 3,
 		"dependencies": {
-			"interfacetype": {
+			"userinterfacetype": {
 				"version_min": 3,
 				"version_max": 3
 			},
