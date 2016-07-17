@@ -70,10 +70,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		if api.Level.CRITICAL in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if _has_win_kernel:
-				self.__colour_print_win32(formatted, api.Level.CRITICAL)
-			else:
-				self.__colour_print_ansi(formatted, api.Level.CRITICAL)
+			self.__colour_print(formatted, api.Level.CRITICAL)
 
 	def debug(self, message, title="Debug"):
 		"""
@@ -88,10 +85,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		if api.Level.DEBUG in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if _has_win_kernel:
-				self.__colour_print_win32(formatted, api.Level.DEBUG)
-			else:
-				self.__colour_print_ansi(formatted, api.Level.DEBUG)
+			self.__colour_print(formatted, api.Level.DEBUG)
 
 	def error(self, message, title="Error"):
 		"""
@@ -106,10 +100,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		if api.Level.ERROR in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if _has_win_kernel:
-				self.__colour_print_win32(formatted, api.Level.ERROR)
-			else:
-				self.__colour_print_ansi(formatted, api.Level.ERROR)
+			self.__colour_print(formatted, api.Level.ERROR)
 
 	def info(self, message, title="Information"):
 		"""
@@ -124,10 +115,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		if api.Level.INFO in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if _has_win_kernel:
-				self.__colour_print_win32(formatted, api.Level.INFO)
-			else:
-				self.__colour_print_ansi(formatted, api.Level.INFO)
+			self.__colour_print(formatted, api.Level.INFO)
 
 	def set_levels(self, levels):
 		"""
@@ -154,69 +142,50 @@ class StandardOut(luna.plugins.interface("logger")):
 		if api.Level.WARNING in self.__levels: #I'm configured to display this message.
 			formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 			formatted += message
-			if _has_win_kernel:
-				self.__colour_print_win32(formatted, api.Level.WARNING)
+			self.__colour_print(formatted, api.Level.WARNING)
+
+	def __colour_print(self, message, level):
+		"""
+		.. function:: __colour_print(message, level)
+		Prints a message with appropriate colour-coding.
+
+		The colour coding is based on the level of the message:
+		* Red for errors.
+		* Magenta for critical messages.
+		* Yellow for warnings.
+		* Green for information.
+		* Blue for debug messages.
+
+		:param message: The text to print.
+		:param level: The importance level of the message.
+		"""
+		if _has_win_kernel:
+			buffer_state = buffer_info.BufferInfo()
+			windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel.
+
+			if level == api.Level.ERROR:
+				windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12) #Red.
+			elif level == api.Level.CRITICAL:
+				windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 13) #Magenta.
+			elif level == api.Level.WARNING:
+				windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 14) #Yellow.
+			elif level == api.Level.INFO:
+				windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 10) #Green.
+			elif level == api.Level.DEBUG:
+				windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9) #Blue.
+			print(message)
+			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+		else: #Hope we have an ANSI-enabled console.
+			if level == api.Level.ERROR:
+				ansi_colour = '\033[38m' #Red.
+			elif level == api.Level.CRITICAL:
+				ansi_colour = '\033[35m' #Magenta.
+			elif level == api.Level.WARNING:
+				ansi_colour = '\033[33m' #Yellow.
+			elif level == api.Level.INFO:
+				ansi_colour = '\033[32m' #Green.
+			elif level == api.Level.DEBUG:
+				ansi_colour = '\033[34m' #Blue.
 			else:
-				self.__colour_print_ansi(formatted, api.Level.WARNING)
-
-	@classmethod
-	def __colour_print_ansi(cls, message, level):
-		"""
-		.. function:: __colourPrintAnsi(message, level)
-		Prints a message with colour-coding in ANSI-based terminals, such as the
-		console of Linux.
-
-		The colour coding is based on the level of the message:
-		* Red for errors.
-		* Magenta for criticals.
-		* Yellow for warnings.
-		* Green for information.
-		* Blue for debug messages.
-
-		:param message: The text to print.
-		:param level: The warning level of the message.
-		"""
-		if level == api.Level.ERROR:
-			ansi_colour = '\033[38m' #Red.
-		elif level == api.Level.CRITICAL:
-			ansi_colour = '\033[35m' #Magenta.
-		elif level == api.Level.WARNING:
-			ansi_colour = '\033[33m' #Yellow.
-		elif level == api.Level.INFO:
-			ansi_colour = '\033[32m' #Green.
-		elif level == api.Level.DEBUG:
-			ansi_colour = '\033[34m' #Blue.
-		else:
-			ansi_colour = '\033[m' #Default colour.
-		print(ansi_colour + message + '\033[m') #Start code, then message, then revert to default colour.
-
-	def __colour_print_win32(self, message, level):
-		"""
-		.. function:: __colourPrintWin32(message, level)
-		Prints a message with colour-coding in Windows Bash.
-
-		The colour coding is based on the level of the message:
-		* Red for errors.
-		* Magenta for criticals.
-		* Yellow for warnings.
-		* Green for information.
-		* Blue for debug messages.
-
-		:param message: The text to print.
-		:param level: The warning level of the message.
-		"""
-		buffer_state = buffer_info.BufferInfo()
-		windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel.
-
-		if level == api.Level.ERROR:
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12) #Red.
-		elif level == api.Level.CRITICAL:
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 13) #Magenta.
-		elif level == api.Level.WARNING:
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 14) #Yellow.
-		elif level == api.Level.INFO:
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 10) #Green.
-		elif level == api.Level.DEBUG:
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9) #Blue.
-		print(message)
-		windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+				ansi_colour = '\033[m' #Default colour.
+			print(ansi_colour + message + '\033[m') #Start code, then message, then revert to default colour.
