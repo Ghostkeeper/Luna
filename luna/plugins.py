@@ -30,7 +30,6 @@ import collections #For namedtuple.
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
 
-import luna.logger #Logging messages.
 import luna.plugin #Checking if plug-ins provide the correct class.
 
 __plugin_locations = []
@@ -100,6 +99,25 @@ def add_plugin_location(location):
 		raise NotADirectoryError("Plug-in location is not a path: {location}".format(location=location))
 	__plugin_locations.append(location)
 
+def api(plugin_type):
+	"""
+	.. function:: api(plugin_type)
+	Gets the API to interact with plug-ins of the specified type.
+
+	These APIs provide sets of functions to interact with the plug-ins of that
+	type. Some API calls may invoke actions on multiple plug-ins at once, or
+	just on a specific one. For details on the API of a specific plug-in type,
+	please refer to the plug-in that defines the type.
+
+	:param plugin_type: The plug-in type to get the API of.
+	:return: An object with methods to interact with plug-ins of the specified
+		type.
+	:raises ImportError The plug-in type is unknown.
+	"""
+	if plugin_type not in __plugin_types:
+		raise ImportError("No API known for \"{type}\".".format(type=plugin_type))
+	return __plugin_types[plugin_type].api
+
 def discover():
 	"""
 	.. function:: discover()
@@ -118,31 +136,36 @@ def discover():
 	candidates = __find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
 	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of __UnresolvedCandidate instances.
 	for identity, folder in candidates:
-		luna.logger.debug("Loading plug-in {plugin} from {folder}.", plugin=identity, folder=folder)
 		#Loading the plug-in.
 		module = __load_candidate(identity, folder)
 		if not module: #Failed to load module.
-			continue
-		if __get_plugin(identity):
-			luna.logger.warning("Plug-in {plugin} is already loaded.", plugin=identity)
 			continue
 
 		#Parsing the metadata.
 		try:
 			metadata = module.metadata()
 		except Exception as e:
-			luna.logger.warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+			try:
+				api("logger").warning("Failed to load metadata of plug-in {plugin}: {message}", plugin=identity, message=str(e))
+			except ImportError: #Logger type hasn't loaded yet.
+				print("Failed to load metadata of plug-in {plugin}: {message}".format(plugin=identity, message=str(e)))
 			continue
 		try:
 			__validate_metadata_global(metadata)
 		except MetadataValidationError as e:
-			luna.logger.warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+			try:
+				api("logger").warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+			except ImportError: #Logger type hasn't loaded yet.
+				print("Metadata of plug-in {plugin} is invalid: {message}".format(plugin=identity, message=str(e)))
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
 				__validate_metadata_type(metadata)
 			except MetadataValidationError as e:
-				luna.logger.warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+				try:
+					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+				except ImportError: #Logger type hasn't loaded yet.
+					print("Metadata of type plug-in {plugin} is invalid: {message}".format(plugin=identity, message=str(e)))
 				continue
 			plugin_type = __PluginType(api=metadata["type"]["api"], interface=metadata["type"]["interface"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
 			__plugin_types[metadata["type"]["type_name"]] = plugin_type
@@ -156,7 +179,7 @@ def discover():
 			try:
 				__plugin_types[candidate_type].validate_metadata(candidate.metadata)
 			except Exception as e:
-				luna.logger.warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
+				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't properly implement their interfaces.
 		else: #All types got validated properly.
 			unresolved_candidates.append(candidate) #Goes on to the third stage.
@@ -168,21 +191,21 @@ def discover():
 				if dependency == dependency_candidate.identity:
 					try:
 						if "version_min" in requirements and dependency_candidate.metadata["version"] < requirements["version_min"]:
-							luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_min} or later.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"]))
+							api("logger").warning("Plug-in {candidate} requires {dependency} version {version_min} or later.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"]))
 							continue
 					except TypeError: #Unorderable types.
-						luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_min} or later, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"], version=str(dependency_candidate.metadata["version"])))
+						api("logger").warning("Plug-in {candidate} requires {dependency} version {version_min} or later, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_min=str(requirements["version_min"], version=str(dependency_candidate.metadata["version"])))
 						continue
 					try:
 						if "version_max" in requirements and dependency_candidate.metadata["version"] > requirements["version_max"]:
-							luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"]))
+							api("logger").warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"]))
 							continue
 					except TypeError: #Unorderable types.
-						luna.logger.warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"], version=str(dependency_candidate.metadata["version"])))
+						api("logger").warning("Plug-in {candidate} requires {dependency} version {version_max} or earlier, but couldn't compare this with its actual version {version}.", candidate=candidate, dependency=dependency, version_max=str(requirements["version_max"], version=str(dependency_candidate.metadata["version"])))
 						continue
 					break
 			else: #Dependency was not found.
-				luna.logger.warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
+				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
 			candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types to register the plug-in at.
@@ -190,47 +213,9 @@ def discover():
 				try:
 					__plugin_types[candidate_type].register(candidate.metadata)
 				except Exception as e:
-					luna.logger.error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
+					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
-			luna.logger.info("Loaded plug-in {plugin}.", plugin=candidate.identity)
-
-def get_interface(name):
-	"""
-	.. function:: getInterface(name)
-	Gets an interface plug-in with the specified name, if it exists.
-
-	:param name: The name of the interface plug-in to get.
-	:returns: The specified interface, or ``None`` if it doesn't exist.
-	"""
-	return __get_plugin(name)
-
-def get_interfaces():
-	"""
-	.. function:: getInterfaces()
-	Gets all interface plug-ins.
-
-	:returns: A list of all interface plug-ins.
-	"""
-	return __get_all_plugins_of_type("interface")
-
-def get_logger(name):
-	"""
-	.. function:: getLogger(name)
-	Gets a logger plug-in with the specified name, if it exists.
-
-	:param name: The name of the logger plug-in to get.
-	:returns: The specified logger, or ``None`` if it doesn't exist.
-	"""
-	return __get_plugin(name)
-
-def get_loggers():
-	"""
-	.. function:: getLoggers()
-	Gets all logger plug-ins.
-
-	:returns: A list of all logger plug-ins.
-	"""
-	return __get_all_plugins_of_type("logger")
+			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
 def __find_candidates():
 	"""
@@ -269,21 +254,21 @@ def __load_candidate(identity, folder):
 		wrong, ``None`` is returned.
 	"""
 	if "." in identity:
-		luna.logger.warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
+		api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
 		return None
 	try:
 		file, path, description = imp.find_module(identity, [folder])
 	except Exception as e:
-		luna.logger.warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=folder, error_message=str(e))
+		api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=folder, error_message=str(e))
 		return None
 	try:
 		module = imp.load_module(identity, file, path, description)
 	except Exception as e:
-		luna.logger.warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+		api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		raise
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
-			luna.logger.warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+			api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			file.close()
 	return module
 

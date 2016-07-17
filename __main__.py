@@ -28,8 +28,7 @@ Provides a base class for the application, and then starts the application.
 
 import os #For finding the root directory of Luna.
 import sys #For reading command line arguments.
-import luna.logger
-import luna.plugins #To initiate the plug-in loading.
+import luna.plugins #To initiate the plug-in loading and use the APIs.
 
 class Luna:
 	"""
@@ -58,17 +57,17 @@ class Luna:
 		luna.plugins.add_plugin_location(os.path.join(base_dir, "interface"))
 		luna.plugins.add_plugin_location(os.path.join(base_dir, "logger"))
 		luna.plugins.discover()
-		luna.logger.set_log_levels([luna.logger.Level.ERROR, luna.logger.Level.CRITICAL, luna.logger.Level.WARNING, luna.logger.Level.INFO, luna.logger.Level.DEBUG])
+		logger = luna.plugins.api("logger")
+		logger.set_log_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
 
 		interface_name = self.DEFAULT_INTERFACE
 		if len(sys.argv) >= 2:
 			interface_name = sys.argv[1]
-		interface = luna.plugins.get_interface(interface_name)
-		if not interface:
-			luna.logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
+		if not luna.plugins.api("interface").exists(interface_name):
+			logger.error("Could not load the interface {interface}. Aborting.", interface=interface_name)
 			return False
-		interface.start()
-
+		luna.plugins.api("interface").start(interface_name)
+		luna.plugins.api("interface").join(interface_name)
 		return True #Success.
 
 #Launches Luna if called from the command line.
