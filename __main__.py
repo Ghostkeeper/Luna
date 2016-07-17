@@ -59,7 +59,7 @@ class Luna:
 		logger = luna.plugins.api("logger")
 		logger.set_log_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
 
-		user_interface_name = self.DEFAULT_INTERFACE
+		user_interface_name = self.DEFAULT_USER_INTERFACE
 		if len(sys.argv) >= 2:
 			user_interface_name = sys.argv[1]
 		try:
