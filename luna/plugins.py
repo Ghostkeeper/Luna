@@ -283,7 +283,7 @@ def __load_candidate(identity, folder):
 			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
 			print("Failed to load plug-in {plugin}: {message}".format(plugin=identity, message=str(e)))
-		raise
+		return None
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
 			try:
