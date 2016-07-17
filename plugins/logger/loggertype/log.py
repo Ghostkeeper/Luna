@@ -69,27 +69,18 @@ class Log:
 		"""
 
 	@staticmethod
-	def critical(*args, **kwargs):
+	def critical(message, title="Critical", **kwargs):
 		"""
 		.. function:: critical(message[, title][, key=value]*)
 		Logs a new critical message with all loggers.
 
-		:param args: Positional arguments. Requires at least one argument. The
-			first argument is the message of the entry. The second argument, if
-			it exists, is a title for the entry. The other arguments are
-			ignored.
+		:param message: The message of the log entry.
+		:param title: A title for the entry.
 		:param kwargs: Key-word arguments. These are inserted in the message
 			body. The value of a key-word argument will be put in place of the
 			key surrounded by brackets. See the Python documentation for
 			``str.format`` for more details.
 		"""
-		if len(args) < 1: #Not enough arguments.
-			raise TypeError("critical() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
-		message = args[0]
-		if len(args) >= 2:
-			title = args[1]
-		else:
-			title = "CRITICAL"
 		substituted = message.format(**kwargs) #Substitute all arguments into the message.
 		loggers = loggertype.loggerregistrar.get_all_loggers()
 		for logger in loggers:
@@ -98,27 +89,18 @@ class Log:
 			print(title + ": " + substituted)
 
 	@staticmethod
-	def debug(*args, **kwargs):
+	def debug(message, title="Debug", **kwargs):
 		"""
 		.. function:: debug(message[, title][, key=value]*)
 		Logs a new debug message with all loggers.
 
-		:param args: Positional arguments. Requires at least one argument. The
-			first argument is the message of the entry. The second argument, if
-			it exists, is a title for the entry. The other arguments are
-			ignored.
+		:param message: The message of the log entry.
+		:param title: A title for the entry.
 		:param kwargs: Key-word arguments. These are inserted in the message
 			body. The value of a key-word argument will be put in place of the
 			key surrounded by brackets. See the Python documentation for
 			``str.format`` for more details.
 		"""
-		if len(args) < 1: #Not enough arguments.
-			raise TypeError("debug() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
-		message = args[0]
-		if len(args) >= 2:
-			title = args[1]
-		else:
-			title = "DEBUG"
 		substituted = message.format(**kwargs) #Substitute all arguments into the message.
 		loggers = loggertype.loggerregistrar.get_all_loggers()
 		for logger in loggers:
@@ -127,27 +109,18 @@ class Log:
 			print(title + ": " + substituted)
 
 	@staticmethod
-	def error(*args, **kwargs):
+	def error(message, title="Error", **kwargs):
 		"""
 		.. function:: error(message[, title][, key=value]*)
 		Logs a new error message with all loggers.
 
-		:param args: Positional arguments. Requires at least one argument. The
-			first argument is the message of the entry. The second argument, if
-			it exists, is a title for the entry. The other arguments are
-			ignored.
+		:param message: The message of the log entry.
+		:param title: A title for the entry.
 		:param kwargs: Key-word arguments. These are inserted in the message
 			body. The value of a key-word argument will be put in place of the
 			key surrounded by brackets. See the Python documentation for
 			``str.format`` for more details.
 		"""
-		if len(args) < 1: #Not enough arguments.
-			raise TypeError("error() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
-		message = args[0]
-		if len(args) >= 2:
-			title = args[1]
-		else:
-			title = "ERROR"
 		substituted = message.format(**kwargs) #Substitute all arguments into the message.
 		loggers = loggertype.loggerregistrar.get_all_loggers()
 		for logger in loggers:
@@ -156,27 +129,18 @@ class Log:
 			print(title + ": " + substituted)
 
 	@staticmethod
-	def info(*args, **kwargs):
+	def info(message, title="Info", **kwargs):
 		"""
 		.. function:: info(message[, title][, key=value]*)
 		Logs a new information message with all loggers.
 
-		:param args: Positional arguments. Requires at least one argument. The
-			first argument is the message of the entry. The second argument, if
-			it exists, is a title for the entry. The other arguments are
-			ignored.
+		:param message: The message of the log entry.
+		:param title: A title for the entry.
 		:param kwargs: Key-word arguments. These are inserted in the message
 			body. The value of a key-word argument will be put in place of the
 			key surrounded by brackets. See the Python documentation for
 			``str.format`` for more details.
 		"""
-		if len(args) < 1: #Not enough arguments.
-			raise TypeError("info() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
-		message = args[0]
-		if len(args) >= 2:
-			title = args[1]
-		else:
-			title = "INFO"
 		substituted = message.format(**kwargs) #Substitute all arguments into the message.
 		loggers = loggertype.loggerregistrar.get_all_loggers()
 		for logger in loggers:
@@ -212,27 +176,18 @@ class Log:
 				logger.set_levels(levels)
 
 	@staticmethod
-	def warning(*args, **kwargs):
+	def warning(message, title="Warning", **kwargs):
 		"""
 		.. function:: warning(message[, title][, key=value]*)
 		Logs a new warning message with all loggers.
 
-		:param args: Positional arguments. Requires at least one argument. The
-			first argument is the message of the entry. The second argument, if
-			it exists, is a title for the entry. The other arguments are
-			ignored.
+		:param message: The message of the log entry.
+		:param title: A title for the entry.
 		:param kwargs: Key-word arguments. These are inserted in the message
 			body. The value of a key-word argument will be put in place of the
 			key surrounded by brackets. See the Python documentation for
 			``str.format`` for more details.
 		"""
-		if len(args) < 1: #Not enough arguments.
-			raise TypeError("warning() missing 1 required positional argument: The message.") #More or less the same as the Python version, so people can look up the error.
-		message = args[0]
-		if len(args) >= 2:
-			title = args[1]
-		else:
-			title = "WARNING"
 		substituted = message.format(**kwargs) #Substitute all arguments into the message.
 		loggers = loggertype.loggerregistrar.get_all_loggers()
 		for logger in loggers:
