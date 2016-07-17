@@ -229,7 +229,8 @@ def __find_candidates():
 				continue
 			directories[:] = [] #Remove all subdirectories. We aren't going to look in submodules.
 			identity = os.path.basename(root) #The name of the folder becomes the plug-in's identity.
-			candidates.add((identity, location))
+			directory = os.path.dirname(root) #The location where the package is located.
+			candidates.add((identity, directory))
 	return candidates
 
 def __load_candidate(identity, folder):
