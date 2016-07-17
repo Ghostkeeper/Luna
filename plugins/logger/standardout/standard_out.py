@@ -29,6 +29,8 @@ Implements the logger plug-in interface.
 import ctypes #For printing in colour on Windows machines.
 import datetime #For putting timestamps alongside each message.
 
+import luna.plugins
+
 try:
 	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
 	_has_win_kernel = True
@@ -39,7 +41,7 @@ import luna.logger #To check against the logger levels.
 import luna.logger_plugin #Superclass.
 from . import buffer_info #To store the state of the console on Windows.
 
-class StandardOut(luna.logger_plugin.LoggerPlugin):
+class StandardOut(luna.plugins.interface("logger")):
 	"""
 	Logs messages to the standard output of the program.
 	"""
