@@ -22,9 +22,20 @@
 #
 #For more information, please refer to <https://unlicense.org/>.
 
+"""
+Defines an interface that logger plug-ins must implement.
+"""
+
 import abc
 
 class Logger(metaclass=abc.ABCMeta):
+	"""
+	Interface that logger plug-ins must implement.
+
+	It defines log functions for various levels of importance, and a function to
+	set which of these levels should actually get added to the log.
+	"""
+
 	@abc.abstractmethod
 	def critical(self, message, title="Critical"):
 		"""
