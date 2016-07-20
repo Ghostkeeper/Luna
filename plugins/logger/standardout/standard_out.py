@@ -105,7 +105,7 @@ class StandardOut(luna.plugins.interface("logger")):
 	def info(self, message, title="Information"):
 		"""
 		.. function:: info(message[, title])
-		Logs a new debug message.
+		Logs a new information message.
 
 		A timestamp is added alongside the message.
 
