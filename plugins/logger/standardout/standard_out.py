@@ -129,7 +129,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		"""
 		self.__levels = levels
 
-	def warning(self, message, title="Debug"):
+	def warning(self, message, title="Warning"):
 		"""
 		.. function:: warning(message[, title])
 		Logs a new warning message.
