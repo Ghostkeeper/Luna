@@ -125,7 +125,7 @@ class StandardOut(luna.plugins.interface("logger")):
 		After this function is called, the log should only acquire messages with
 		a log level that is in the list of levels passed to this function.
 
-		:param levels: A list of log levels that will be logged.
+		:param levels: A container of log levels that will be logged.
 		"""
 		self.__levels = levels
 
