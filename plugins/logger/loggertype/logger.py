@@ -25,4 +25,64 @@
 import abc
 
 class Logger(metaclass=abc.ABCMeta):
-	pass #TODO
+	@abc.abstractmethod
+	def critical(self, message, title="Critical"):
+		"""
+		.. function:: critical(message[, title])
+		Logs a new critical message.
+
+		:param message: The message text.
+		:param title: A header for the message.
+		"""
+
+	@abc.abstractmethod
+	def debug(self, message, title="Debug"):
+		"""
+		.. function:: debug(message[, title])
+		Logs a new debug message.
+
+		:param message: The message text.
+		:param title: A header for the message.
+		"""
+
+	@abc.abstractmethod
+	def error(self, message, title="Error"):
+		"""
+		.. function:: error(message[, title])
+		Logs a new error message.
+
+		:param message: The message text.
+		:param title: A header for the message.
+		"""
+
+	@abc.abstractmethod
+	def info(self, message, title="Info"):
+		"""
+		.. function:: info(message[, title])
+		Logs a new information message.
+		:param message:
+		:param title:
+		:return:
+		"""
+
+	@abc.abstractmethod
+	def set_levels(self, levels):
+		"""
+		.. function:: set_levels(levels)
+		Changes which log levels are logged.
+
+		After this function is called, the log should only acquire messages with
+		a log level that is in the list of levels passed to this function.
+
+		:param levels: A container of log levels that will be logged.
+		"""
+
+	@abc.abstractmethod
+	def warning(self, message, title="Warning"):
+		"""
+		.. function:: warning(message[, title])
+		Logs a new warning message.
+
+		:param message: The message text.
+		:param title: A header for the message.
+		"""
