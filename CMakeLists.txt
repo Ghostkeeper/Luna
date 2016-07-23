@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(Luna)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 #Dependencies.
 find_package(PythonInterp 3.4.0 REQUIRED)
@@ -37,3 +38,12 @@ if(BUILD_TESTING)
 	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${python_files})
 	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
 endif(BUILD_TESTING)
+
+#Documentation
+option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
+if(BUILD_DOCUMENTATION)
+	find_package(Sphinx REQUIRED)
+	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/documentation")
+	configure_file("${CMAKE_SOURCE_DIR}/sphinx_configuration.py.in" "${CMAKE_BINARY_DIR}/sphinx_configuration.py" @ONLY)
+	add_custom_target(documentation ALL ${SPHINX_EXECUTABLE} -n "${CMAKE_SOURCE_DIR}" "${DOCUMENTATION_OUTPUT_DIR}" COMMENT "Generate technical documentation of the application.")
+endif(BUILD_DOCUMENTATION)
