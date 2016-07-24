@@ -34,6 +34,10 @@ import enum #To define the logging importance levels.
 import loggertype.loggerregistrar #To get the logger plug-ins to log with.
 
 class Log:
+	"""
+	An API for logging messages.
+	"""
+
 	class Level(enum.Enum):
 		"""
 		Enumerates the logging importance levels.
