@@ -43,7 +43,7 @@ def join(user_interface):
 	"""
 	user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
 	if not user_interface_object:
-		luna.plugins.api("logger").warning("There is no user interface {plugin} to join with.", plugin=user_interface)
+		luna.plugins.api("logger").warning("There is no user interface \"{plugin}\" to join with.", plugin=user_interface)
 		return
 	user_interface_object.join()
 
@@ -59,11 +59,11 @@ def start(user_interface):
 	:param user_interface: The plug-in identity of a user interface to run.
 	"""
 	if user_interface in __running:
-		luna.plugins.api("logger").warning("User interface {plugin} was already ran.", plugin=user_interface)
+		luna.plugins.api("logger").warning("User interface \"{plugin}\" was already ran.", plugin=user_interface)
 		return
 	user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
 	if not user_interface_object:
-		luna.plugins.api("logger").warning("There is no user interface {plugin} to launch.", plugin=user_interface)
+		luna.plugins.api("logger").warning("There is no user interface \"{plugin}\" to launch.", plugin=user_interface)
 		return
 
 	#Checks complete. Run the interface.
