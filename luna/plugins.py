@@ -272,9 +272,9 @@ def __load_candidate(identity, folder):
 		file, path, description = imp.find_module(identity, [folder])
 	except Exception as e:
 		try:
-			api("logger").warning("Failed to find module of plug-in in {plugin}: {message}", plugin=folder, error_message=str(e))
+			api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=folder, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			print("Failed to find module of plug-in in {plugin}: {message}".format(plugin=folder, message=str(e)))
+			print("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=folder, error_message=str(e)))
 		return None
 	try:
 		module = imp.load_module(identity, file, path, description)
@@ -282,7 +282,7 @@ def __load_candidate(identity, folder):
 		try:
 			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			print("Failed to load plug-in {plugin}: {message}".format(plugin=identity, message=str(e)))
+			print("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 		return None
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
