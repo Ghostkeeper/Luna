@@ -31,60 +31,49 @@ This allows for launching and stopping user interfaces.
 import userinterfacetype.userinterfaceregistrar #To get the user interface plug-ins.
 import luna.plugins #To log messages.
 
-class UserInterface:
+__running = set() #Set of user interfaces that have run.
+
+def join(user_interface):
 	"""
-	An API for managing the user interfaces.
+	.. function:: join(user_interface)
+	Blocks the current thread until the specified user interface has
+	stopped.
+
+	:param user_interface: The user interface to wait for.
 	"""
+	user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
+	if not user_interface_object:
+		luna.plugins.api("logger").warning("There is no user interface {plugin} to join with.", plugin=user_interface)
+		return
+	user_interface_object.join()
 
-	def __init__(self):
-		"""
-		.. function:: UserInterface()
-		Creates the API object that interfaces with user interfaces.
-		"""
-		super().__init__()
-		self.__running = set() #Set of user interfaces that have run.
+def start(user_interface):
+	"""
+	.. function:: start(user_interface)
+	Launches a new instance of the specified user interface.
 
-	def join(self, user_interface):
-		"""
-		.. function:: join(user_interface)
-		Blocks the current thread until the specified user interface has
-		stopped.
+	Only one instance of a specific plug-in may be run at the same time.
+	Starting the same interface again will have no effect, even if the user
+	interface has already stopped in the meanwhile.
 
-		:param user_interface: The user interface to wait for.
-		"""
-		user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
-		if not user_interface_object:
-			luna.plugins.api("logger").warning("There is no user interface {plugin} to join with.", plugin=user_interface)
-			return
-		user_interface_object.join()
+	:param user_interface: The plug-in identity of a user interface to run.
+	"""
+	if user_interface in __running:
+		luna.plugins.api("logger").warning("User interface {plugin} was already ran.", plugin=user_interface)
+		return
+	user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
+	if not user_interface_object:
+		luna.plugins.api("logger").warning("There is no user interface {plugin} to launch.", plugin=user_interface)
+		return
 
-	def start(self, user_interface):
-		"""
-		.. function:: start(user_interface)
-		Launches a new instance of the specified user interface.
+	#Checks complete. Run the interface.
+	__running.add(user_interface)
+	user_interface_object.start()
 
-		Only one instance of a specific plug-in may be run at the same time.
-		Starting the same interface again will have no effect, even if the user
-		interface has already stopped in the meanwhile.
-
-		:param user_interface: The plug-in identity of a user interface to run.
-		"""
-		if user_interface in self.__running:
-			luna.plugins.api("logger").warning("User interface {plugin} was already ran.", plugin=user_interface)
-			return
-		user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
-		if not user_interface_object:
-			luna.plugins.api("logger").warning("There is no user interface {plugin} to launch.", plugin=user_interface)
-			return
-
-		#Checks complete. Run the interface.
-		self.__running.add(user_interface)
-		user_interface_object.start()
-
-	def stop_all(self):
-		"""
-		.. function:: stop_all()
-		Stops all user interfaces that are still running.
-		"""
-		for user_interface_object in userinterfacetype.userinterfaceregistrar.get_all_user_interfaces():
-			user_interface_object.stop()
+def stop_all():
+	"""
+	.. function:: stop_all()
+	Stops all user interfaces that are still running.
+	"""
+	for user_interface_object in userinterfacetype.userinterfaceregistrar.get_all_user_interfaces():
+		user_interface_object.stop()

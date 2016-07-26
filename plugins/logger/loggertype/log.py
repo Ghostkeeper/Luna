@@ -33,168 +33,157 @@ import enum #To define the logging importance levels.
 
 import loggertype.loggerregistrar #To get the logger plug-ins to log with.
 
-class Log:
+class Level(enum.Enum):
 	"""
-	An API for logging messages.
+	Enumerates the logging importance levels.
 	"""
 
-	class Level(enum.Enum):
-		"""
-		Enumerates the logging importance levels.
-		"""
+	ERROR = 1
+	"""
+	For logging fatal errors that will crash the program.
+	"""
 
-		ERROR = 1
-		"""
-		For logging fatal errors that will crash the program.
-		"""
+	CRITICAL = 2
+	"""
+	For logging fatal errors that will crash the current operation.
+	"""
 
-		CRITICAL = 2
-		"""
-		For logging fatal errors that will crash the current operation.
-		"""
+	WARNING = 3
+	"""
+	For logging events that are probably not going the way the user
+	intended.
+	"""
 
-		WARNING = 3
-		"""
-		For logging events that are probably not going the way the user
-		intended.
-		"""
+	INFO = 4
+	"""
+	For logging events.
 
-		INFO = 4
-		"""
-		For logging events.
+	At least all events that got initiated from an external source must be
+	logged with this level, such as user input.
+	"""
 
-		At least all events that got initiated from an external source must be
-		logged with this level, such as user input.
-		"""
+	DEBUG = 5
+	"""
+	Information that might be useful for a debugger to know.
+	"""
 
-		DEBUG = 5
-		"""
-		Information that might be useful for a debugger to know.
-		"""
+def critical(message, title="Critical", **kwargs):
+	"""
+	.. function:: critical(message[, title][, key=value]*)
+	Logs a new critical message with all loggers.
 
-	@staticmethod
-	def critical(message, title="Critical", **kwargs):
-		"""
-		.. function:: critical(message[, title][, key=value]*)
-		Logs a new critical message with all loggers.
+	:param message: The message of the log entry.
+	:param title: A title for the entry.
+	:param kwargs: Key-word arguments. These are inserted in the message
+		body. The value of a key-word argument will be put in place of the
+		key surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
+	"""
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
+	loggers = loggertype.loggerregistrar.get_all_loggers()
+	for logger in loggers:
+		logger.critical(substituted, title)
+	if not loggers: #There are no loggers.
+		print(title + ": " + substituted)
 
-		:param message: The message of the log entry.
-		:param title: A title for the entry.
-		:param kwargs: Key-word arguments. These are inserted in the message
-			body. The value of a key-word argument will be put in place of the
-			key surrounded by brackets. See the Python documentation for
-			``str.format`` for more details.
-		"""
-		substituted = message.format(**kwargs) #Substitute all arguments into the message.
-		loggers = loggertype.loggerregistrar.get_all_loggers()
-		for logger in loggers:
-			logger.critical(substituted, title)
-		if not loggers: #There are no loggers.
-			print(title + ": " + substituted)
+def debug(message, title="Debug", **kwargs):
+	"""
+	.. function:: debug(message[, title][, key=value]*)
+	Logs a new debug message with all loggers.
 
-	@staticmethod
-	def debug(message, title="Debug", **kwargs):
-		"""
-		.. function:: debug(message[, title][, key=value]*)
-		Logs a new debug message with all loggers.
+	:param message: The message of the log entry.
+	:param title: A title for the entry.
+	:param kwargs: Key-word arguments. These are inserted in the message
+		body. The value of a key-word argument will be put in place of the
+		key surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
+	"""
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
+	loggers = loggertype.loggerregistrar.get_all_loggers()
+	for logger in loggers:
+		logger.debug(substituted, title)
+	if not loggers: #There are no loggers.
+		print(title + ": " + substituted)
 
-		:param message: The message of the log entry.
-		:param title: A title for the entry.
-		:param kwargs: Key-word arguments. These are inserted in the message
-			body. The value of a key-word argument will be put in place of the
-			key surrounded by brackets. See the Python documentation for
-			``str.format`` for more details.
-		"""
-		substituted = message.format(**kwargs) #Substitute all arguments into the message.
-		loggers = loggertype.loggerregistrar.get_all_loggers()
-		for logger in loggers:
-			logger.debug(substituted, title)
-		if not loggers: #There are no loggers.
-			print(title + ": " + substituted)
+def error(message, title="Error", **kwargs):
+	"""
+	.. function:: error(message[, title][, key=value]*)
+	Logs a new error message with all loggers.
 
-	@staticmethod
-	def error(message, title="Error", **kwargs):
-		"""
-		.. function:: error(message[, title][, key=value]*)
-		Logs a new error message with all loggers.
+	:param message: The message of the log entry.
+	:param title: A title for the entry.
+	:param kwargs: Key-word arguments. These are inserted in the message
+		body. The value of a key-word argument will be put in place of the
+		key surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
+	"""
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
+	loggers = loggertype.loggerregistrar.get_all_loggers()
+	for logger in loggers:
+		logger.error(substituted, title)
+	if not loggers: #There are no loggers.
+		print(title + ": " + substituted)
 
-		:param message: The message of the log entry.
-		:param title: A title for the entry.
-		:param kwargs: Key-word arguments. These are inserted in the message
-			body. The value of a key-word argument will be put in place of the
-			key surrounded by brackets. See the Python documentation for
-			``str.format`` for more details.
-		"""
-		substituted = message.format(**kwargs) #Substitute all arguments into the message.
-		loggers = loggertype.loggerregistrar.get_all_loggers()
-		for logger in loggers:
-			logger.error(substituted, title)
-		if not loggers: #There are no loggers.
-			print(title + ": " + substituted)
+def info(message, title="Info", **kwargs):
+	"""
+	.. function:: info(message[, title][, key=value]*)
+	Logs a new information message with all loggers.
 
-	@staticmethod
-	def info(message, title="Info", **kwargs):
-		"""
-		.. function:: info(message[, title][, key=value]*)
-		Logs a new information message with all loggers.
+	:param message: The message of the log entry.
+	:param title: A title for the entry.
+	:param kwargs: Key-word arguments. These are inserted in the message
+		body. The value of a key-word argument will be put in place of the
+		key surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
+	"""
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
+	loggers = loggertype.loggerregistrar.get_all_loggers()
+	for logger in loggers:
+		logger.info(substituted, title)
+	if not loggers: #There are no loggers.
+		print(title + ": " + substituted)
 
-		:param message: The message of the log entry.
-		:param title: A title for the entry.
-		:param kwargs: Key-word arguments. These are inserted in the message
-			body. The value of a key-word argument will be put in place of the
-			key surrounded by brackets. See the Python documentation for
-			``str.format`` for more details.
-		"""
-		substituted = message.format(**kwargs) #Substitute all arguments into the message.
-		loggers = loggertype.loggerregistrar.get_all_loggers()
-		for logger in loggers:
-			logger.info(substituted, title)
-		if not loggers: #There are no loggers.
-			print(title + ": " + substituted)
+def set_log_levels(levels, logger_name=None):
+	"""
+	.. function:: setLogLevels(levels[, loggerName])
+	Sets the log levels that are logged by the loggers.
 
-	@staticmethod
-	def set_log_levels(levels, logger_name=None):
-		"""
-		.. function:: setLogLevels(levels[, loggerName])
-		Sets the log levels that are logged by the loggers.
+	The logger(s) will only acquire log messages with importance levels that
+	are in the list specified by the last call to this function.
 
-		The logger(s) will only acquire log messages with importance levels that
-		are in the list specified by the last call to this function.
+	If given a logger name, the log levels are only set for the specified
+	logger. If not given a name, the log levels are set for all loggers.
 
-		If given a logger name, the log levels are only set for the specified
-		logger. If not given a name, the log levels are set for all loggers.
-
-		:param levels: A list of log levels that the logger(s) will log.
-		:param logger_name: The identifier of a logger plug-in if setting the
-			levels for a specific logger, or None if setting the levels for all
-			loggers.
-		"""
-		if logger_name: #If given a specific logger name, set the log levels only for that logger.
-			logger = luna.plugins.get_logger(logger_name)
-			if not logger:
-				warning("Logger {name} doesn't exist.", name=logger_name)
-				return
+	:param levels: A list of log levels that the logger(s) will log.
+	:param logger_name: The identifier of a logger plug-in if setting the
+		levels for a specific logger, or None if setting the levels for all
+		loggers.
+	"""
+	if logger_name: #If given a specific logger name, set the log levels only for that logger.
+		logger = luna.plugins.get_logger(logger_name)
+		if not logger:
+			warning("Logger {name} doesn't exist.", name=logger_name)
+			return
+		logger.set_levels(levels)
+	else: #If not given any specific logger name, set the log levels for all loggers.
+		for logger in loggertype.loggerregistrar.get_all_loggers():
 			logger.set_levels(levels)
-		else: #If not given any specific logger name, set the log levels for all loggers.
-			for logger in loggertype.loggerregistrar.get_all_loggers():
-				logger.set_levels(levels)
 
-	@staticmethod
-	def warning(message, title="Warning", **kwargs):
-		"""
-		.. function:: warning(message[, title][, key=value]*)
-		Logs a new warning message with all loggers.
+def warning(message, title="Warning", **kwargs):
+	"""
+	.. function:: warning(message[, title][, key=value]*)
+	Logs a new warning message with all loggers.
 
-		:param message: The message of the log entry.
-		:param title: A title for the entry.
-		:param kwargs: Key-word arguments. These are inserted in the message
-			body. The value of a key-word argument will be put in place of the
-			key surrounded by brackets. See the Python documentation for
-			``str.format`` for more details.
-		"""
-		substituted = message.format(**kwargs) #Substitute all arguments into the message.
-		loggers = loggertype.loggerregistrar.get_all_loggers()
-		for logger in loggers:
-			logger.warning(substituted, title)
-		if not loggers: #There are no loggers.
-			print(title + ": " + substituted)
+	:param message: The message of the log entry.
+	:param title: A title for the entry.
+	:param kwargs: Key-word arguments. These are inserted in the message
+		body. The value of a key-word argument will be put in place of the
+		key surrounded by brackets. See the Python documentation for
+		``str.format`` for more details.
+	"""
+	substituted = message.format(**kwargs) #Substitute all arguments into the message.
+	loggers = loggertype.loggerregistrar.get_all_loggers()
+	for logger in loggers:
+		logger.warning(substituted, title)
+	if not loggers: #There are no loggers.
+		print(title + ": " + substituted)

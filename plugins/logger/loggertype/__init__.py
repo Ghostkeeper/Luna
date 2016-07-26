@@ -52,7 +52,7 @@ def metadata():
 
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "logger",
-			"api": loggertype.log.Log,
+			"api": loggertype.log,
 			"interface": loggertype.logger.Logger,
 			"register": loggertype.loggerregistrar.register,
 			"validate_metadata": loggertype.loggerregistrar.validate_metadata
