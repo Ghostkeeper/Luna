@@ -63,14 +63,10 @@ class Luna:
 		if len(sys.argv) >= 2:
 			user_interface_name = sys.argv[1]
 		try:
-			if not luna.plugins.api("userinterface").exists(user_interface_name):
-				logger.error("Could not load the user interface {userinterface}. Aborting.", userinterface=user_interface_name)
-				return False
+			luna.plugins.api("userinterface").start(user_interface_name)
+			luna.plugins.api("userinterface").join(user_interface_name)
 		except ImportError:
 			logger.error("Could not load the user interface plug-in type. Aborting.")
-			return False
-		luna.plugins.api("userinterface").start(user_interface_name)
-		luna.plugins.api("userinterface").join(user_interface_name)
 		return True #Success.
 
 #Launches Luna if called from the command line.
