@@ -164,9 +164,6 @@ def set_levels(levels, identity=None):
 		a specific logger, or None if setting the levels for all loggers.
 	"""
 	if identity: #If given a specific logger identity, set the log levels only for that logger.
-		if identity not in __logger_levels:
-			warning("Logger {identity} doesn't exist.", identity=identity)
-			return
 		__logger_levels[identity] = levels
 	else: #If not given any specific logger name, set the log levels for all loggers.
 		for logger in __logger_levels:
