@@ -29,8 +29,22 @@ Logger plug-ins need to register here. Their implementations are stored and may
 be called upon to log something.
 """
 
+import collections #For namedtuple.
+
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
-import loggertype.logger #To check if a logger implements the logger interface.
+
+__Logger = collections.namedtuple("__Logger", "critical debug error info set_levels warning")
+"""
+Represents a logger plug-in.
+
+This named tuple has one field for every function in the logger:
+* critical: The function to log critical messages with.
+* debug: The function to log debug messages with.
+* error: The function to log error messages with.
+* info: The function to log information messages with.
+* set_levels: The function to set which types of messages should be reported.
+* warning: The function to log warning messages with.
+"""
 
 __loggers = {}
 """
@@ -59,7 +73,14 @@ def register(identity, metadata):
 	if identity in __loggers:
 		luna.plugins.api("logger").warning("Logger {logger} is already registered.", logger=identity)
 		return
-	__loggers[identity] = metadata["logger"]["implementation"]()
+	__loggers[identity] = __Logger( #Put all logger functions in a named tuple for easier access.
+		critical=metadata["logger"]["critical"],
+		debug=metadata["logger"]["debug"],
+		error=metadata["logger"]["error"],
+		info=metadata["logger"]["info"],
+		set_levels=metadata["logger"]["set_levels"],
+		warning=metadata["logger"]["warning"]
+	)
 
 def validate_metadata(metadata):
 	"""
@@ -75,11 +96,12 @@ def validate_metadata(metadata):
 	"""
 	if "logger" not in metadata:
 		raise luna.plugins.MetadataValidationError("This is not a logger plug-in.")
-	required_fields = {"implementation"}
+	required_functions = {"critical", "debug", "error", "info", "set_levels", "warning"}
 	try:
-		if not required_fields <= metadata["logger"].keys():
+		if not required_functions <= metadata["logger"].keys(): #All functions must be present.
 			raise luna.plugins.MetadataValidationError("The logger specifies no implementation.")
-		if not issubclass(metadata["logger"]["implementation"], loggertype.logger.Logger):
-			raise luna.plugins.MetadataValidationError("The logger interface is not implemented.")
+		for function_name in required_functions:
+			if not hasattr(metadata["logger"][function_name], "__call__"): #Each must be a callable object (such as a function).
+				raise luna.plugins.MetadataValidationError("The {function_name} metadata is not callable.".format(function_name=function_name))
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The logger metadata is not a dictionary.")
