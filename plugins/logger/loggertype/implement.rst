@@ -2,14 +2,14 @@
 Implementing logger plug-ins
 ============================
 
-A logger plug-in represents one way to output log messages. Adding more loggers causes logs to be output to multiple places simultaneously. Each logger can set their log levels individually though, so one could specify a file logger to output all types of messages while a log that's shown to the user could show only errors and warnings.
+This document gives instruction on how to implement a logger plug-in. A logger plug-in represents one way to output log messages. Adding more loggers causes logs to be output to multiple places simultaneously.
 
-The logger plug-in provides a way to change the levels that it needs to log and a way to log messages with that level.
+To implement a logger plug-in, one needs to implement all functions listed below in `Function implementation`_. The metadata then needs to include an entry for each of these functions, with as key the function name and as value the function itself.
 
 ----------
 Log levels
 ----------
-There are a number of log levels that a logger plug-in should support. They each represent a certain severity. This implies an order (from severe to unimportant), but this order is only semantic and needs not be retained. For instance, a plug-in may be set to log only errors and information but not critical messages and warnings. The plug-in should support this.
+There are a number of log levels that a logger plug-in should support. They each represent a certain severity. This implies an order (from severe to unimportant), but this order is only semantic and needs not be retained. For instance, a plug-in may be set to log only errors and information but not critical messages and warnings. The plug-in doesn't need to implement this filtering itself. This is done by the API, so only levels that are set to be logged by your logger are called by the API.
 
 The log levels that are available are:
 - Error, for events that prevent the entire program from properly functioning.
@@ -18,12 +18,12 @@ The log levels that are available are:
 - Information, indicating an event that was initiated on purpose by an external force such as the user.
 - Debug, giving detailed information on what is happening inside the application.
 
-A plug-in may define for itself which log levels are output by default, before the ``set_levels`` function is called.
+The logger may display these messages differently depending on the log level, such as with colour coding.
 
------------------------
-Function implementation
------------------------
-These are the functions that need to be implemented by a plug-in. All of these functions need to be in the metadata of the plug-in, indicated by the function name.
+----------------------
+Required functionality
+----------------------
+These are the functions that need to be implemented by a logger plug-in. All of these functions must be in the metadata of the plug-in, indexed by the function name.
 
 ::
 
@@ -63,15 +63,6 @@ Logs an information message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
-
-----
-::
-
-	set_levels(levels)
-
-Changes the levels that the logger should output. This may cause the logger to output nothing for certain message types even if the log function is called. The logger may opt to include a placeholder instead to indicate that something is hidden.
-
-- ``levels``: A collection of levels that need to be logged. Levels not in this collection should not be logged. This must be a collection of ``log.Levels`` (see the API).
 
 ----
 ::
