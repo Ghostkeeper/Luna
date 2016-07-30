@@ -47,6 +47,10 @@ def metadata():
 		},
 
 		"logger": {
-			"implementation": standardout.standard_out.StandardOut
-		},
+			"critical": standardout.standard_out.critical,
+			"debug": standardout.standard_out.debug,
+			"error": standardout.standard_out.error,
+			"info": standardout.standard_out.info,
+			"warning": standardout.standard_out.warning
+		}
 	}
