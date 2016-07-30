@@ -148,9 +148,9 @@ def info(message, title="Info", **kwargs):
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
 
-def set_log_levels(levels, identity=None):
+def set_levels(levels, identity=None):
 	"""
-	.. function:: setLogLevels(levels[, identity])
+	.. function:: set_levels(levels[, identity])
 	Sets the log levels that are logged by the loggers.
 
 	The logger(s) will only acquire log messages with severity levels that are
