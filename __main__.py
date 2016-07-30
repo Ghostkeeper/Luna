@@ -57,7 +57,7 @@ class Luna:
 		luna.plugins.add_plugin_location(os.path.join(base_dir, "plugins"))
 		luna.plugins.discover()
 		logger = luna.plugins.api("logger")
-		logger.set_log_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
+		logger.set_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
 
 		user_interface_name = self.DEFAULT_USER_INTERFACE
 		if len(sys.argv) >= 2:
