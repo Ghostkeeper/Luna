@@ -61,13 +61,12 @@ This is a named tuple consisting of the following fields:
 * dependencies: A list of plug-in identities on which this plug-in depends.
 """
 
-__PluginType = collections.namedtuple("__PluginType", "api interface register validate_metadata")
+__PluginType = collections.namedtuple("__PluginType", "api register validate_metadata")
 """
 Represents a plug-in type plug-in.
 
 This is a named tuple consisting of the following fields:
 * api: The class that provides the API for the plug-ins of this type.
-* interface: The interface that plug-ins of this type must implement.
 * register: The function that plug-ins of this type must register with.
 * validate_metadata: The function that verifies that the metadata is valid for
 this type.
@@ -160,7 +159,7 @@ def discover():
 				except ImportError: #Logger type hasn't loaded yet.
 					print("Metadata of type plug-in {plugin} is invalid: {message}".format(plugin=identity, message=str(e)))
 				continue
-			plugin_type = __PluginType(api=metadata["type"]["api"], interface=metadata["type"]["interface"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
+			plugin_type = __PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
 			__plugin_types[metadata["type"]["type_name"]] = plugin_type
 
 		unvalidated_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
@@ -173,7 +172,7 @@ def discover():
 				__plugin_types[candidate_type].validate_metadata(candidate.metadata)
 			except Exception as e:
 				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
-				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't properly implement their interfaces.
+				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't have valid metadata.
 		else: #All types got validated properly.
 			unresolved_candidates.append(candidate) #Goes on to the third stage.
 
@@ -209,21 +208,6 @@ def discover():
 					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
-
-def interface(plugin_type):
-	"""
-	.. function:: interface(plugin_type)
-	Gets the interface that plug-ins of the specified type must implement.
-
-	Note that this returns a class, not an instantiation of the class.
-
-	:param plugin_type: The plug-in type to get the interface of.
-	:return: The interface of the specified plug-in type as a class.
-	:raises ImportError: The specified plug-in type is unknown.
-	"""
-	if plugin_type not in __plugin_types:
-		raise ImportError("No interface known for \"{type}\".".format(type=plugin_type))
-	return __plugin_types[plugin_type].interface
 
 def __find_candidates():
 	"""
@@ -330,11 +314,9 @@ def __validate_metadata_type(metadata):
 	if "type" not in metadata:
 		raise MetadataValidationError("This is not a plug-in type plug-in.")
 	try:
-		required_fields = {"type_name", "api", "interface", "register", "validate_metadata"}
+		required_fields = {"type_name", "api", "register", "validate_metadata"}
 		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
-		if not "_abc_registry" in dir(metadata["type"]["interface"]):
-			raise MetadataValidationError("The interface must be an abstract base class.")
 		if not callable(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
 		if metadata["type"]["register"].__code__.co_argcount != 2:
