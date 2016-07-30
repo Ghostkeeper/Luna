@@ -138,26 +138,26 @@ def discover():
 			metadata = module.metadata()
 		except Exception as e:
 			try:
-				api("logger").warning("Failed to load metadata of plug-in {plugin}: {message}", plugin=identity, message=str(e))
+				api("logger").warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				print("Failed to load metadata of plug-in {plugin}: {message}".format(plugin=identity, message=str(e)))
+				print("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
 		try:
 			__validate_metadata_global(metadata)
 		except MetadataValidationError as e:
 			try:
-				api("logger").warning("Metadata of plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				print("Metadata of plug-in {plugin} is invalid: {message}".format(plugin=identity, message=str(e)))
+				print("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
 				__validate_metadata_type(metadata)
 			except MetadataValidationError as e:
 				try:
-					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {message}", plugin=identity, message=str(e))
+					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
 				except ImportError: #Logger type hasn't loaded yet.
-					print("Metadata of type plug-in {plugin} is invalid: {message}".format(plugin=identity, message=str(e)))
+					print("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 				continue
 			plugin_type = __PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
 			__plugin_types[metadata["type"]["type_name"]] = plugin_type
@@ -205,7 +205,7 @@ def discover():
 				try:
 					__plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
 				except Exception as e:
-					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {message}", candidate=candidate.identity, type=candidate_type, message=str(e))
+					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
