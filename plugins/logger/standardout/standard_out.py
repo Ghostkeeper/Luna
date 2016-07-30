@@ -53,7 +53,7 @@ def critical(message, title="Critical"):
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	formatted += message
-	self.__colour_print(formatted, "magenta")
+	__colour_print(formatted, "magenta")
 
 def debug(message, title="Debug"):
 	"""
@@ -67,7 +67,7 @@ def debug(message, title="Debug"):
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	formatted += message
-	self.__colour_print(formatted, "blue")
+	__colour_print(formatted, "blue")
 
 def error(message, title="Error"):
 	"""
@@ -81,7 +81,7 @@ def error(message, title="Error"):
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	formatted += message
-	self.__colour_print(formatted, "red")
+	__colour_print(formatted, "red")
 
 def info(message, title="Information"):
 	"""
@@ -95,7 +95,7 @@ def info(message, title="Information"):
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	formatted += message
-	self.__colour_print(formatted, "green")
+	__colour_print(formatted, "green")
 
 def warning(message, title="Warning"):
 	"""
@@ -109,7 +109,7 @@ def warning(message, title="Warning"):
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	formatted += message
-	self.__colour_print(formatted, "yellow")
+	__colour_print(formatted, "yellow")
 
 def __colour_print(message, colour="default"):
 	"""
@@ -133,21 +133,21 @@ def __colour_print(message, colour="default"):
 	"""
 	if __has_win_kernel:
 		buffer_state = buffer_info.BufferInfo()
-		windll.kernel32.GetConsoleScreenBufferInfo(self.__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
+		windll.kernel32.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
 
 		if colour == "red":
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 12)
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 12)
 		elif colour == "yellow":
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 14)
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 14)
 		elif colour == "green":
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 10)
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 10)
 		elif colour == "blue":
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 9)
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 9)
 		elif colour == "magenta":
-			windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, 13)
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 13)
 		#Else, don't set the colour (so it stays default).
 		print(message)
-		windll.kernel32.SetConsoleTextAttribute(self.__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+		windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
 	else: #Hope we have an ANSI-enabled console.
 		if colour == "red":
 			ansi_colour = "\033[38m"
