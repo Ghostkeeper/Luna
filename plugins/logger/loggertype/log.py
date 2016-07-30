@@ -105,8 +105,8 @@ def debug(message, title="Debug", **kwargs):
 	for logger in loggers:
 		if Level.DEBUG in __logger_levels[logger]:
 			loggers[logger].debug(substituted, title)
-	if not loggers: #There are no loggers.
-		print(title + ": " + substituted)
+	#Since debug log messages aren't activated by default, there is no fallback for this level.
+	#The fallback doesn't have this level set by default and there is no way to set it.
 
 def error(message, title="Error", **kwargs):
 	"""
