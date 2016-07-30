@@ -18,6 +18,8 @@ The log levels that are available are:
 - Information, indicating an event that was initiated on purpose by an external force such as the user.
 - Debug, giving detailed information on what is happening inside the application.
 
+A plug-in may define for itself which log levels are output by default, before the ``set_levels`` function is called.
+
 -----------------------
 Function implementation
 -----------------------
