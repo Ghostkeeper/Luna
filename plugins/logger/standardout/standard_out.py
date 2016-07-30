@@ -41,7 +41,7 @@ if __has_win_kernel: #We're on Windows Bash.
 	__standard_out_handle = windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 	__default_console_attributes = windll.kernel32.GetConsoleScreenBufferInfo(-11)
 
-def critical(self, message, title="Critical"):
+def critical(message, title="Critical"):
 	"""
 	.. function:: critical(message[, title])
 	Logs a new critical message.
@@ -55,7 +55,7 @@ def critical(self, message, title="Critical"):
 	formatted += message
 	self.__colour_print(formatted, "magenta")
 
-def debug(self, message, title="Debug"):
+def debug(message, title="Debug"):
 	"""
 	.. function:: debug(message[, title])
 	Logs a new debug message.
@@ -69,7 +69,7 @@ def debug(self, message, title="Debug"):
 	formatted += message
 	self.__colour_print(formatted, "blue")
 
-def error(self, message, title="Error"):
+def error(message, title="Error"):
 	"""
 	.. function:: error(message[, title])
 	Logs a new error message.
@@ -83,7 +83,7 @@ def error(self, message, title="Error"):
 	formatted += message
 	self.__colour_print(formatted, "red")
 
-def info(self, message, title="Information"):
+def info(message, title="Information"):
 	"""
 	.. function:: info(message[, title])
 	Logs a new information message.
@@ -97,7 +97,7 @@ def info(self, message, title="Information"):
 	formatted += message
 	self.__colour_print(formatted, "green")
 
-def warning(self, message, title="Warning"):
+def warning(message, title="Warning"):
 	"""
 	.. function:: warning(message[, title])
 	Logs a new warning message.
@@ -111,7 +111,7 @@ def warning(self, message, title="Warning"):
 	formatted += message
 	self.__colour_print(formatted, "yellow")
 
-def __colour_print(self, message, colour="default"):
+def __colour_print(message, colour="default"):
 	"""
 	.. function:: __colour_print(message, colour)
 	Prints a message with specified colour-coding.
