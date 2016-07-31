@@ -28,13 +28,14 @@ Implements the logger plug-in interface.
 
 import ctypes #For printing in colour on Windows machines.
 import datetime #For putting timestamps alongside each message.
+
+import standardout.buffer_info #To store the state of the console on Windows.
+
+#Set up the default state of the Windows StdOut handle.
 try:
 	__win_kernel = ctypes.WinDLL("kernel32")
 except OSError:
 	__win_kernel = None
-from . import buffer_info #To store the state of the console on Windows.
-
-#Set up the default state of the Windows StdOut handle.
 if __win_kernel: #We're on Windows Bash.
 	__standard_out_handle = __win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 	__default_console_attributes = __win_kernel.GetConsoleScreenBufferInfo(-11)
@@ -160,7 +161,7 @@ def __colour_print(message, colour="default"):
 	supported, the default colour is used.
 	"""
 	if __win_kernel:
-		buffer_state = buffer_info.BufferInfo()
+		buffer_state = standardout.buffer_info.BufferInfo()
 		__win_kernel.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
 
 		if colour in __win_colour_codes:
