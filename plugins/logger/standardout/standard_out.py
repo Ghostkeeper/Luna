@@ -39,6 +39,18 @@ except OSError:
 if _win_kernel: #We're on Windows Bash.
 	_standard_out_handle = _win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
 	_default_console_attributes = _win_kernel.GetConsoleScreenBufferInfo(-11)
+	#Test whether changing the colour actually works.
+	original_buffer_state = standardout.buffer_info.BufferInfo()
+	_win_kernel.GetConsoleScreenBufferInfo(_standard_out_handle, ctypes.byref(original_buffer_state))
+	_win_kernel.SetConsoleTextAttribute(_standard_out_handle, 1) #Change to dark blue so we know it's not equal to the user's preferred state.
+	pre_buffer_state = standardout.buffer_info.BufferInfo()
+	_win_kernel.GetConsoleScreenBufferInfo(_standard_out_handle, ctypes.byref(pre_buffer_state))
+	_win_kernel.SetConsoleTextAttribute(_standard_out_handle, 4) #Change to dark red.
+	post_buffer_state = standardout.buffer_info.BufferInfo()
+	_win_kernel.GetConsoleScreenBufferInfo(_standard_out_handle, ctypes.byref(post_buffer_state))
+	_win_kernel.SetConsoleTextAttribute(_standard_out_handle, original_buffer_state.wAttributes) #Change back to user's preference.
+	if pre_buffer_state.wAttributes == post_buffer_state.wAttributes: #Didn't change.
+		_win_kernel = None #We have the Windows kernel, but this terminal doesn't support changes to it. Fall back to ANSI.
 
 def critical(message, title="Critical"):
 	"""
