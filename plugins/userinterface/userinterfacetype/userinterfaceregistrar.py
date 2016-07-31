@@ -26,7 +26,7 @@
 Keeps track of all user interface plug-ins.
 
 User interface plug-ins need to register here. Their implementations are stored
-and may be called upon to start and communicate with the user interface.
+and may be called upon to start and communicate with the user.
 """
 
 import collections #For namedtuple.
