@@ -29,17 +29,15 @@ Implements the logger plug-in interface.
 import ctypes #For printing in colour on Windows machines.
 import datetime #For putting timestamps alongside each message.
 try:
-	from ctypes import windll #For access to Windows' console API to change the colours. Needs to use the from ... import syntax for some reason.
-	__has_win_kernel = True
-except ImportError:
-	windll = None
-	__has_win_kernel = False
+	__win_kernel = ctypes.WinDLL("kernel32")
+except OSError:
+	__win_kernel = None
 from . import buffer_info #To store the state of the console on Windows.
 
 #Set up the default state of the Windows StdOut handle.
-if __has_win_kernel: #We're on Windows Bash.
-	__standard_out_handle = windll.kernel32.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
-	__default_console_attributes = windll.kernel32.GetConsoleScreenBufferInfo(-11)
+if __win_kernel: #We're on Windows Bash.
+	__standard_out_handle = __win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
+	__default_console_attributes = __win_kernel.GetConsoleScreenBufferInfo(-11)
 
 def critical(message, title="Critical"):
 	"""
@@ -161,15 +159,15 @@ def __colour_print(message, colour="default"):
 	:param colour: The colour of the message to display. If the colour is not
 	supported, the default colour is used.
 	"""
-	if __has_win_kernel:
+	if __win_kernel:
 		buffer_state = buffer_info.BufferInfo()
-		windll.kernel32.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
+		__win_kernel.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
 
 		if colour in __win_colour_codes:
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, __win_colour_codes[colour]) #Set the colour of the terminal to the desired colour.
+			__win_kernel.SetConsoleTextAttribute(__standard_out_handle, __win_colour_codes[colour]) #Set the colour of the terminal to the desired colour.
 		#Else, don't set the colour (so it stays default).
 		print(message)
-		windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+		__win_kernel.SetConsoleTextAttribute(__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
 	else: #Hope we have an ANSI-enabled console.
 		if colour in __ansi_colour_codes:
 			print(__ansi_colour_codes[colour] + message + "\033[m") #Start code, then message, then revert to default colour.
