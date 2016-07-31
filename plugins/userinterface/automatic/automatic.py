@@ -28,8 +28,6 @@ Implements the user interface plug-in interface.
 
 import luna.plugins #To get the interface we must implement and access to the logging API.
 
-__instance = None #The instance of the currently running user interface.
-
 class Automatic():
 	"""
 	A user interface that allows no control by the user.
@@ -37,6 +35,15 @@ class Automatic():
 	This user interface is designed to work without any user input. It
 	automatically converts any files in the same folder it can to the output
 	files using the default settings.
+	"""
+
+	instance = None
+	"""
+	The instance of this user interface.
+
+	Only one instance of this interface can exist at a time, but it is not a
+	singleton. This instance gets recreated every time the interface is started,
+	in order to force the user interface to lose any state it may have kept.
 	"""
 
 	def __init__(self):
@@ -70,8 +77,8 @@ def start():
 
 	For this automatic user interface, this runs the entire program automatically.
 	"""
-	__instance = Automatic()
-	__instance.start()
+	Automatic.instance = Automatic()
+	Automatic.instance.start()
 
 def stop():
 	"""
