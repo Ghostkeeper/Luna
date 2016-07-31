@@ -7,6 +7,8 @@ An application typically starts one user interface and lets it run until it clos
 
 The user interface is intended to purely be a view and controller in the model-view-controller paradigm. It should therefore *hold no state*, or very little. Conceptually, any state being held by a user interface should be the kind of state that is particular to that specific instance of the user interface only and gets reset when the user interface is restarted. For instance, which file is opened should not be in the state of the user interface, since it is shared among all interfaces, and which menu items are expanded in a tree menu should also not be stored in the state of the user interface if this state is intended to be retained when the program restarts (i.e. it should be saved as a preference). An example of state that might be held by a user interface is which tooltips are visible.
 
+Only one instance of each user interface plug-in will get to run at the same time. The API will prevent calling your ``start`` function while the user interface is considered to be running (that is, between the last call to the ``start`` function and the ``join`` or ``stop`` function).
+
 To implement a user interface plug-in, one needs to implement all functions listed below in `Required functionality`_. The metadata then needs to include an entry for each of these functions, with as key the function name and as value the function itself.
 
 ---------
