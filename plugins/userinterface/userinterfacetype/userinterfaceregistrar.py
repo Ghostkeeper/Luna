@@ -29,10 +29,21 @@ User interface plug-ins need to register here. Their implementations are stored
 and may be called upon to start and communicate with the user interface.
 """
 
-import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
-import userinterfacetype.userinterfaceinterface #To check if a user interface implements the user interface interface.
+import collections #For namedtuple.
 
-__userinterfaces = {}
+import luna.plugins #To raise a MetadataValidationError if the metadata is invalid, and logging.
+
+__UserInterface = collections.namedtuple("__UserInterface", "join start stop")
+"""
+Represents a user interface plug-in.
+
+This named tuple has one field for every function in the user interface:
+* join: Blocks the current thread until the user interface terminates.
+* start: Starts the user interface.
+* stop: Interrupts the user interface.
+"""
+
+__user_interfaces = {}
 """
 The user interfaces that have been registered here so far, keyed by their
 identities.
@@ -43,9 +54,9 @@ def get_all_user_interfaces():
 	.. function:: get_all_user_interfaces()
 	Gets all user interfaces that have been registered here so far.
 
-	:return: A generator of user interfaces.
+	:return: A dictionary of user interfaces, keyed by their identities.
 	"""
-	return __userinterfaces.values()
+	return __user_interfaces
 
 def get_user_interface(identity):
 	"""
@@ -56,6 +67,9 @@ def get_user_interface(identity):
 	:return: The user interface with the specified identity, or None if no user
 		interface with the specified identity exists.
 	"""
+	if identity not in __user_interfaces:
+		return None
+	return __user_interfaces[identity]
 
 def register(identity, metadata):
 	"""
@@ -68,9 +82,14 @@ def register(identity, metadata):
 	:param identity: The identity of the plug-in to register.
 	:param metadata: The metadata of the user interface plug-in.
 	"""
-	if identity in __userinterfaces:
+	if identity in __user_interfaces:
+		luna.plugins.api("logger").warning("User interface {user_interface} is already registered.", user_interface=identity)
 		return
-	__userinterfaces[identity] = metadata["userinterface"]["implementation"]()
+	__user_interfaces[identity] = __UserInterface( #Put all user interface functions in a named tuple for easier access.
+		join=metadata["userinterface"]["join"],
+		start=metadata["userinterface"]["start"],
+		stop=metadata["userinterface"]["stop"]
+	)
 
 def validate_metadata(metadata):
 	"""
@@ -87,11 +106,12 @@ def validate_metadata(metadata):
 	"""
 	if "userinterface" not in metadata:
 		raise luna.plugins.MetadataValidationError("This is not a user interface plug-in.")
-	required_fields = {"implementation"}
+	required_functions = {"join", "start", "stop"}
 	try:
-		if not required_fields <= metadata["userinterface"].keys():
-			raise luna.plugins.MetadataValidationError("The user interface specifies no implementation.")
-		if not issubclass(metadata["userinterface"]["implementation"], userinterfacetype.userinterfaceinterface.UserInterfaceInterface):
-			raise luna.plugins.MetadataValidationError("The user interface is not implemented by the provided plug-in.")
+		if not required_functions <= metadata["userinterface"].keys():
+			raise luna.plugins.MetadataValidationError("The user interface specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["userinterface"].keys())))
+		for function_name in required_functions:
+			if not hasattr(metadata["userinterface"][function_name], "__call__"): #Each must be a callable object (such as a function).
+				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The user interface metadata is not a dictionary.")
