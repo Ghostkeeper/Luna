@@ -56,6 +56,8 @@ def metadata():
 		},
 
 		"userinterface": {
-			"implementation": automatic_module.Automatic
+			"join": automatic_module.join,
+			"start": automatic_module.start,
+			"stop": automatic_module.stop
 		},
 	}

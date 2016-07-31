@@ -28,7 +28,9 @@ Implements the user interface plug-in interface.
 
 import luna.plugins #To get the interface we must implement and access to the logging API.
 
-class Automatic(luna.plugins.interface("userinterface")):
+__instance = None #The instance of the currently running user interface.
+
+class Automatic():
 	"""
 	A user interface that allows no control by the user.
 
@@ -53,4 +55,27 @@ class Automatic(luna.plugins.interface("userinterface")):
 		started.
 		"""
 		luna.plugins.api("logger").info("Starting Automatic interface.") #Not implemented yet.
-		return False
+
+def join():
+	"""
+	.. function:: join()
+	Blocks the current thread until the user interface has stopped.
+	"""
+	pass #This user interface is single-threaded, so if the start function is ran, it joins immediately.
+
+def start():
+	"""
+	.. function:: start()
+	Starts the user interface.
+
+	For this automatic user interface, this runs the entire program automatically.
+	"""
+	__instance = Automatic()
+	__instance.start()
+
+def stop():
+	"""
+	.. function:: stop()
+	Stops the user interface.
+	"""
+	pass #This user interface is single-threaded, so if the start function is ran, it stops immediately.
