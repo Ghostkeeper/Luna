@@ -48,9 +48,11 @@ def critical(message, title="Critical"):
 	A timestamp is added alongside the message.
 
 	:param message: The message string.
-	:param title: A header for the message. This is ignored.
+	:param title: A header for the message.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
+	if title != "Critical": #Only include the title if it is special, because the default is already indicated by the colour.
+		formatted += title + ": "
 	formatted += message
 	__colour_print(formatted, "magenta")
 
@@ -62,9 +64,11 @@ def debug(message, title="Debug"):
 	A timestamp is added alongside the message.
 
 	:param message: The message string.
-	:param title: A header for the message. This is ignored.
+	:param title: A header for the message.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
+	if title != "Debug": #Only include the title if it is special, because the default is already indicated by the colour.
+		formatted += title + ": "
 	formatted += message
 	__colour_print(formatted, "blue")
 
@@ -76,9 +80,11 @@ def error(message, title="Error"):
 	A timestamp is added alongside the message.
 
 	:param message: The message string.
-	:param title: A header for the message. This is ignored.
+	:param title: A header for the message.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
+	if title != "Error": #Only include the title if it is special, because the default is already indicated by the colour.
+		formatted += title + ": "
 	formatted += message
 	__colour_print(formatted, "red")
 
@@ -90,9 +96,11 @@ def info(message, title="Information"):
 	A timestamp is added alongside the message.
 
 	:param message: The message string.
-	:param title: A header for the message. This is ignored.
+	:param title: A header for the message.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
+	if title != "Information": #Only include the title if it is special, because the default is already indicated by the colour.
+		formatted += title + ": "
 	formatted += message
 	__colour_print(formatted, "green")
 
@@ -104,9 +112,11 @@ def warning(message, title="Warning"):
 	A timestamp is added alongside the message.
 
 	:param message: The message string.
-	:param title: A header for the message. This is ignored.
+	:param title: A header for the message.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
+	if title != "Warning": #Only include the title if it is special, because the default is already indicated by the colour.
+		formatted += title + ": "
 	formatted += message
 	__colour_print(formatted, "yellow")
 

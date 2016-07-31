@@ -128,7 +128,7 @@ def error(message, title="Error", **kwargs):
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
 
-def info(message, title="Info", **kwargs):
+def info(message, title="Information", **kwargs):
 	"""
 	.. function:: info(message[, title][, key=value]*)
 	Logs a new information message with all loggers.
