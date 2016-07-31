@@ -111,21 +111,51 @@ def warning(message, title="Warning"):
 	formatted += message
 	__colour_print(formatted, "yellow")
 
+__win_colour_codes = {
+	"red": 12,
+	"yellow": 14,
+	"green": 10,
+	"cyan": 11,
+	"blue": 9,
+	"magenta": 13,
+	"dark_red": 4,
+	"dark_yellow": 6,
+	"dark_green": 2,
+	"dark_cyan": 3,
+	"dark_blue": 1,
+	"dark_magenta": 5,
+	"black": 0,
+	"dark_grey": 8,
+	"light_grey": 7,
+	"white": 15
+}
+"""
+The colour codes for I/O streams in the Windows API.
+"""
+
+__ansi_colour_codes = {
+	"red": "\033[38m",
+	"yellow": "\033[33m",
+	"green": "\033[32m",
+	"cyan": "\033[36m",
+	"blue": "\033[34m",
+	"magenta": "\033[35m",
+	"black": "\033[30m",
+	"white": "\033[37m"
+}
+"""
+The colour codes in the ANSI-specification for escape codes.
+"""
+
 def __colour_print(message, colour="default"):
 	"""
 	.. function:: __colour_print(message, colour)
 	Prints a message with specified colour-coding.
 
-	Since the colours need to be supported by multiple terminals, the list of
-	supported colours is limited to the intersection of the colours that all the
-	supported terminals support. This is the list of supported colours. The
-	`colour` parameter needs to be one of these:
-	* default (The default colour of the terminal).
-	* red
-	* yellow
-	* green
-	* blue
-	* magenta
+	The colour needs to be in the ``__win_colour_codes`` dictionary as well as
+	the ``__ansi_colour_codes`` dictionary in order to be supported by both
+	terminals. If a colour code is provided that is not supported by a terminal,
+	that message will show up in the default colour for that terminal.
 
 	:param message: The text to print.
 	:param colour: The colour of the message to display. If the colour is not
@@ -135,30 +165,13 @@ def __colour_print(message, colour="default"):
 		buffer_state = buffer_info.BufferInfo()
 		windll.kernel32.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
 
-		if colour == "red":
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 12)
-		elif colour == "yellow":
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 14)
-		elif colour == "green":
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 10)
-		elif colour == "blue":
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 9)
-		elif colour == "magenta":
-			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, 13)
+		if colour in __win_colour_codes:
+			windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, __win_colour_codes[colour]) #Set the colour of the terminal to the desired colour.
 		#Else, don't set the colour (so it stays default).
 		print(message)
 		windll.kernel32.SetConsoleTextAttribute(__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
 	else: #Hope we have an ANSI-enabled console.
-		if colour == "red":
-			ansi_colour = "\033[38m"
-		elif colour == "yellow":
-			ansi_colour = "\033[33m"
-		elif colour == "green":
-			ansi_colour = "\033[32m"
-		elif colour == "blue":
-			ansi_colour = "\033[34m"
-		elif colour == "magenta":
-			ansi_colour = "\033[35m"
+		if colour in __ansi_colour_codes:
+			print(__ansi_colour_codes[colour] + message + "\033[m") #Start code, then message, then revert to default colour.
 		else:
-			ansi_colour = "" #Stay on default colour.
-		print(ansi_colour + message + "\033[m") #Start code, then message, then revert to default colour.
+			print(message) #Stay on default colour.
