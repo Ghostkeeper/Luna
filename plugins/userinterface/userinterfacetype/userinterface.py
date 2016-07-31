@@ -65,7 +65,7 @@ def start(user_interface):
 		return
 	user_interface_object = userinterfacetype.userinterfaceregistrar.get_user_interface(user_interface)
 	if not user_interface_object:
-		luna.plugins.api("logger").warning("There is no user interface \"{plugin}\" to launch.", plugin=user_interface)
+		luna.plugins.api("logger").error("There is no user interface \"{plugin}\" to launch.", plugin=user_interface)
 		return
 
 	#Checks complete. Run the interface.
