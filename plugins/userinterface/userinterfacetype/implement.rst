@@ -37,7 +37,7 @@ Blocks the current thread until the user interface has stopped.
 
 Starts the user interface.
 
-Starting a user interface that has already started should have no effect, even if the user interface was stopped since. User interfaces are one-shot instances.
+Starting a user interface that has already started should have no effect, but starting a user interface that has been stopped or terminated should behave as if the user interface was never started yet (except for any changes that the user interface might have incurred on the model).
 
 ----
 
