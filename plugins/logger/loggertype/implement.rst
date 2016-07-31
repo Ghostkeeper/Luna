@@ -1,10 +1,9 @@
 ============================
 Implementing logger plug-ins
 ============================
+This document gives instructions on how to implement a logger plug-in. A logger plug-in represents one way to output log messages. Adding more loggers causes logs to be output to multiple places simultaneously.
 
-This document gives instruction on how to implement a logger plug-in. A logger plug-in represents one way to output log messages. Adding more loggers causes logs to be output to multiple places simultaneously.
-
-To implement a logger plug-in, one needs to implement all functions listed below in `Function implementation`_. The metadata then needs to include an entry for each of these functions, with as key the function name and as value the function itself.
+To implement a logger plug-in, one needs to implement all functions listed below in `Required functionality`_. The metadata then needs to include an entry for each of these functions, with as key the function name and as value the function itself.
 
 ----------
 Log levels
@@ -25,6 +24,8 @@ Required functionality
 ----------------------
 These are the functions that need to be implemented by a logger plug-in. All of these functions must be in the metadata of the plug-in, indexed by the function name.
 
+----
+
 ::
 
 	critical(message[, title])
@@ -35,6 +36,7 @@ Logs a critical message.
 - ``title``: A title for the message.
 
 ----
+
 ::
 
 	debug(message[, title])
@@ -45,6 +47,7 @@ Logs a debug message.
 - ``title``: A title for the message.
 
 ----
+
 ::
 
 	error(message[, title])
@@ -55,6 +58,7 @@ Logs an error message.
 - ``title``: A title for the message.
 
 ----
+
 ::
 
 	info(message[, title])
@@ -65,6 +69,7 @@ Logs an information message.
 - ``title``: A title for the message.
 
 ----
+
 ::
 
 	warning(message[, title])
