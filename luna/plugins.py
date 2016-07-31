@@ -358,7 +358,5 @@ def __validate_metadata_type(metadata):
 			raise MetadataValidationError("The metadata validator must be callable.")
 		if metadata["type"]["validate_metadata"].__code__.co_argcount != 1:
 			raise MetadataValidationError("The metadata validation function must take exactly one argument: The plug-in's metadata.")
-		if metadata["dependencies"]:
-			raise MetadataValidationError("Type plug-ins may not have dependencies.")
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("The type section is not a dictionary.")
