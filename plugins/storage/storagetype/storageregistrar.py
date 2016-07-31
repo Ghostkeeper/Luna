@@ -74,7 +74,7 @@ def register(identity, metadata):
 	if identity in _storages:
 		luna.plugins.api("logger").warning("Storage {storage} is already registered.", storage=identity)
 		return
-	_storages[identity] = _Storages( #Put all storage functions in a named tuple for easier access.
+	_storages[identity] = _Storage( #Put all storage functions in a named tuple for easier access.
 		can_read=metadata["storage"]["can_read"],
 		can_write=metadata["storage"]["can_write"],
 		exists=metadata["storage"]["exists"],
