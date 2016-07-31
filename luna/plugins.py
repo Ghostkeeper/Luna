@@ -327,7 +327,7 @@ def __validate_metadata_global(metadata):
 	try:
 		if not __required_metadata_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
 			raise MetadataValidationError("Required fields missing: " + str(__required_metadata_fields - metadata.keys()))
-		for plugin, requirements in metadata["dependencies"].items(): #Raises AttributeError if not a dictionary.
+		for requirements in metadata["dependencies"].values(): #Raises AttributeError if not a dictionary.
 			if not requirements.keys() <= allowed_requirements:
 				raise MetadataValidationError("Unknown plug-in dependency requirements " + str(requirements.keys() - allowed_requirements) + ".")
 	except (AttributeError, TypeError):
