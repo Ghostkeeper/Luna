@@ -46,8 +46,8 @@ def metadata():
 		"version": 3,
 		"dependencies": {
 			"userinterfacetype": {
-				"version_min": 3,
-				"version_max": 3
+				"version_min": 1,
+				"version_max": 1
 			},
 			"standardout": {
 				"version_min": 5,
