@@ -79,7 +79,7 @@ def move(source, destination):
 	:param destination: The new URI of the data.
 	:raises IOError: The operation failed.
 	"""
-	readers = {}
+	readers = set()
 	storages = storagetype.storageregistrar.get_all_storages()
 	for storage in storages:
 		if storages[storage].can_read(source):
