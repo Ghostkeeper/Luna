@@ -30,12 +30,12 @@ import collections #For namedtuple.
 import imp #Imports Python modules dynamically.
 import os #To search through folders to find the plug-ins.
 
-__plugin_locations = []
+_plugin_locations = []
 """
 List of directories where to look for plug-ins.
 """
 
-__plugin_types = {}
+_plugin_types = {}
 """
 Dictionary of all plug-in types.
 
@@ -43,12 +43,12 @@ The keys are the type names of the plug-in types. The values are the plug-in
 types as named tuples.
 """
 
-__required_metadata_fields = {"dependencies", "description", "name", "version"}
+_required_metadata_fields = {"dependencies", "description", "name", "version"}
 """
 Fields that must be present in every plug-in's metadata.
 """
 
-__UnresolvedCandidate = collections.namedtuple("__UnresolvedCandidate", "identity metadata dependencies")
+_UnresolvedCandidate = collections.namedtuple("_UnresolvedCandidate", "identity metadata dependencies")
 """
 Represents a candidate plug-in whose dependencies haven't yet been resolved.
 
@@ -61,7 +61,7 @@ This is a named tuple consisting of the following fields:
 * dependencies: A list of plug-in identities on which this plug-in depends.
 """
 
-__PluginType = collections.namedtuple("__PluginType", "api register validate_metadata")
+_PluginType = collections.namedtuple("_PluginType", "api register validate_metadata")
 """
 Represents a plug-in type plug-in.
 
@@ -89,7 +89,7 @@ def add_plugin_location(location):
 	"""
 	if not location or not os.path.isdir(location): #Invalid plug-in location.
 		raise NotADirectoryError("Plug-in location is not a path: {location}".format(location=location))
-	__plugin_locations.append(location)
+	_plugin_locations.append(location)
 
 def api(plugin_type):
 	"""
@@ -106,9 +106,9 @@ def api(plugin_type):
 		type.
 	:raises ImportError The plug-in type is unknown.
 	"""
-	if plugin_type not in __plugin_types:
+	if plugin_type not in _plugin_types:
 		raise ImportError("No API known for \"{type}\".".format(type=plugin_type))
-	return __plugin_types[plugin_type].api
+	return _plugin_types[plugin_type].api
 
 def discover():
 	"""
@@ -125,11 +125,11 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	candidates = __find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
-	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of __UnresolvedCandidate instances.
+	candidates = _find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
+	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
 	for identity, folder in candidates:
 		#Loading the plug-in.
-		module = __load_candidate(identity, folder)
+		module = _load_candidate(identity, folder)
 		if not module: #Failed to load module.
 			continue
 
@@ -143,7 +143,7 @@ def discover():
 				print("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
 		try:
-			__validate_metadata_global(metadata)
+			_validate_metadata_global(metadata)
 		except MetadataValidationError as e:
 			try:
 				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
@@ -152,24 +152,24 @@ def discover():
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
-				__validate_metadata_type(metadata)
+				_validate_metadata_type(metadata)
 			except MetadataValidationError as e:
 				try:
 					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
 				except ImportError: #Logger type hasn't loaded yet.
 					print("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 				continue
-			plugin_type = __PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
-			__plugin_types[metadata["type"]["type_name"]] = plugin_type
+			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
+			_plugin_types[metadata["type"]["type_name"]] = plugin_type
 
-		unvalidated_candidates.append(__UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
+		unvalidated_candidates.append(_UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
 
-	unresolved_candidates = [] #Third stage of candidates. We could validate their metadata but haven't resolved their dependencies yet. List of __UnresolvedCandidate instances.
+	unresolved_candidates = [] #Third stage of candidates. We could validate their metadata but haven't resolved their dependencies yet. List of _UnresolvedCandidate instances.
 	for candidate in unvalidated_candidates:
-		candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types this candidate proposes to implement.
+		candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types this candidate proposes to implement.
 		for candidate_type in candidate_types:
 			try:
-				__plugin_types[candidate_type].validate_metadata(candidate.metadata)
+				_plugin_types[candidate_type].validate_metadata(candidate.metadata)
 			except Exception as e:
 				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't have valid metadata.
@@ -181,7 +181,7 @@ def discover():
 		for dependency, requirements in candidate.dependencies.items():
 			for dependency_candidate in unresolved_candidates:
 				if dependency == dependency_candidate.identity:
-					if not __meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate):
+					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate):
 						continue #Search on.
 					else:
 						break #Found this dependency.
@@ -189,18 +189,18 @@ def discover():
 				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
-			candidate_types = candidate.metadata.keys() & __plugin_types.keys() #The plug-in types to register the plug-in at.
+			candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 			for candidate_type in candidate_types:
 				try:
-					__plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
+					_plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
 				except Exception as e:
 					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
-def __meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
+def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
 	"""
-	.. function:: __meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity)
+	.. function:: _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity)
 	Checks whether a candidate meets the requirements set by a dependant
 	plug-in.
 
@@ -242,9 +242,9 @@ def __meets_requirements(candidate_metadata, requirements, candidate_identity, d
 
 	return True
 
-def __find_candidates():
+def _find_candidates():
 	"""
-	.. function:: __findCandidates()
+	.. function:: _find_candidates()
 	Finds candidates for what looks like might be plug-ins.
 
 	A candidate is a folder inside a plug-in location, which has a file
@@ -255,7 +255,7 @@ def __find_candidates():
 	folder.
 	"""
 	candidates = set()
-	for location in __plugin_locations:
+	for location in _plugin_locations:
 		for root, directories, files in os.walk(location, followlinks=True):
 			if "__init__.py" not in files: #The directory must have an __init__.py file.
 				continue
@@ -265,9 +265,9 @@ def __find_candidates():
 			candidates.add((identity, directory))
 	return candidates
 
-def __load_candidate(identity, folder):
+def _load_candidate(identity, folder):
 	"""
-	.. function:: __loadCandidate(identity, folder)
+	.. function:: _load_candidate(identity, folder)
 	Loads a plug-in candidate as a Python package.
 
 	This is intended to be used on Python packages, containing an init
@@ -310,9 +310,9 @@ def __load_candidate(identity, folder):
 			file.close()
 	return module
 
-def __validate_metadata_global(metadata):
+def _validate_metadata_global(metadata):
 	"""
-	.. function:: __validate_metadata_global(metadata)
+	.. function:: _validate_metadata_global(metadata)
 	Checks if the global part of the metadata of a plug-in is correct.
 
 	If it is incorrect, an exception is raised.
@@ -325,17 +325,17 @@ def __validate_metadata_global(metadata):
 	"""
 	allowed_requirements = {"version_max", "version_min"}
 	try:
-		if not __required_metadata_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
-			raise MetadataValidationError("Required fields missing: " + str(__required_metadata_fields - metadata.keys()))
+		if not _required_metadata_fields <= metadata.keys(): #Set boolean comparison: Not all required_fields in metadata.
+			raise MetadataValidationError("Required fields missing: " + str(_required_metadata_fields - metadata.keys()))
 		for requirements in metadata["dependencies"].values(): #Raises AttributeError if not a dictionary.
 			if not requirements.keys() <= allowed_requirements:
 				raise MetadataValidationError("Unknown plug-in dependency requirements {requirements}.".format(requirements=", ".join(requirements.keys() - allowed_requirements)))
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("Metadata is not a dictionary.")
 
-def __validate_metadata_type(metadata):
+def _validate_metadata_type(metadata):
 	"""
-	.. function:: __validate_metadata_type(metadata)
+	.. function:: _validate_metadata_type(metadata)
 	Checks if the metadata of a plug-in type plug-in is correct.
 
 	If it is incorrect, an exception is raised. At this point, the metadata must

@@ -33,12 +33,12 @@ import standardout.buffer_info #To store the state of the console on Windows.
 
 #Set up the default state of the Windows StdOut handle.
 try:
-	__win_kernel = ctypes.WinDLL("kernel32")
+	_win_kernel = ctypes.WinDLL("kernel32")
 except OSError:
-	__win_kernel = None
-if __win_kernel: #We're on Windows Bash.
-	__standard_out_handle = __win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
-	__default_console_attributes = __win_kernel.GetConsoleScreenBufferInfo(-11)
+	_win_kernel = None
+if _win_kernel: #We're on Windows Bash.
+	_standard_out_handle = _win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
+	_default_console_attributes = _win_kernel.GetConsoleScreenBufferInfo(-11)
 
 def critical(message, title="Critical"):
 	"""
@@ -54,7 +54,7 @@ def critical(message, title="Critical"):
 	if title != "Critical": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
-	__colour_print(formatted, "magenta")
+	_colour_print(formatted, "magenta")
 
 def debug(message, title="Debug"):
 	"""
@@ -70,7 +70,7 @@ def debug(message, title="Debug"):
 	if title != "Debug": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
-	__colour_print(formatted, "blue")
+	_colour_print(formatted, "blue")
 
 def error(message, title="Error"):
 	"""
@@ -86,7 +86,7 @@ def error(message, title="Error"):
 	if title != "Error": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
-	__colour_print(formatted, "red")
+	_colour_print(formatted, "red")
 
 def info(message, title="Information"):
 	"""
@@ -102,7 +102,7 @@ def info(message, title="Information"):
 	if title != "Information": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
-	__colour_print(formatted, "green")
+	_colour_print(formatted, "green")
 
 def warning(message, title="Warning"):
 	"""
@@ -118,9 +118,9 @@ def warning(message, title="Warning"):
 	if title != "Warning": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
-	__colour_print(formatted, "yellow")
+	_colour_print(formatted, "yellow")
 
-__win_colour_codes = {
+_win_colour_codes = {
 	"red": 12,
 	"yellow": 14,
 	"green": 10,
@@ -142,7 +142,7 @@ __win_colour_codes = {
 The colour codes for I/O streams in the Windows API.
 """
 
-__ansi_colour_codes = {
+_ansi_colour_codes = {
 	"red": "\033[38m",
 	"yellow": "\033[33m",
 	"green": "\033[32m",
@@ -156,13 +156,13 @@ __ansi_colour_codes = {
 The colour codes in the ANSI-specification for escape codes.
 """
 
-def __colour_print(message, colour="default"):
+def _colour_print(message, colour="default"):
 	"""
-	.. function:: __colour_print(message, colour)
+	.. function:: _colour_print(message, colour)
 	Prints a message with specified colour-coding.
 
-	The colour needs to be in the ``__win_colour_codes`` dictionary as well as
-	the ``__ansi_colour_codes`` dictionary in order to be supported by both
+	The colour needs to be in the ``_win_colour_codes`` dictionary as well as
+	the ``_ansi_colour_codes`` dictionary in order to be supported by both
 	terminals. If a colour code is provided that is not supported by a terminal,
 	that message will show up in the default colour for that terminal.
 
@@ -170,17 +170,17 @@ def __colour_print(message, colour="default"):
 	:param colour: The colour of the message to display. If the colour is not
 	supported, the default colour is used.
 	"""
-	if __win_kernel:
+	if _win_kernel:
 		buffer_state = standardout.buffer_info.BufferInfo()
-		__win_kernel.GetConsoleScreenBufferInfo(__standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
+		_win_kernel.GetConsoleScreenBufferInfo(_standard_out_handle, ctypes.byref(buffer_state)) #Store the old state of the output channel so we can restore it afterwards.
 
-		if colour in __win_colour_codes:
-			__win_kernel.SetConsoleTextAttribute(__standard_out_handle, __win_colour_codes[colour]) #Set the colour of the terminal to the desired colour.
+		if colour in _win_colour_codes:
+			_win_kernel.SetConsoleTextAttribute(_standard_out_handle, _win_colour_codes[colour]) #Set the colour of the terminal to the desired colour.
 		#Else, don't set the colour (so it stays default).
 		print(message)
-		__win_kernel.SetConsoleTextAttribute(__standard_out_handle, buffer_state.wAttributes) #Reset to old state.
+		_win_kernel.SetConsoleTextAttribute(_standard_out_handle, buffer_state.wAttributes) #Reset to old state.
 	else: #Hope we have an ANSI-enabled console.
-		if colour in __ansi_colour_codes:
-			print(__ansi_colour_codes[colour] + message + "\033[m") #Start code, then message, then revert to default colour.
+		if colour in _ansi_colour_codes:
+			print(_ansi_colour_codes[colour] + message + "\033[m") #Start code, then message, then revert to default colour.
 		else:
 			print(message) #Stay on default colour.

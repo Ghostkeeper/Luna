@@ -33,7 +33,7 @@ import collections #For namedtuple.
 
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid, and logging.
 
-__UserInterface = collections.namedtuple("__UserInterface", "join start stop")
+_UserInterface = collections.namedtuple("_UserInterface", "join start stop")
 """
 Represents a user interface plug-in.
 
@@ -43,7 +43,7 @@ This named tuple has one field for every function in the user interface:
 * stop: Interrupts the user interface.
 """
 
-__user_interfaces = {}
+_user_interfaces = {}
 """
 The user interfaces that have been registered here so far, keyed by their
 identities.
@@ -56,7 +56,7 @@ def get_all_user_interfaces():
 
 	:return: A dictionary of user interfaces, keyed by their identities.
 	"""
-	return __user_interfaces
+	return _user_interfaces
 
 def get_user_interface(identity):
 	"""
@@ -67,9 +67,9 @@ def get_user_interface(identity):
 	:return: The user interface with the specified identity, or None if no user
 		interface with the specified identity exists.
 	"""
-	if identity not in __user_interfaces:
+	if identity not in _user_interfaces:
 		return None
-	return __user_interfaces[identity]
+	return _user_interfaces[identity]
 
 def register(identity, metadata):
 	"""
@@ -82,10 +82,10 @@ def register(identity, metadata):
 	:param identity: The identity of the plug-in to register.
 	:param metadata: The metadata of the user interface plug-in.
 	"""
-	if identity in __user_interfaces:
+	if identity in _user_interfaces:
 		luna.plugins.api("logger").warning("User interface {user_interface} is already registered.", user_interface=identity)
 		return
-	__user_interfaces[identity] = __UserInterface( #Put all user interface functions in a named tuple for easier access.
+	_user_interfaces[identity] = _UserInterface( #Put all user interface functions in a named tuple for easier access.
 		join=metadata["userinterface"]["join"],
 		start=metadata["userinterface"]["start"],
 		stop=metadata["userinterface"]["stop"]

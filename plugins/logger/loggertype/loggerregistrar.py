@@ -33,7 +33,7 @@ import collections #For namedtuple.
 
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
 
-__Logger = collections.namedtuple("__Logger", "critical debug error info warning")
+_Logger = collections.namedtuple("_Logger", "critical debug error info warning")
 """
 Represents a logger plug-in.
 
@@ -45,7 +45,7 @@ This named tuple has one field for every function in the logger:
 * warning: The function to log warning messages with.
 """
 
-__loggers = {}
+_loggers = {}
 """
 The loggers that have been registered here so far, keyed by their identities.
 """
@@ -59,7 +59,7 @@ def get_all_loggers():
 
 	:return: A dictionary of loggers, keyed by identity.
 	"""
-	return __loggers
+	return _loggers
 
 def register(identity, metadata):
 	"""
@@ -72,11 +72,11 @@ def register(identity, metadata):
 	:param metadata: The metadata of a logger plug-in.
 	"""
 	api = luna.plugins.api("logger") #Cache.
-	if identity in __loggers:
+	if identity in _loggers:
 		api.warning("Logger {logger} is already registered.", logger=identity)
 		return
 	api.set_levels(levels={api.Level.ERROR, api.Level.CRITICAL, api.Level.WARNING, api.Level.INFO}, identity=identity) #Set the default log levels.
-	__loggers[identity] = __Logger( #Put all logger functions in a named tuple for easier access.
+	_loggers[identity] = _Logger( #Put all logger functions in a named tuple for easier access.
 		critical=metadata["logger"]["critical"],
 		debug=metadata["logger"]["debug"],
 		error=metadata["logger"]["error"],

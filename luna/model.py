@@ -64,10 +64,10 @@ def model(original_class):
 		"""
 		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
 		#pylint: disable=protected-access
-		self.__listening = False
-		self.__attribute_listeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
-		self.__instance_listeners = set() #Set of listeners that listen to ALL changes in the instance.
-		self.__listening = True
+		self._listening = False
+		self._attribute_listeners = {} #For each attribute, contains a set of listeners. To be lazily filled when listeners hook in.
+		self._instance_listeners = set() #Set of listeners that listen to ALL changes in the instance.
+		self._listening = True
 		original_init(self, *args, **kwargs)
 	original_class.__init__ = new_init
 
@@ -93,14 +93,14 @@ def model(original_class):
 			result = old_function(self, *args, **kwargs)
 			#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
 			#pylint: disable=protected-access
-			if not self.__listening:
+			if not self._listening:
 				return result
-			for listener in self.__instance_listeners:
+			for listener in self._instance_listeners:
 				try:
 					listener()()
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
-						self.__instance_listeners.remove(listener)
+						self._instance_listeners.remove(listener)
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
 			return result
@@ -125,23 +125,23 @@ def model(original_class):
 		old_setattr(self, name, value)
 		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
 		#pylint: disable=protected-access
-		if not self.__listening:
+		if not self._listening:
 			return
-		for listener in self.__instance_listeners: #Instance listeners always need to be called.
+		for listener in self._instance_listeners: #Instance listeners always need to be called.
 			try:
 				listener()()
 			except TypeError:
 				if not listener: #Garbage collection nicked it!
-					self.__instance_listeners.remove(listener)
+					self._instance_listeners.remove(listener)
 				else: #An actual TypeError raised by the listener. Need to pass this on.
 					raise
-		if name in self.__attribute_listeners:
-			for listener in self.__attribute_listeners[name]:
+		if name in self._attribute_listeners:
+			for listener in self._attribute_listeners[name]:
 				try:
 					listener()()
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
-						self.__attribute_listeners[name].remove(listener)
+						self._attribute_listeners[name].remove(listener)
 					else: #An actual TypeError raised by the listener. Need to pass this on.
 						raise
 	original_class.__setattr__ = new_setattr
@@ -175,11 +175,11 @@ def model(original_class):
 		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
 		#pylint: disable=protected-access
 		if type(attribute) is str: #We are listening to a specific attribute.
-			if attribute not in self.__attribute_listeners:
-				self.__attribute_listeners[attribute] = set()
-			self.__attribute_listeners[attribute].add(listener)
+			if attribute not in self._attribute_listeners:
+				self._attribute_listeners[attribute] = set()
+			self._attribute_listeners[attribute].add(listener)
 		else: #We are listening to all changes.
-			self.__instance_listeners.add(listener)
+			self._instance_listeners.add(listener)
 	original_class.listen = listen
 
 	return original_class

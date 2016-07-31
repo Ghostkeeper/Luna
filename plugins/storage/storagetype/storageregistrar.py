@@ -33,7 +33,7 @@ import collections #For namedtuple.
 
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid, and logging.
 
-__Storage = collections.namedtuple("__Storage", "can_read can_write exists move read write")
+_Storage = collections.namedtuple("_Storage", "can_read can_write exists move read write")
 """
 Represents a storage plug-in.
 
@@ -46,7 +46,7 @@ This named tuple has one field for every function in the storage plug-in:
 * write: Writes to a URI.
 """
 
-__storages = {}
+_storages = {}
 """
 The storage plug-ins that have been registered here so far, keyed by their
 identities.
@@ -59,7 +59,7 @@ def get_all_storages():
 
 	:return: A dictionary of storage plug-ins, keyed by their identities.
 	"""
-	return __storages
+	return _storages
 
 def register(identity, metadata):
 	"""
@@ -71,10 +71,10 @@ def register(identity, metadata):
 	:param identity: The identity of the plug-in to register.
 	:param metadata: The metadata of the storage plug-in.
 	"""
-	if identity in __storages:
+	if identity in _storages:
 		luna.plugins.api("logger").warning("Storage {storage} is already registered.", storage=identity)
 		return
-	__storages[identity] = __Storages( #Put all storage functions in a named tuple for easier access.
+	_storages[identity] = _Storages( #Put all storage functions in a named tuple for easier access.
 		can_read=metadata["storage"]["can_read"],
 		can_write=metadata["storage"]["can_write"],
 		exists=metadata["storage"]["exists"],

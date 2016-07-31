@@ -163,10 +163,10 @@ module-rgx=[a-z_][a-z0-9_]*$
 module-name-hint=[a-z_][a-z0-9_]*$
 
 # Regular expression matching correct class names
-class-rgx=(__)?[A-Z][a-zA-Z0-9]*$
+class-rgx=_?[A-Z][a-zA-Z0-9]*$
 
 # Naming hint for class names
-class-name-hint=(__)?[A-Z][a-zA-Z0-9]*$
+class-name-hint=_?[A-Z][a-zA-Z0-9]*$
 
 # Regular expression which should only match function or class names that do
 # not require a docstring.

@@ -66,7 +66,7 @@ class Level(enum.Enum):
 	Information that might be useful for a debugger to know.
 	"""
 
-__logger_levels = {}
+_logger_levels = {}
 
 def critical(message, title="Critical", **kwargs):
 	"""
@@ -83,7 +83,7 @@ def critical(message, title="Critical", **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	for logger in loggers:
-		if Level.CRITICAL in __logger_levels[logger]:
+		if Level.CRITICAL in _logger_levels[logger]:
 			loggers[logger].critical(substituted, title)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
@@ -103,7 +103,7 @@ def debug(message, title="Debug", **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	for logger in loggers:
-		if Level.DEBUG in __logger_levels[logger]:
+		if Level.DEBUG in _logger_levels[logger]:
 			loggers[logger].debug(substituted, title)
 	#Since debug log messages aren't activated by default, there is no fallback for this level.
 	#The fallback doesn't have this level set by default and there is no way to set it.
@@ -123,7 +123,7 @@ def error(message, title="Error", **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	for logger in loggers:
-		if Level.ERROR in __logger_levels[logger]:
+		if Level.ERROR in _logger_levels[logger]:
 			loggers[logger].error(substituted, title)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
@@ -143,7 +143,7 @@ def info(message, title="Information", **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	for logger in loggers:
-		if Level.INFO in __logger_levels[logger]:
+		if Level.INFO in _logger_levels[logger]:
 			loggers[logger].info(substituted, title)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
@@ -164,10 +164,10 @@ def set_levels(levels, identity=None):
 		a specific logger, or None if setting the levels for all loggers.
 	"""
 	if identity: #If given a specific logger identity, set the log levels only for that logger.
-		__logger_levels[identity] = levels
+		_logger_levels[identity] = levels
 	else: #If not given any specific logger name, set the log levels for all loggers.
-		for logger in __logger_levels:
-			__logger_levels[logger] = levels
+		for logger in _logger_levels:
+			_logger_levels[logger] = levels
 
 def warning(message, title="Warning", **kwargs):
 	"""
@@ -184,7 +184,7 @@ def warning(message, title="Warning", **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	for logger in loggers:
-		if Level.WARNING in __logger_levels[logger]:
+		if Level.WARNING in _logger_levels[logger]:
 			loggers[logger].warning(substituted, title)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
