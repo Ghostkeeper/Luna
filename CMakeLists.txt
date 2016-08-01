@@ -2,8 +2,41 @@ cmake_minimum_required(VERSION 2.6)
 project(Luna)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-#Dependencies.
-find_package(PythonInterp 3.4.0 REQUIRED)
+#---------------------------------Dependencies----------------------------------
+option(DEPENDENCIES_BUILD_MISSING "Dependencies that are missing should be built from source." FALSE)
+if(DEPENDENCIES_BUILD_MISSING)
+	include(ExternalProject)
+	set(DEPENDENCIES_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/inst)
+
+	#Python.
+	find_package(PythonInterp 3.4.0)
+	if(NOT PythonInterp_FOUND)
+		option(BUILD_PYTHON "Build Python from source." TRUE)
+		if(BUILD_PYTHON)
+			if(WIN32)
+				ExternalProject_Add(Python
+					URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
+					URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
+					CONFIGURE_COMMAND echo Skipping configure command on Windows.
+					BUILD_COMMAND ./PCBuild/build.bat -e
+					BUILD_IN_SOURCE 1
+				)
+				set(PYTHON_EXECUTABLE ${DEPENDENCIES_INSTALL_PREFIX}/bin/python3.exe)
+			else(WIN32)
+				ExternalProject_Add(Python
+					URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
+					URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
+					CONFIGURE_COMMAND ./configure --prefix=${DEPENDENCIES_INSTALL_PREFIX} --enable-shared --with-threads
+					BUILD_IN_SOURCE 1
+				)
+				set(PYTHON_EXECUTABLE ${DEPENDENCIES_INSTALL_PREFIX}/bin/python3)
+			endif(WIN32)
+		endif(BUILD_PYTHON)
+	endif(NOT PythonInterp_FOUND)
+else(DEPENDENCIES_BUILD_MISSING)
+	#Python.
+	find_package(PythonInterp 3.4.0 REQUIRED)
+endif(DEPENDENCIES_BUILD_MISSING)
 
 #Finding/requiring Python modules.
 function(find_python_module module)
