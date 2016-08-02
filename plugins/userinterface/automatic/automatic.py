@@ -28,7 +28,7 @@ Implements the user interface plug-in interface.
 
 import luna.plugins #To get the interface we must implement and access to the logging API.
 
-class Automatic():
+class Automatic:
 	"""
 	A user interface that allows no control by the user.
 
