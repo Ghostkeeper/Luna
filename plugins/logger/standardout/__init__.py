@@ -26,7 +26,7 @@
 A logger plug-in that logs to the standard output channel.
 """
 
-import standardout.standard_out
+import standardout.standard_out #Implementing functions.
 
 def metadata():
 	"""
