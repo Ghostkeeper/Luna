@@ -146,7 +146,7 @@ def discover():
 			_validate_metadata_global(metadata)
 		except MetadataValidationError as e:
 			try:
-				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
+				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
 				print("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
@@ -155,7 +155,7 @@ def discover():
 				_validate_metadata_type(metadata)
 			except MetadataValidationError as e:
 				try:
-					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", plugin=identity, error_message=str(e))
+					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 				except ImportError: #Logger type hasn't loaded yet.
 					print("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 				continue
