@@ -153,7 +153,7 @@ def read(uri):
 	arbitrary one will be chosen.
 
 	:param uri: The URI from which to read the data.
-	:return: The data stored at that URI.
+	:return: The data stored at that URI as a ``bytes`` string.
 	:raises IOError: The operation failed.
 	"""
 	for storage in storagetype.storageregistrar.get_all_storages().values():
@@ -181,7 +181,7 @@ def write(uri, data):
 	Any old data at the specified URI will get overwritten.
 
 	:param uri: The URI to which to write the data.
-	:param data: A unicode string to write to this URI.
+	:param data: A ``bytes`` string to write to this URI.
 	:raises IOError: The operation failed.
 	"""
 	for storage in storagetype.storageregistrar.get_all_storages().values():
