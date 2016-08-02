@@ -28,53 +28,60 @@ These are the functions that need to be implemented by a logger plug-in. All of 
 
 ::
 
-	critical(message[, title])
+	critical(message[, title][, stack_trace])
 
 Logs a critical message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
+- ``stack_trace``: The stack trace at the except clause where the logging was initiated, if the logging was done in the except clause of a try-except block. This will get provided in the form of a list of FrameInfo_ objects, with the most recent frame last.
 
 ----
 
 ::
 
-	debug(message[, title])
+	debug(message[, title][, stack_trace])
 
 Logs a debug message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
+- ``stack_trace``: The stack trace at the except clause where the logging was initiated, if the logging was done in the except clause of a try-except block. This will get provided in the form of a list of FrameInfo_ objects, with the most recent frame last.
 
 ----
 
 ::
 
-	error(message[, title])
+	error(message[, title][, stack_trace])
 
 Logs an error message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
+- ``stack_trace``: The stack trace at the except clause where the logging was initiated, if the logging was done in the except clause of a try-except block. This will get provided in the form of a list of FrameInfo_ objects, with the most recent frame last.
 
 ----
 
 ::
 
-	info(message[, title])
+	info(message[, title][, stack_trace])
 
 Logs an information message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
+- ``stack_trace``: The stack trace at the except clause where the logging was initiated, if the logging was done in the except clause of a try-except block. This will get provided in the form of a list of FrameInfo_ objects, with the most recent frame last.
 
 ----
 
 ::
 
-	warning(message[, title])
+	warning(message[, title][, stack_trace])
 
 Logs a warning message.
 
 - ``message``: The message that needs to be logged.
 - ``title``: A title for the message.
+- ``stack_trace``: The stack trace at the except clause where the logging was initiated, if the logging was done in the except clause of a try-except block. This will get provided in the form of a list of FrameInfo_ objects, with the most recent frame last.
+
+.. _FrameInfo: https://docs.python.org/3/library/inspect.html#the-interpreter-stack
