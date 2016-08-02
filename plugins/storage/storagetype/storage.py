@@ -75,6 +75,8 @@ def move(source, destination):
 	can do both, a plug-in will be chosen to read the data from the source, and
 	a different plug-in will be chosen to write the data to the destination.
 
+	Any old data at the destination will get overwritten.
+
 	:param source: The URI of the data to move.
 	:param destination: The new URI of the data.
 	:raises IOError: The operation failed.
