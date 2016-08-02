@@ -52,85 +52,115 @@ if _win_kernel: #We're on Windows Bash.
 	if _pre_buffer_state.wAttributes == _post_buffer_state.wAttributes: #Didn't change.
 		_win_kernel = None #We have the Windows kernel, but this terminal doesn't support changes to it. Fall back to ANSI.
 
-def critical(message, title="Critical"):
+def critical(message, title="Critical", stack_trace=None):
 	"""
-	.. function:: critical(message[, title])
+	.. function:: critical(message[, title][, stack_trace)
 	Logs a new critical message.
 
-	A timestamp is added alongside the message.
+	A timestamp is added alongside the message. If a title is provided, it is
+	written before the message. If a stack trace is provided, it is printed
+	after the message.
 
 	:param message: The message string.
 	:param title: A header for the message.
+	:param stack_trace: A trace of the call stack where the message originated,
+		as a list of ``FrameInfo`` objects, most recent frame first.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Critical": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
 	_colour_print(formatted, "magenta")
+	if stack_trace:
+		_print_stack_trace(stack_trace)
 
-def debug(message, title="Debug"):
+def debug(message, title="Debug", stack_trace=None):
 	"""
 	.. function:: debug(message[, title])
 	Logs a new debug message.
 
-	A timestamp is added alongside the message.
+	A timestamp is added alongside the message. If a title is provided, it is
+	written before the message. If a stack trace is provided, it is printed
+	after the message.
 
 	:param message: The message string.
 	:param title: A header for the message.
+	:param stack_trace: A trace of the call stack where the message originated,
+		as a list of ``FrameInfo`` objects, most recent frame first.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Debug": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
 	_colour_print(formatted, "blue")
+	if stack_trace:
+		_print_stack_trace(stack_trace)
 
-def error(message, title="Error"):
+def error(message, title="Error", stack_trace=None):
 	"""
 	.. function:: error(message[, title])
 	Logs a new error message.
 
-	A timestamp is added alongside the message.
+	A timestamp is added alongside the message. If a title is provided, it is
+	written before the message. If a stack trace is provided, it is printed
+	after the message.
 
 	:param message: The message string.
 	:param title: A header for the message.
+	:param stack_trace: A trace of the call stack where the message originated,
+		as a list of ``FrameInfo`` objects, most recent frame first.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Error": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
 	_colour_print(formatted, "red")
+	if stack_trace:
+		_print_stack_trace(stack_trace)
 
-def info(message, title="Information"):
+def info(message, title="Information", stack_trace=None):
 	"""
 	.. function:: info(message[, title])
 	Logs a new information message.
 
-	A timestamp is added alongside the message.
+	A timestamp is added alongside the message. If a title is provided, it is
+	written before the message. If a stack trace is provided, it is printed
+	after the message.
 
 	:param message: The message string.
 	:param title: A header for the message.
+	:param stack_trace: A trace of the call stack where the message originated,
+		as a list of ``FrameInfo`` objects, most recent frame first.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Information": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
 	_colour_print(formatted, "green")
+	if stack_trace:
+		_print_stack_trace(stack_trace)
 
-def warning(message, title="Warning"):
+def warning(message, title="Warning", stack_trace=None):
 	"""
 	.. function:: warning(message[, title])
 	Logs a new warning message.
 
-	A timestamp is added alongside the message.
+	A timestamp is added alongside the message. If a title is provided, it is
+	written before the message. If a stack trace is provided, it is printed
+	after the message.
 
 	:param message: The message string.
 	:param title: A header for the message.
+	:param stack_trace: A trace of the call stack where the message originated,
+		as a list of ``FrameInfo`` objects, most recent frame first.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Warning": #Only include the title if it is special, because the default is already indicated by the colour.
 		formatted += title + ": "
 	formatted += message
 	_colour_print(formatted, "yellow")
+	if stack_trace:
+		_print_stack_trace(stack_trace)
 
 _win_colour_codes = {
 	"red": 12,
@@ -196,3 +226,21 @@ def _colour_print(message, colour="default"):
 			print(_ansi_colour_codes[colour] + message + "\033[m") #Start code, then message, then revert to default colour.
 		else:
 			print(message) #Stay on default colour.
+
+def _print_stack_trace(stack_trace):
+	"""
+	.. function:: _print_stack_trace(stack_trace)
+	Prints a formatted stack trace.
+
+	The stack trace is formatted similarly to how Python formats its stack
+	trace.
+
+	:param stack_trace: A stack trace, as a list of ``FrameInfo`` objects
+		resulting from ``inspect.getouterframes`` or ``inspect.getinnerframes``,
+		most recent frame first.
+	"""
+	print("Stack trace:")
+	for frame in stack_trace:
+		print("\tFile \"{file_name}\", line {line_number}, in {function}".format(file_name=frame.filename, line_number=frame.lineno, function=frame.function))
+		for line in frame.code_context:
+			print("\t\t" + line.strip())

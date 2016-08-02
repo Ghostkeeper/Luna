@@ -30,6 +30,8 @@ messages with those levels.
 """
 
 import enum #To define the logging importance levels.
+import inspect #To dissect the stack trace.
+import sys #To get the stack trace.
 
 import loggertype.loggerregistrar #To get the logger plug-ins to log with.
 
@@ -68,13 +70,15 @@ class Level(enum.Enum):
 
 _logger_levels = {}
 
-def critical(message, title="Critical", **kwargs):
+def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	"""
 	.. function:: critical(message[, title][, key=value]*)
 	Logs a new critical message with all loggers.
 
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
+	:param include_stack_trace: If this function is called from within an
+		exception, should a stack trace be printed?
 	:param kwargs: Key-word arguments. These are inserted in the message
 		body. The value of a key-word argument will be put in place of the
 		key surrounded by brackets. See the Python documentation for
@@ -82,19 +86,26 @@ def critical(message, title="Critical", **kwargs):
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
+	stack_trace = []
+	if include_stack_trace:
+		traceback = sys.exc_info()[2]
+		if traceback:
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 	for logger in loggers:
 		if Level.CRITICAL in _logger_levels[logger]:
-			loggers[logger].critical(substituted, title)
+			loggers[logger].critical(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
 
-def debug(message, title="Debug", **kwargs):
+def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	"""
 	.. function:: debug(message[, title][, key=value]*)
 	Logs a new debug message with all loggers.
 
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
+	:param include_stack_trace: If this function is called from within an
+		exception, should a stack trace be printed?
 	:param kwargs: Key-word arguments. These are inserted in the message
 		body. The value of a key-word argument will be put in place of the
 		key surrounded by brackets. See the Python documentation for
@@ -102,19 +113,26 @@ def debug(message, title="Debug", **kwargs):
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
+	stack_trace = []
+	if include_stack_trace:
+		traceback = sys.exc_info()[2]
+		if traceback:
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 	for logger in loggers:
 		if Level.DEBUG in _logger_levels[logger]:
-			loggers[logger].debug(substituted, title)
+			loggers[logger].debug(substituted, title, stack_trace)
 	#Since debug log messages aren't activated by default, there is no fallback for this level.
 	#The fallback doesn't have this level set by default and there is no way to set it.
 
-def error(message, title="Error", **kwargs):
+def error(message, title="Error", include_stack_trace=True, **kwargs):
 	"""
 	.. function:: error(message[, title][, key=value]*)
 	Logs a new error message with all loggers.
 
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
+	:param include_stack_trace: If this function is called from within an
+		exception, should a stack trace be printed?
 	:param kwargs: Key-word arguments. These are inserted in the message
 		body. The value of a key-word argument will be put in place of the
 		key surrounded by brackets. See the Python documentation for
@@ -122,19 +140,26 @@ def error(message, title="Error", **kwargs):
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
+	stack_trace = []
+	if include_stack_trace:
+		traceback = sys.exc_info()[2]
+		if traceback:
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 	for logger in loggers:
 		if Level.ERROR in _logger_levels[logger]:
-			loggers[logger].error(substituted, title)
+			loggers[logger].error(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
 
-def info(message, title="Information", **kwargs):
+def info(message, title="Information", include_stack_trace=True, **kwargs):
 	"""
 	.. function:: info(message[, title][, key=value]*)
 	Logs a new information message with all loggers.
 
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
+	:param include_stack_trace: If this function is called from within an
+		exception, should a stack trace be printed?
 	:param kwargs: Key-word arguments. These are inserted in the message
 		body. The value of a key-word argument will be put in place of the
 		key surrounded by brackets. See the Python documentation for
@@ -142,9 +167,14 @@ def info(message, title="Information", **kwargs):
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
+	stack_trace = []
+	if include_stack_trace:
+		traceback = sys.exc_info()[2]
+		if traceback:
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 	for logger in loggers:
 		if Level.INFO in _logger_levels[logger]:
-			loggers[logger].info(substituted, title)
+			loggers[logger].info(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
 
@@ -169,13 +199,15 @@ def set_levels(levels, identity=None):
 		for logger in _logger_levels:
 			_logger_levels[logger] = levels
 
-def warning(message, title="Warning", **kwargs):
+def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	"""
 	.. function:: warning(message[, title][, key=value]*)
 	Logs a new warning message with all loggers.
 
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
+	:param include_stack_trace: If this function is called from within an
+		exception, should a stack trace be printed?
 	:param kwargs: Key-word arguments. These are inserted in the message
 		body. The value of a key-word argument will be put in place of the
 		key surrounded by brackets. See the Python documentation for
@@ -183,8 +215,13 @@ def warning(message, title="Warning", **kwargs):
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
+	stack_trace = []
+	if include_stack_trace:
+		traceback = sys.exc_info()[2]
+		if traceback:
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 	for logger in loggers:
 		if Level.WARNING in _logger_levels[logger]:
-			loggers[logger].warning(substituted, title)
+			loggers[logger].warning(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
 		print(title + ": " + substituted)
