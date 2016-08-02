@@ -33,6 +33,31 @@ data.
 import luna.plugins #To use the logger API.
 import storagetype.storageregistrar #To get the logger plug-ins to log with.
 
+def delete(uri):
+	"""
+	.. function:: delete(uri)
+	Removes an entity at the specified location.
+
+	The URI is taken relative to the application's working directory. That means
+	that any relative URIs will delete files, since the working directory has
+	the file schema.
+
+	Any plug-in that reports it can write to the URI will be used to delete the
+	entry. If there are multiple plug-ins that can write to the URI, an
+	arbitrary one will be chosen.
+
+	:param uri: The URI to delete.
+	:raises IOError: The operation failed.
+	"""
+	for storage in storagetype.storageregistrar.get_all_storages().values():
+		if storage.can_write(uri):
+			try:
+				return storage.delete(uri)
+			except Exception as e:
+				luna.plugins.api("logger").warning("Deleting {uri} failed: {error_message}", uri=uri, error_message=str(e))
+				#Try with the next plug-in.
+	raise IOError("No storage plug-in can delete URI: {uri}".format(uri=uri))
+
 def exists(uri):
 	"""
 	.. function:: exists(uri)

@@ -33,13 +33,14 @@ import collections #For namedtuple.
 
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid, and logging.
 
-_Storage = collections.namedtuple("_Storage", "can_read can_write exists move read write")
+_Storage = collections.namedtuple("_Storage", "can_read can_write delete exists move read write")
 """
 Represents a storage plug-in.
 
 This named tuple has one field for every function in the storage plug-in:
 * can_read: Determines if the plug-in can read from a URI.
 * can_write: Determines if the plug-in can write to a URI.
+* delete: Removes an entry from a URI.
 * exists: Checks if a URI exists.
 * move: Moves data from one URI to another.
 * read: Reads from a URI.
@@ -77,6 +78,7 @@ def register(identity, metadata):
 	_storages[identity] = _Storage( #Put all storage functions in a named tuple for easier access.
 		can_read=metadata["storage"]["can_read"],
 		can_write=metadata["storage"]["can_write"],
+		delete=metadata["storage"]["delete"],
 		exists=metadata["storage"]["exists"],
 		move=metadata["storage"]["move"],
 		read=metadata["storage"]["read"],
@@ -89,15 +91,15 @@ def validate_metadata(metadata):
 	Validates whether the specified metadata is valid for storage plug-ins.
 
 	Storage metadata must have a "storage" entry, which must contain six
-	entries: "can_read", "can_write", "exists", "move", "read" and "write".
-	These entries must contain callable objects (such as functions).
+	entries: "can_read", "can_write", "delete", "exists", "move", "read" and
+	"write". These entries must contain callable objects (such as functions).
 
 	:param metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
 	if "storage" not in metadata:
 		raise luna.plugins.MetadataValidationError("This is not a storage plug-in.")
-	required_functions = {"can_read", "can_write", "exists", "move", "read", "write"}
+	required_functions = {"can_read", "can_write", "delete", "exists", "move", "read", "write"}
 	try:
 		if not required_functions <= metadata["storage"].keys():
 			raise luna.plugins.MetadataValidationError("The storage specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["storage"].keys())))
