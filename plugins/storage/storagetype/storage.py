@@ -31,6 +31,7 @@ data.
 """
 
 import os.path #To get absolute paths.
+import pathlib #To get URIs from relative paths.
 
 import luna.plugins #To use the logger API.
 import storagetype.storageregistrar #To get the logger plug-ins to log with.
@@ -51,7 +52,7 @@ def delete(uri):
 	:param uri: The URI to delete.
 	:raises IOError: The operation failed.
 	"""
-	uri = os.path.abspath(uri)
+	uri = _to_absolute_uri(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
@@ -79,7 +80,7 @@ def exists(uri):
 		doesn't.
 	:raises IOError: The operation failed.
 	"""
-	uri = os.path.abspath(uri)
+	uri = _to_absolute_uri(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
@@ -110,8 +111,8 @@ def move(source, destination):
 	:param destination: The new URI of the data.
 	:raises IOError: The operation failed.
 	"""
-	source = os.path.abspath(source)
-	destination = os.path.abspath(destination)
+	source = _to_absolute_uri(source)
+	destination = _to_absolute_uri(destination)
 	readers = set()
 	storages = storagetype.storageregistrar.get_all_storages()
 	for storage in storages:
@@ -162,7 +163,7 @@ def read(uri):
 	:return: The data stored at that URI as a ``bytes`` string.
 	:raises IOError: The operation failed.
 	"""
-	uri = os.path.abspath(uri)
+	uri = _to_absolute_uri(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
@@ -191,7 +192,7 @@ def write(uri, data):
 	:param data: A ``bytes`` string to write to this URI.
 	:raises IOError: The operation failed.
 	"""
-	uri = os.path.abspath(uri)
+	uri = _to_absolute_uri(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
@@ -201,3 +202,16 @@ def write(uri, data):
 				luna.plugins.api("logger").critical("Writing to {uri} failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with next plug-in.
 	raise IOError("No storage plug-in can write to URI: {uri}".format(uri=uri))
+
+def _to_absolute_uri(uri):
+	"""
+	.. function:: _to_absolute_uri(uri)
+	Converts the input URI into an absolute URI, relative to the current working
+	directory.
+
+	:param uri: A URI, absolute or relative.
+	:return: An absolute URI.
+	"""
+	if ":" in uri: #Already absolute. Is either a drive letter ("C:/") or already fully specified URI ("http://").
+		return pathlib.Path(uri).as_uri() #Pathlib can take care of both these cases.
+	return pathlib.Path(os.path.abspath(uri)).as_uri() #Convert to absolute path, then to URI.
