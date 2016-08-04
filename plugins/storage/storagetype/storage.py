@@ -30,6 +30,8 @@ administrative tasks that acts as shortcuts for multiple tasks, such as moving
 data.
 """
 
+import os.path #To get absolute paths.
+
 import luna.plugins #To use the logger API.
 import storagetype.storageregistrar #To get the logger plug-ins to log with.
 
@@ -49,6 +51,7 @@ def delete(uri):
 	:param uri: The URI to delete.
 	:raises IOError: The operation failed.
 	"""
+	uri = os.path.abspath(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
@@ -76,6 +79,7 @@ def exists(uri):
 		doesn't.
 	:raises IOError: The operation failed.
 	"""
+	uri = os.path.abspath(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
@@ -106,6 +110,8 @@ def move(source, destination):
 	:param destination: The new URI of the data.
 	:raises IOError: The operation failed.
 	"""
+	source = os.path.abspath(source)
+	destination = os.path.abspath(destination)
 	readers = set()
 	storages = storagetype.storageregistrar.get_all_storages()
 	for storage in storages:
@@ -156,6 +162,7 @@ def read(uri):
 	:return: The data stored at that URI as a ``bytes`` string.
 	:raises IOError: The operation failed.
 	"""
+	uri = os.path.abspath(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
@@ -184,6 +191,7 @@ def write(uri, data):
 	:param data: A ``bytes`` string to write to this URI.
 	:raises IOError: The operation failed.
 	"""
+	uri = os.path.abspath(uri)
 	for storage in storagetype.storageregistrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
