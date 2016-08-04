@@ -32,7 +32,7 @@ other applications can access it.
 
 The API of this plug-in type is based on "files" with a unique URI. If the
 storage intended is not based on URI, a plug-in may have to emulate it and
-devise a custom schema for the URI.
+devise a custom scheme for the URI.
 """
 
 import storagetype.storage #The API for other plug-ins to use storage with.

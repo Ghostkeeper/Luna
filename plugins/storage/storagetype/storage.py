@@ -43,7 +43,7 @@ def delete(uri):
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will delete files, since the working directory has
-	the file schema.
+	the file scheme.
 
 	Any plug-in that reports it can write to the URI will be used to delete the
 	entry. If there are multiple plug-ins that can write to the URI, an
@@ -69,7 +69,7 @@ def exists(uri):
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will check for files, since the working directory has
-	the file schema.
+	the file scheme.
 
 	Any plug-in that reports it can read from the URI will be used to check for
 	its existence. If there are multiple plug-ins that can read from the URI, an
@@ -97,7 +97,7 @@ def move(source, destination):
 
 	Both URIs are taken relative to the application's working directory. That
 	means that any relative URIs will always move files, since the working
-	directory has the file schema.
+	directory has the file scheme.
 
 	Any plug-in that reports it can read from the source and write to the
 	destination will be used to move the data. If there are multiple plug-ins
@@ -153,7 +153,7 @@ def read(uri):
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will read from file, since the working directory has
-	the file schema.
+	the file scheme.
 
 	Any plug-in that reports it can read from the URI will be used to read the
 	data. If there are multiple plug-ins that can read from the URI, an
@@ -180,7 +180,7 @@ def write(uri, data):
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will write to file, since the working directory has
-	the	file schema.
+	the	file scheme.
 
 	Any plug-in that reports it can write to the URI will be used to write the
 	data. If there are multiple plug-ins that can write to the URI, an arbitrary
