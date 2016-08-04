@@ -46,7 +46,7 @@ def can_read(uri):
 	:return: ``True`` if this plug-in can read from the specified URI, or
 		``False`` if it can't.
 	"""
-	return urllib.parse.urlparse(uri).scheme == "file" #Can only read file schemes.
+	return urllib.parse.urlparse(uri).scheme == "file" #Can only read from file schemes.
 
 def can_write(uri):
 	"""
@@ -55,10 +55,11 @@ def can_write(uri):
 	This determination is purely made on the URI, not on the actual file system.
 	It can write to the URI if the URI uses the file scheme.
 
-	:param uri:
-	:return:
+	:param uri: An absolute URI.
+	:return: ``True`` if this plug-in can write to the specified URI, or
+		``False`` if it can't.
 	"""
-	return urllib.parse.urlparse(uri).scheme == "file" #Can only read file schemes.
+	return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
 
 def delete(uri):
 	raise RuntimeError("This functionality is not yet implemented.")
