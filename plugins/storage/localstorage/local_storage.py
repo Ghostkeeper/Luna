@@ -33,6 +33,7 @@ atomicity doesn't prevent race conditions in these cases, but at least prevents
 data corruption.
 """
 
+import os.path #To get the modification times of a file.
 import urllib.parse #To get the scheme from a URI.
 
 def can_read(uri):
@@ -71,7 +72,30 @@ def move(source, destination):
 	raise RuntimeError("This functionality is not yet implemented.")
 
 def read(uri):
-	raise RuntimeError("This functionality is not yet implemented.")
+	"""
+	.. function read(uri):
+	Reads the contents of the specified file.
+
+	This read is done atomically, meaning that it will return the state of the
+	file at a single instance in time. This is achieved fairly naively by
+	tracking the time of last modification in the file system, and re-trying to
+	read when the time of last modification changed while the reading was in
+	progress. As a result, this method is lock-free but not wait-free. It may be
+	retrying indefinitely if the file keeps getting updated during the read.
+	However, this algorithm is simple to implement and introduces very little
+	overhead if there is nobody writing, which is the main use case.
+
+	:param uri: The URI of the file to read.
+	:return: The contents of the file, as a bytes string.
+	"""
+	path = _uri_to_path(uri)
+
+	while True:
+		last_modified = os.path.getmtime(path)
+		with open(path, "rb") as file_handle: #Read in binary mode.
+			result = file_handle.read()
+		if os.path.getmtime(path) == last_modified: #Still not modified. We've got a good copy.
+			return result
 
 def write(uri, data):
 	raise RuntimeError("This functionality is not yet implemented.")
