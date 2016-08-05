@@ -65,7 +65,14 @@ def can_write(uri):
 	return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
 
 def delete(uri):
-	raise RuntimeError("This functionality is not yet implemented.")
+	"""
+	.. function:: delete(uri)
+	Deletes the resource at the specified location.
+
+	:param uri: The location of the resource to delete.
+	:raises IOError: The file could not be deleted.
+	"""
+	os.remove(_uri_to_path(uri))
 
 def exists(uri):
 	raise RuntimeError("This functionality is not yet implemented.")
