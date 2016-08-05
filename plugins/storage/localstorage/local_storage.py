@@ -38,6 +38,7 @@ import urllib.parse #To get the scheme from a URI.
 
 def can_read(uri):
 	"""
+	.. function:: can_read(uri)
 	Determines if this plug-in could read from a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
@@ -51,6 +52,7 @@ def can_read(uri):
 
 def can_write(uri):
 	"""
+	.. function:: can_write(uri)
 	Determines if this plug-in could write to a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
