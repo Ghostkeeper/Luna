@@ -34,7 +34,7 @@ import standardout.buffer_info #To store the state of the console on Windows.
 #Set up the default state of the Windows StdOut handle.
 try:
 	_win_kernel = ctypes.WinDLL("kernel32")
-except OSError:
+except AttributeError:
 	_win_kernel = None
 if _win_kernel: #We're on Windows Bash.
 	_standard_out_handle = _win_kernel.GetStdHandle(-11) #-11 is the flag for standard output in the Windows API.
