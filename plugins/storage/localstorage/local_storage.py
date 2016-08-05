@@ -75,3 +75,23 @@ def read(uri):
 
 def write(uri, data):
 	raise RuntimeError("This functionality is not yet implemented.")
+
+def _uri_to_path(uri):
+	"""
+	.. function _uri_to_path(uri)
+	Converts a URI to a local path that can be read by Python's file I/O.
+
+	This already assumes that this is local. The input must have been checked by
+	``can_read`` or ``can_write``.
+
+	:param uri: The URI to convert to a path.
+	:return: A local path that can be read by Python's file I/O.
+	"""
+	parsed = urllib.parse.urlparse(uri)
+	if parsed.netloc: #Network location on Windows (Unix uses normal paths like /mnt/... or /media/...).
+		return "//" + parsed.netloc + parsed.path
+	else: #Local file.
+		if ":" in parsed.path: #All paths are absolute. Only the Windows local paths have a drive letter in them.
+			return parsed.path[1:] #URI has an additional slash before it to indicate that it's absolute, but Python I/O can't take that.
+		else: #Unix path.
+			return parsed.path
