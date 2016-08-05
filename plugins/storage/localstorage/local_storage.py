@@ -75,7 +75,15 @@ def delete(uri):
 	os.remove(_uri_to_path(uri))
 
 def exists(uri):
-	raise RuntimeError("This functionality is not yet implemented.")
+	"""
+	.. function:: exists(uri)
+	Checks if the specified resource exists.
+
+	:param uri: The location of the resource to check for.
+	:return: ``True`` if the file exists, or ``False`` if it doesn't.
+	:raises IOError: The existence check could not be performed.
+	"""
+	return os.path.isfile(_uri_to_path(uri))
 
 def move(source, destination):
 	raise RuntimeError("This functionality is not yet implemented.")
