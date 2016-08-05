@@ -33,7 +33,7 @@ atomicity doesn't prevent race conditions in these cases, but at least prevents
 data corruption.
 """
 
-import os.path #To get the modification times of a file.
+import os #To delete files and get modification times.
 import urllib.parse #To get the scheme from a URI.
 
 def can_read(uri):
