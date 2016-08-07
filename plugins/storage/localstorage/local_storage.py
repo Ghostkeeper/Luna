@@ -86,6 +86,16 @@ def exists(uri):
 	return os.path.isfile(_uri_to_path(uri))
 
 def move(source, destination):
+	"""
+	.. function:: move(source, destination)
+	Moves a resource from one location to another.
+
+	Any existing resource at the destination will get overwritten.
+
+	:param source: The location of a resource that must be moved.
+	:param destination: The new location of the resource.
+	:raises IOError: Moving the resource failed.
+	"""
 	raise RuntimeError("This functionality is not yet implemented.")
 
 def read(uri):
