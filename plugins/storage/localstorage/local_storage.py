@@ -34,7 +34,8 @@ data corruption.
 """
 
 import shutil #For the move function.
-import os #To delete files and get modification times.
+import os #To delete files, get modification times and flush data to files.
+import tempfile #To write to temporary files in order to write atomically.
 import urllib.parse #To get the scheme from a URI.
 
 def can_read(uri):
@@ -127,7 +128,29 @@ def read(uri):
 			return result
 
 def write(uri, data):
-	raise RuntimeError("This functionality is not yet implemented.")
+	"""
+	.. function:: write(uri, data)
+	Writes data to a resource.
+
+	Any old data in the resource will get overwritten. If no resource exists at
+	the specified location, a new resource will be created.
+
+	This writing is done atomically, meaning that it will appear as if the
+	writing is made instantaneously. This is done by writing the data to a
+	temporary file, then moving the new file on top of the old file. Therefore,
+	the actual atomicity of this write depends on the atomicity of ``move``.
+
+	:param uri: The location of the resource to write the data to.
+	:param data: The data to write to the resource, as a bytes string.
+	:raises IOError: The data could not be written.
+	"""
+	path = _uri_to_path(uri)
+	directory, _ = os.path.split(path) #Put the temporary file in the same directory, so it will be on the same file system which guarantees an atomic move.
+	with tempfile.NamedTemporaryFile(dir=directory, delete=False) as temp_handle: #Don't delete it afterwards!
+		temp_handle.write(data)
+		temp_handle.flush() #Make sure that it's really all written.
+		os.fsync(temp_handle.fileno()) #Make sure the file system is up-to-date.
+	move(temp_handle.name, uri) #Move the new file into place, replacing the old file if it existed.
 
 def _uri_to_path(uri):
 	"""
