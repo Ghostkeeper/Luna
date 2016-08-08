@@ -146,7 +146,7 @@ def write(uri, data):
 	"""
 	path = _uri_to_path(uri)
 	directory, _ = os.path.split(path) #Put the temporary file in the same directory, so it will be on the same file system which guarantees an atomic move.
-	with tempfile.NamedTemporaryFile(dir=directory, delete=False) as temp_handle: #Don't delete it afterwards!
+	with tempfile.NamedTemporaryFile(dir=directory, delete=False, mode="wb") as temp_handle: #Don't delete it afterwards!
 		temp_handle.write(data)
 		temp_handle.flush() #Make sure that it's really all written.
 		os.fsync(temp_handle.fileno()) #Make sure the file system is up-to-date.
