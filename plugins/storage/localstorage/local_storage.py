@@ -101,7 +101,7 @@ def move(source, destination):
 
 def read(uri):
 	"""
-	.. function read(uri):
+	.. function:: read(uri)
 	Reads the contents of the specified file.
 
 	This read is done atomically, meaning that it will return the state of the
@@ -113,8 +113,9 @@ def read(uri):
 	However, this algorithm is simple to implement and introduces very little
 	overhead if there is nobody writing, which is the main use case.
 
-	:param uri: The URI of the file to read.
-	:return: The contents of the file, as a bytes string.
+	:param uri: The URI of the resource to read.
+	:return: The contents of the resource, as a bytes string.
+	:raises IOError: The data could not be read.
 	"""
 	path = _uri_to_path(uri)
 
