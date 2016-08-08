@@ -33,6 +33,7 @@ atomicity doesn't prevent race conditions in these cases, but at least prevents
 data corruption.
 """
 
+import shutil #For the move function.
 import os #To delete files and get modification times.
 import urllib.parse #To get the scheme from a URI.
 
@@ -96,7 +97,7 @@ def move(source, destination):
 	:param destination: The new location of the resource.
 	:raises IOError: Moving the resource failed.
 	"""
-	raise RuntimeError("This functionality is not yet implemented.")
+	shutil.move(_uri_to_path(source), _uri_to_path(destination)) #Use shutil because it overwrites old files on Windows too.
 
 def read(uri):
 	"""
