@@ -2,9 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 project(Luna)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+#-----------------------------------Targets-------------------------------------
+option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
+option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
+option(BUILD_MISSING_DEPENDENCIES "Dependencies that are missing should be built from source." FALSE)
+
 #---------------------------------Dependencies----------------------------------
-option(DEPENDENCIES_BUILD_MISSING "Dependencies that are missing should be built from source." FALSE)
-if(DEPENDENCIES_BUILD_MISSING)
+if(BUILD_MISSING_DEPENDENCIES)
 	include(ExternalProject)
 	set(DEPENDENCIES_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/inst)
 
@@ -33,10 +37,10 @@ if(DEPENDENCIES_BUILD_MISSING)
 			endif(WIN32)
 		endif(BUILD_PYTHON)
 	endif(NOT PythonInterp_FOUND)
-else(DEPENDENCIES_BUILD_MISSING)
+else(BUILD_MISSING_DEPENDENCIES)
 	#Python.
 	find_package(PythonInterp 3.4.0 REQUIRED)
-endif(DEPENDENCIES_BUILD_MISSING)
+endif(BUILD_MISSING_DEPENDENCIES)
 
 #Finding/requiring Python modules.
 function(find_python_module module)
@@ -61,7 +65,6 @@ function(find_python_module module)
 endfunction(find_python_module)
 
 #Tests
-option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
 	enable_testing()
 
@@ -73,7 +76,6 @@ if(BUILD_TESTING)
 endif(BUILD_TESTING)
 
 #Documentation
-option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
 if(BUILD_DOCUMENTATION)
 	find_package(Sphinx REQUIRED)
 	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/documentation")
