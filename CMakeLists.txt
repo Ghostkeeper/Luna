@@ -37,6 +37,28 @@ if(BUILD_MISSING_DEPENDENCIES)
 			endif(WIN32)
 		endif(BUILD_PYTHON)
 	endif(NOT PythonInterp_FOUND)
+
+	#Sphinx.
+	if(BUILD_DOCUMENTATION) #Sphinx is only required for documentation.
+		find_package(Sphinx)
+		if(NOT SPHINX_FOUND)
+			option(BUILD_SPHINX "Build Sphinx from source." TRUE)
+			if(BUILD_SPHINX)
+				if(NOT PYTHON_EXECUTABLE)
+					message(ERROR "Building Sphinx from source requires Python.")
+				endif(NOT PYTHON_EXECUTABLE)
+				ExternalProject_Add(Sphinx
+					URL https://pypi.python.org/packages/8b/78/eeea2b837f911cdc301f5f05163f9729a2381cadd03ccf35b25afe816c90/Sphinx-1.4.5.tar.gz#md5=5c2cd2dac45dfa6123d067e32a89e89a
+					URL_HASH SHA512=E11CA5E02C44A2112CA31E1CFF4DB8A89AC0D58E410AEF43EAD48C74520DACAE61BA8AA5B91C5F6EF920851E35A2FF1470E74FD038CB50AC9BB6F689C495CEE7
+					CONFIGURE_COMMAND ""
+					BUILD_COMMAND ${PYTHON_EXECUTABLE} setup.py build
+					INSTALL_COMMAND ${PYTHON_EXECUTABLE} setup.py install
+					BUILD_IN_SOURCE 1
+				)
+				set(SPHINX_EXECUTABLE sphinx-build)
+			endif(BUILD_SPHINX)
+		endif(NOT SPHINX_FOUND)
+	endif(BUILD_DOCUMENTATION)
 else(BUILD_MISSING_DEPENDENCIES)
 	#Python.
 	find_package(PythonInterp 3.4.0 REQUIRED)
