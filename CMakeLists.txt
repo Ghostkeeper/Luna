@@ -17,6 +17,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 	if(NOT PythonInterp_FOUND)
 		option(BUILD_PYTHON "Build Python from source." TRUE)
 		if(BUILD_PYTHON)
+			message(STATUS "Dependency Python is missing and will be built from source.")
 			if(WIN32)
 				ExternalProject_Add(Python
 					URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
@@ -34,8 +35,8 @@ if(BUILD_MISSING_DEPENDENCIES)
 					BUILD_IN_SOURCE 1
 				)
 				set(PYTHON_EXECUTABLE ${DEPENDENCIES_INSTALL_PREFIX}/bin/python3)
-				set(PythonInterp_FOUND TRUE)
 			endif(WIN32)
+			set(PythonInterp_FOUND TRUE)
 		endif(BUILD_PYTHON)
 	endif(NOT PythonInterp_FOUND)
 
@@ -48,6 +49,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 				if(NOT PYTHON_EXECUTABLE)
 					message(ERROR "Building Sphinx from source requires Python.")
 				endif(NOT PYTHON_EXECUTABLE)
+				message(STATUS "Depencency Sphinx is missing and will be built from source.")
 				ExternalProject_Add(Sphinx
 					URL https://pypi.python.org/packages/8b/78/eeea2b837f911cdc301f5f05163f9729a2381cadd03ccf35b25afe816c90/Sphinx-1.4.5.tar.gz#md5=5c2cd2dac45dfa6123d067e32a89e89a
 					URL_HASH SHA512=E11CA5E02C44A2112CA31E1CFF4DB8A89AC0D58E410AEF43EAD48C74520DACAE61BA8AA5B91C5F6EF920851E35A2FF1470E74FD038CB50AC9BB6F689C495CEE7
