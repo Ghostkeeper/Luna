@@ -3,10 +3,16 @@
 Luna Documentation
 ==================
 
-Contents:
-
 .. toctree::
-	:maxdepth: 2
+	:glob:
+	:caption: Table of Contents
+	:maxdepth: 4
+
+	documentation/*
+	luna/*
+	plugins/*
+	plugins/*/*
+	plugins/*/*/*
 
 Indices and tables
 ==================
