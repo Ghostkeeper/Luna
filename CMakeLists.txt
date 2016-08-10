@@ -15,7 +15,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 
 	#Python.
 	find_package(PythonInterp 3.4.0)
-	if(NOT PythonInterp_FOUND)
+	if(NOT PYTHONINTERP_FOUND)
 		option(BUILD_PYTHON "Build Python from source." TRUE)
 		if(BUILD_PYTHON)
 			message(STATUS "Dependency Python is missing and will be built from source.")
@@ -39,7 +39,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 			endif(WIN32)
 			set(PythonInterp_FOUND TRUE)
 		endif(BUILD_PYTHON)
-	endif(NOT PythonInterp_FOUND)
+	endif(NOT PYTHONINTERP_FOUND)
 
 	#PyLint.
 	if(BUILD_TESTING) #PyLint is only required for testing.
