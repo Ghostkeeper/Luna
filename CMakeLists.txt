@@ -41,6 +41,28 @@ if(BUILD_MISSING_DEPENDENCIES)
 		endif(BUILD_PYTHON)
 	endif(NOT PythonInterp_FOUND)
 
+	#PyLint.
+	if(BUILD_TESTING) #PyLint is only required for testing.
+		find_python_module(PyLint)
+		if(NOT PyLint_FOUND)
+			option(BUILD_PYLINT "Build PyLint from source." TRUE)
+			if(BUILD_PYLINT)
+				if(NOT PYTHON_EXECUTABLE)
+					message(ERROR "Building PyLint from source requires Python.")
+				endif(NOT PYTHON_EXECUTABLE)
+				message(STATUS "Dependency PyLint is missing and will be built from source.")
+				ExternalProject_Add(PyLint
+					URL https://pypi.python.org/packages/4e/4b/2f14a233e6c86bbfff9568d3357860573dea51be7c96eecab9471ab6ca6f/pylint-1.6.4.tar.gz#md5=66ba9c27e067568bdabcdd7c21303903
+					URL_HASH SHA512=8252A46F8A7FF6A70F2EA10A94A9E8618A903014210CF87C061E649FBE0C2106FB1B63643605AE0ED3F4652E8ED09442F4FD32A0DF11F3639E6E35128E432D51
+					CONFIGURE_COMMAND ""
+					BUILD_COMMAND ${PYTHON_EXECUTABLE} setup.py build
+					INSTALL_COMMAND ${PYTHON_EXECUTABLE} setup.py install
+					BUILD_IN_SOURCE 1
+				)
+			endif(BUILD_PYLINT)
+		endif(NOT PyLint_FOUND)
+	endif(BUILD_TESTING)
+
 	#Sphinx.
 	if(BUILD_DOCUMENTATION) #Sphinx is only required for documentation.
 		find_package(Sphinx)
@@ -50,7 +72,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 				if(NOT PYTHON_EXECUTABLE)
 					message(ERROR "Building Sphinx from source requires Python.")
 				endif(NOT PYTHON_EXECUTABLE)
-				message(STATUS "Depencency Sphinx is missing and will be built from source.")
+				message(STATUS "Dependency Sphinx is missing and will be built from source.")
 				ExternalProject_Add(Sphinx
 					URL https://pypi.python.org/packages/8b/78/eeea2b837f911cdc301f5f05163f9729a2381cadd03ccf35b25afe816c90/Sphinx-1.4.5.tar.gz#md5=5c2cd2dac45dfa6123d067e32a89e89a
 					URL_HASH SHA512=E11CA5E02C44A2112CA31E1CFF4DB8A89AC0D58E410AEF43EAD48C74520DACAE61BA8AA5B91C5F6EF920851E35A2FF1470E74FD038CB50AC9BB6F689C495CEE7
