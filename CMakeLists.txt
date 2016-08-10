@@ -43,8 +43,8 @@ if(BUILD_MISSING_DEPENDENCIES)
 
 	#PyLint.
 	if(BUILD_TESTING) #PyLint is only required for testing.
-		find_python_module(PyLint)
-		if(NOT PyLint_FOUND)
+		find_python_module(pylint)
+		if(NOT PYTHON_PYLINT_FOUND)
 			option(BUILD_PYLINT "Build PyLint from source." TRUE)
 			if(BUILD_PYLINT)
 				if(NOT PYTHON_EXECUTABLE)
@@ -60,7 +60,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 					BUILD_IN_SOURCE 1
 				)
 			endif(BUILD_PYLINT)
-		endif(NOT PyLint_FOUND)
+		endif(NOT PYTHON_PYLINT_FOUND)
 	endif(BUILD_TESTING)
 
 	#Sphinx.
