@@ -109,7 +109,7 @@ html_theme = "nature"
 
 #The name for this set of Sphinx documents.
 #"<project> v<release> documentation" by default.
-#html_title = "Luna v0.0"
+#html_title = "${LUNA_TITLE} v${LUNA_VERSION_MAJOR}.${LUNA_VERSION_MINOR}"
 
 #A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
