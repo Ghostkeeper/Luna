@@ -3,6 +3,11 @@ project(Luna)
 include(${CMAKE_SOURCE_DIR}/cmake/FindPythonModule.cmake)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+#----------------------------Application Metadata-------------------------------
+set(LUNA_VERSION_MAJOR 0 CACHE STRING "Major version number. The major version number must increase for every release that alters any pre-existing API.")
+set(LUNA_VERSION_MINOR 0 CACHE STRING "Minor version number. The minor version number must increase for every release that introduces new features and does not alter any pre-existing API.")
+set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version number must increase for every release that only fixes bugs and does not alter any pre-existing API.")
+
 #-----------------------------------Targets-------------------------------------
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
