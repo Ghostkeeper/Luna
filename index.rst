@@ -9,9 +9,6 @@ Luna Documentation
 	:maxdepth: 4
 
 	documentation/*
-	luna/*
-	plugins/*
-	plugins/*/*
 	plugins/*/*/*
 
 Indices and tables
