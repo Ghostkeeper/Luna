@@ -90,6 +90,7 @@ if(BUILD_MISSING_DEPENDENCIES)
 					BUILD_IN_SOURCE 1
 				)
 				set(SPHINX_EXECUTABLE sphinx-build)
+				set(SPHINX_APIDOC_EXECUTABLE sphinx-apidoc)
 				set(SPHINX_FOUND TRUE)
 			endif(BUILD_SPHINX)
 		endif(NOT SPHINX_FOUND)
@@ -114,7 +115,27 @@ endif(BUILD_TESTING)
 if(BUILD_DOCUMENTATION)
 	find_package(Sphinx REQUIRED)
 	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_BINARY_DIR}/documentation" CACHE FILEPATH "Where to save generated documentation.")
+	set(DOCUMENTATION_TEMP_DIR "${CMAKE_BINARY_DIR}/documentation_source")
+
+	#Information to put in the Sphinx configuration file.
 	string(TIMESTAMP DOCUMENTATION_YEAR "%Y")
+	file(GLOB_RECURSE DOCUMENTATION_INIT_FILES __init__.py) #All directories with __init__.py files.
 	configure_file("${CMAKE_SOURCE_DIR}/sphinx_configuration.py.in" "${CMAKE_BINARY_DIR}/conf.py")
-	add_custom_target(documentation ALL ${SPHINX_EXECUTABLE} -c ${CMAKE_BINARY_DIR} -n "${CMAKE_SOURCE_DIR}" "${DOCUMENTATION_OUTPUT_DIR}" COMMENT "Generate technical documentation of the application.")
+
+	#Get all plug-in directories.
+	set(DOCUMENTATION_APIDOC_COMMANDS "")
+	set(DOCUMENTATION_COPY_SOURCES_COMMANDS "")
+	FOREACH(INIT_FILE ${DOCUMENTATION_INIT_FILES})
+		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
+		get_filename_component(PACKAGE_NAME ${PACKAGE_DIR} NAME)
+		list(APPEND DOCUMENTATION_APIDOC_COMMANDS ${SPHINX_APIDOC_EXECUTABLE} -o ${DOCUMENTATION_TEMP_DIR}/technical -e ${PACKAGE_DIR} &&) #Generate the documentation.
+		list(APPEND DOCUMENTATION_COPY_SOURCES_COMMANDS ${CMAKE_COMMAND} -E copy_directory "${PACKAGE_DIR}" "${DOCUMENTATION_TEMP_DIR}/${PACKAGE_NAME}" &&) #Copy sources so that any other .rst files are included.
+	ENDFOREACH(INIT_FILE ${DOCUMENTATION_INIT_FILES})
+
+	add_custom_target(documentation ALL
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/documentation" "${DOCUMENTATION_TEMP_DIR}" &&
+		${DOCUMENTATION_COPY_SOURCES_COMMANDS}
+		${DOCUMENTATION_APIDOC_COMMANDS}
+		${SPHINX_EXECUTABLE} -c ${CMAKE_BINARY_DIR} -n "${DOCUMENTATION_TEMP_DIR}" "${DOCUMENTATION_OUTPUT_DIR}" COMMENT "Generate documentation of the application."
+	)
 endif(BUILD_DOCUMENTATION)

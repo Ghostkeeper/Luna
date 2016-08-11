@@ -3,13 +3,18 @@
 Luna Documentation
 ==================
 
+Welcome to Luna's documentation.
+
 .. toctree::
 	:glob:
 	:caption: Table of Contents
-	:maxdepth: 4
+	:maxdepth: 2
 
-	documentation/*
-	plugins/*/*/*
+	*
+	*/implement
+	technical/luna
+	technical/luna*
+	technical/*
 
 Indices and tables
 ==================
