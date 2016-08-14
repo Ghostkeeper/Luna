@@ -7,6 +7,7 @@
 Provides a system for the model part of the model-view-presenter paradigm.
 
 To use the model system properly, the following code changes are required:
+
 - Give all classes that are part of the model the ``@model`` decorator.
 - To let the view update whenever the model is changed, call the ``listen``
   function of the model. Supply a callable object that must be called whenever a
@@ -38,8 +39,8 @@ def model(original_class):
 		Initialises the model such that lists of listeners are tracked.
 
 		:param self: The model instance.
-		:param args: Positional arguments passed to the model's __init__.
-		:param kwargs: Key-word arguments passed to the model's __init__.
+		:param args: Positional arguments passed to the model's ``__init__``.
+		:param kwargs: Key-word arguments passed to the model's ``__init__``.
 		"""
 		#This function is only called when self is the original_class and only references fields defined in this module, so we can safely allow protected access.
 		#pylint: disable=protected-access

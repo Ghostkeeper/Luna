@@ -19,8 +19,9 @@ class BufferInfo(ctypes.Structure):
 	C-type data structure to store the state of the Windows stdout channel in.
 
 	This data structure must exactly match the CONSOLE_SCREEN_BUFFER_INFO
-	structure as described in the `MSDN documentation
-	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx>`.
+	structure as described in the `MSDN documentation`_.
+
+	.. _MSDN documentation: https://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx
 	"""
 	_fields_ = [
 		("dwSize", c_type_coordinate.CTypeCoordinate), #Size of the window (in character rows and columns).

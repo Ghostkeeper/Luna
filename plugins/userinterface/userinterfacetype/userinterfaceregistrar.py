@@ -74,8 +74,8 @@ def validate_metadata(metadata):
 	Validates whether the specified metadata is valid for user interface
 	plug-ins.
 
-	User interface metadata must have a "userinterface" entry, which must
-	contain three entries: "join", "start" and "stop". These entries must
+	User interface metadata must have a ``userinterface`` entry, which must
+	contain three entries: ``join``, ``start`` and ``stop``. These entries must
 	contain callable objects (such as functions).
 
 	:param metadata: The metadata to validate.

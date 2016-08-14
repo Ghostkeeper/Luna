@@ -68,9 +68,10 @@ def validate_metadata(metadata):
 	"""
 	Validates whether the specified metadata is valid for storage plug-ins.
 
-	Storage metadata must have a "storage" entry, which must contain six
-	entries: "can_read", "can_write", "delete", "exists", "move", "read" and
-	"write". These entries must contain callable objects (such as functions).
+	Storage metadata must have a ``storage`` entry, which must contain six
+	entries: ``can_read``, ``can_write``, ``delete``, ``exists``, ``move``,
+	``read`` and ``write``. These entries must contain callable objects (such as
+	functions).
 
 	:param metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.

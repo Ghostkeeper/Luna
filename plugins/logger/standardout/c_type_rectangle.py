@@ -18,8 +18,9 @@ class CTypeRectangle(ctypes.Structure):
 	The rectangle consists of a position and a size.
 
 	This data structure must exactly match the SMALL_RECT structure as described
-	in the `MSDN documentation
-	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms686311.aspx>`.
+	in the `MSDN documentation`_.
+
+	.. _MSDN documentation: https://msdn.microsoft.com/en-us/library/windows/desktop/ms686311.aspx
 	"""
 	_fields_ = [
 		("Left", ctypes.c_short), #Horizontal coordinate of left side.

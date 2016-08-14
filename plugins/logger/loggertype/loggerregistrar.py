@@ -67,9 +67,9 @@ def validate_metadata(metadata):
 	"""
 	Validates whether the specified metadata is valid for logger plug-ins.
 
-	Logger's metadata must have a "logger" field, which contains an
-	"implementation" field. This field must contain a class which inherits from
-	the Logger interface.
+	Logger's metadata must have a ``logger`` field, which must contain five
+	entries: ``critical``, ``debug``, ``error``, ``info`` and ``warning``. These
+	entries must contain callable objects (such as functions).
 
 	:param metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.

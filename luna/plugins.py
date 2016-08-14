@@ -83,7 +83,7 @@ def api(plugin_type):
 	:param plugin_type: The plug-in type to get the API of.
 	:return: An object with methods to interact with plug-ins of the specified
 		type.
-	:raises ImportError The plug-in type is unknown.
+	:raises ImportError: The plug-in type is unknown.
 	"""
 	if plugin_type not in _plugin_types:
 		raise ImportError("No API known for \"{type}\".".format(type=plugin_type))

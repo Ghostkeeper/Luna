@@ -15,7 +15,7 @@ introduce an external dependency.
 import functools #For partial functions.
 import unittest #For unittest's test case, which we extend.
 
-class TestCaseMeta(type):
+class _TestCaseMeta(type):
 	"""
 	Metaclass to capture all parametrised tests and duplicate them for each of
 	their parameter sets.
@@ -41,12 +41,12 @@ class TestCaseMeta(type):
 				del(members[member]) #Delete the original parametrised function.
 		return type.__new__(cls, name, bases, members)
 
-class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
+class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 	"""
-	Extension of unittest.TestCase that adds all features that Luna's test cases
-	need.
+	Extension of ``unittest.TestCase`` that adds all features that Luna's test
+	cases need.
 	"""
-	pass
+	pass #All special logic is currently done by the metaclass.
 
 def parametrise(parameters):
 	"""

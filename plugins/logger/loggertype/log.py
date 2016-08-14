@@ -21,22 +21,22 @@ class Level(enum.Enum):
 	Enumerates the logging severity levels.
 	"""
 
-	ERROR = 1
+	ERROR = 0
 	"""
 	For logging fatal errors that will crash the program.
 	"""
 
-	CRITICAL = 2
+	CRITICAL = 1
 	"""
 	For logging fatal errors that will crash the current operation.
 	"""
 
-	WARNING = 3
+	WARNING = 2
 	"""
 	For logging events that are probably not going the way the user intended.
 	"""
 
-	INFO = 4
+	INFO = 3
 	"""
 	For logging events.
 
@@ -44,7 +44,7 @@ class Level(enum.Enum):
 	logged with this level, such as user input.
 	"""
 
-	DEBUG = 5
+	DEBUG = 4
 	"""
 	Information that might be useful for a debugger to know.
 	"""

@@ -16,8 +16,9 @@ class CTypeCoordinate(ctypes.Structure):
 	C-type data structure representing a coordinate pair.
 
 	This data structure must exactly match the COORD structure as described in
-	the `MSDN documentation
-	<https://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx>`.
+	the `MSDN documentation`_.
+
+	.. _MSDN documentation: https://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx
 	"""
 	_fields_ = [
 		("X", ctypes.c_short), #Horizontal coordinate.
