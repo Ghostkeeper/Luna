@@ -38,7 +38,6 @@ import userinterfacetype.userinterfaceregistrar #Where user interface plug-ins m
 
 def metadata():
 	"""
-	.. function:: metadata()
 	Provides metadata for the UserInterfaceType plug-in.
 
 	This gives human-readable information on the plug-in, dependency resolution

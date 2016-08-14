@@ -40,7 +40,6 @@ import urllib.parse #To get the scheme from a URI.
 
 def can_read(uri):
 	"""
-	.. function:: can_read(uri)
 	Determines if this plug-in could read from a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
@@ -54,7 +53,6 @@ def can_read(uri):
 
 def can_write(uri):
 	"""
-	.. function:: can_write(uri)
 	Determines if this plug-in could write to a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
@@ -68,7 +66,6 @@ def can_write(uri):
 
 def delete(uri):
 	"""
-	.. function:: delete(uri)
 	Deletes the resource at the specified location.
 
 	:param uri: The location of the resource to delete.
@@ -78,7 +75,6 @@ def delete(uri):
 
 def exists(uri):
 	"""
-	.. function:: exists(uri)
 	Checks if the specified resource exists.
 
 	:param uri: The location of the resource to check for.
@@ -89,7 +85,6 @@ def exists(uri):
 
 def move(source, destination):
 	"""
-	.. function:: move(source, destination)
 	Moves a resource from one location to another.
 
 	Any existing resource at the destination will get overwritten.
@@ -102,7 +97,6 @@ def move(source, destination):
 
 def read(uri):
 	"""
-	.. function:: read(uri)
 	Reads the contents of the specified file.
 
 	This read is done atomically, meaning that it will return the state of the
@@ -129,7 +123,6 @@ def read(uri):
 
 def write(uri, data):
 	"""
-	.. function:: write(uri, data)
 	Writes data to a resource.
 
 	Any old data in the resource will get overwritten. If no resource exists at
@@ -154,7 +147,6 @@ def write(uri, data):
 
 def _uri_to_path(uri):
 	"""
-	.. function _uri_to_path(uri)
 	Converts a URI to a local path that can be read by Python's file I/O.
 
 	This already assumes that this is local. The input must have been checked by

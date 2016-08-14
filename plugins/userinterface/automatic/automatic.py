@@ -48,14 +48,12 @@ class Automatic:
 
 	def __init__(self):
 		"""
-		.. function:: __init__()
 		Creates a new instance of the Automatic user interface.
 		"""
 		super().__init__()
 
 	def start(self):
 		"""
-		.. function:: start()
 		Starts the Automatic interface.
 
 		For now this just prints a message that the Automatic interface is
@@ -65,14 +63,12 @@ class Automatic:
 
 def join():
 	"""
-	.. function:: join()
 	Blocks the current thread until the user interface has stopped.
 	"""
 	pass #This user interface is single-threaded, so if the start function is ran, it joins immediately.
 
 def start():
 	"""
-	.. function:: start()
 	Starts the user interface.
 
 	For this automatic user interface, this runs the entire program automatically.
@@ -82,7 +78,6 @@ def start():
 
 def stop():
 	"""
-	.. function:: stop()
 	Stops the user interface.
 	"""
 	pass #This user interface is single-threaded, so if the start function is ran, it stops immediately.

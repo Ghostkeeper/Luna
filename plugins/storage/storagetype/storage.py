@@ -38,7 +38,6 @@ import storagetype.storageregistrar #To get the logger plug-ins to log with.
 
 def delete(uri):
 	"""
-	.. function:: delete(uri)
 	Removes an entity at the specified location.
 
 	The URI is taken relative to the application's working directory. That means
@@ -64,7 +63,6 @@ def delete(uri):
 
 def exists(uri):
 	"""
-	.. function:: exists(uri)
 	Checks whether an entity exists at the specified location.
 
 	The URI is taken relative to the application's working directory. That means
@@ -92,7 +90,6 @@ def exists(uri):
 
 def move(source, destination):
 	"""
-	.. function:: move(source, destination)
 	Moves data from one place to another.
 
 	Both URIs are taken relative to the application's working directory. That
@@ -148,7 +145,6 @@ def move(source, destination):
 
 def read(uri):
 	"""
-	.. function:: read(uri)
 	Reads all data stored at a specified location.
 
 	The URI is taken relative to the application's working directory. That means
@@ -175,7 +171,6 @@ def read(uri):
 
 def write(uri, data):
 	"""
-	.. function:: write(uri, data)
 	Writes data to persistent storage at a specified location.
 
 	The URI is taken relative to the application's working directory. That means
@@ -205,7 +200,6 @@ def write(uri, data):
 
 def _to_absolute_uri(uri):
 	"""
-	.. function:: _to_absolute_uri(uri)
 	Converts the input URI into an absolute URI, relative to the current working
 	directory.
 

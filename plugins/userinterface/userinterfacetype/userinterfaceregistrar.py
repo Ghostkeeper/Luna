@@ -51,7 +51,6 @@ identities.
 
 def get_all_user_interfaces():
 	"""
-	.. function:: get_all_user_interfaces()
 	Gets all user interfaces that have been registered here so far.
 
 	:return: A dictionary of user interfaces, keyed by their identities.
@@ -60,7 +59,6 @@ def get_all_user_interfaces():
 
 def get_user_interface(identity):
 	"""
-	.. function:: get_user_interface(identity)
 	Gets a specific user interface plug-in object by identity.
 
 	:param identity: The identity of the user interface to get.
@@ -73,7 +71,6 @@ def get_user_interface(identity):
 
 def register(identity, metadata):
 	"""
-	.. function:: register(identity, metadata)
 	Registers a new user interface plug-in to communicate to the user with.
 
 	This expects the metadata to already be verified as a user interface's
@@ -93,7 +90,6 @@ def register(identity, metadata):
 
 def validate_metadata(metadata):
 	"""
-	.. function:: validate_metadata(metadata)
 	Validates whether the specified metadata is valid for user interface
 	plug-ins.
 

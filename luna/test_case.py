@@ -42,7 +42,6 @@ class TestCaseMeta(type):
 
 	def __new__(cls, name, bases, members):
 		"""
-		.. function:: TestCaseMeta()
 		Defines a new TestCase class.
 
 		This intercepts all tests that are parametrised and duplicates them for
@@ -70,7 +69,6 @@ class TestCase(unittest.TestCase, metaclass=TestCaseMeta):
 
 def parametrise(parameters):
 	"""
-	.. function:: parametrise(parameters)
 	Causes a test to run multiple times with different parameters.
 
 	This only works for functions inside a `TestCase` class.

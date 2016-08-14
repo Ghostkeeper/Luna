@@ -54,7 +54,6 @@ if _win_kernel: #We're on Windows Bash.
 
 def critical(message, title="Critical", stack_trace=None):
 	"""
-	.. function:: critical(message[, title][, stack_trace)
 	Logs a new critical message.
 
 	A timestamp is added alongside the message. If a title is provided, it is
@@ -76,7 +75,6 @@ def critical(message, title="Critical", stack_trace=None):
 
 def debug(message, title="Debug", stack_trace=None):
 	"""
-	.. function:: debug(message[, title])
 	Logs a new debug message.
 
 	A timestamp is added alongside the message. If a title is provided, it is
@@ -98,7 +96,6 @@ def debug(message, title="Debug", stack_trace=None):
 
 def error(message, title="Error", stack_trace=None):
 	"""
-	.. function:: error(message[, title])
 	Logs a new error message.
 
 	A timestamp is added alongside the message. If a title is provided, it is
@@ -120,7 +117,6 @@ def error(message, title="Error", stack_trace=None):
 
 def info(message, title="Information", stack_trace=None):
 	"""
-	.. function:: info(message[, title])
 	Logs a new information message.
 
 	A timestamp is added alongside the message. If a title is provided, it is
@@ -142,7 +138,6 @@ def info(message, title="Information", stack_trace=None):
 
 def warning(message, title="Warning", stack_trace=None):
 	"""
-	.. function:: warning(message[, title])
 	Logs a new warning message.
 
 	A timestamp is added alongside the message. If a title is provided, it is
@@ -200,7 +195,6 @@ The colour codes in the ANSI-specification for escape codes.
 
 def _colour_print(message, colour="default"):
 	"""
-	.. function:: _colour_print(message, colour)
 	Prints a message with specified colour-coding.
 
 	The colour needs to be in the ``_win_colour_codes`` dictionary as well as
@@ -210,7 +204,7 @@ def _colour_print(message, colour="default"):
 
 	:param message: The text to print.
 	:param colour: The colour of the message to display. If the colour is not
-	supported, the default colour is used.
+		supported, the default colour is used.
 	"""
 	if _win_kernel:
 		buffer_state = standardout.buffer_info.BufferInfo()
@@ -229,7 +223,6 @@ def _colour_print(message, colour="default"):
 
 def _print_stack_trace(stack_trace):
 	"""
-	.. function:: _print_stack_trace(stack_trace)
 	Prints a formatted stack trace.
 
 	The stack trace is formatted similarly to how Python formats its stack

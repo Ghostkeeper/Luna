@@ -72,7 +72,6 @@ _logger_levels = {}
 
 def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	"""
-	.. function:: critical(message[, title][, key=value]*)
 	Logs a new critical message with all loggers.
 
 	:param message: The message of the log entry.
@@ -99,7 +98,6 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 
 def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	"""
-	.. function:: debug(message[, title][, key=value]*)
 	Logs a new debug message with all loggers.
 
 	:param message: The message of the log entry.
@@ -126,7 +124,6 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 
 def error(message, title="Error", include_stack_trace=True, **kwargs):
 	"""
-	.. function:: error(message[, title][, key=value]*)
 	Logs a new error message with all loggers.
 
 	:param message: The message of the log entry.
@@ -153,7 +150,6 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 
 def info(message, title="Information", include_stack_trace=True, **kwargs):
 	"""
-	.. function:: info(message[, title][, key=value]*)
 	Logs a new information message with all loggers.
 
 	:param message: The message of the log entry.
@@ -180,7 +176,6 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 
 def set_levels(levels, identity=None):
 	"""
-	.. function:: set_levels(levels[, identity])
 	Sets the log levels that are logged by the loggers.
 
 	The logger(s) will only acquire log messages with severity levels that are
@@ -201,7 +196,6 @@ def set_levels(levels, identity=None):
 
 def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	"""
-	.. function:: warning(message[, title][, key=value]*)
 	Logs a new warning message with all loggers.
 
 	:param message: The message of the log entry.

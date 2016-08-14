@@ -55,7 +55,6 @@ identities.
 
 def get_all_storages():
 	"""
-	.. function:: get_all_storages()
 	Gets all storage plug-ins that have been registered here so far.
 
 	:return: A dictionary of storage plug-ins, keyed by their identities.
@@ -64,7 +63,6 @@ def get_all_storages():
 
 def register(identity, metadata):
 	"""
-	.. function:: register(identity, metadata)
 	Registers a new storage plug-in to store persistent data with.
 
 	This expects the metadata to already be verified as a storage's metadata.
@@ -87,7 +85,6 @@ def register(identity, metadata):
 
 def validate_metadata(metadata):
 	"""
-	.. function:: validate_metadata(metadata)
 	Validates whether the specified metadata is valid for storage plug-ins.
 
 	Storage metadata must have a "storage" entry, which must contain six

@@ -35,7 +35,6 @@ import loggertype.loggerregistrar #Where logger plug-ins must register.
 
 def metadata():
 	"""
-	.. function:: metadata()
 	Provides the metadata for the LoggerType plug-in.
 
 	This gives human-readable information on the plug-in, dependency resolution

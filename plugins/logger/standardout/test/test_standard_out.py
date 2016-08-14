@@ -65,7 +65,6 @@ class TestStandardOut(luna.test_case.TestCase):
 	@luna.test_case.parametrise(_test_messages)
 	def test_critical(self, message, title):
 		"""
-		.. function:: test_critical()
 		Tests printing a critical message.
 
 		:param message: The message to print.
@@ -78,7 +77,6 @@ class TestStandardOut(luna.test_case.TestCase):
 	@luna.test_case.parametrise(_test_messages)
 	def test_info(self, message, title):
 		"""
-		.. function:: test_info()
 		Tests printing an information message.
 
 		:param message: The message to print.

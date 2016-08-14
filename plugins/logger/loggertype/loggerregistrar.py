@@ -52,7 +52,6 @@ The loggers that have been registered here so far, keyed by their identities.
 
 def get_all_loggers():
 	"""
-	.. function:: get_all_loggers()
 	Gets a dictionary of all loggers that have been registered here so far.
 
 	The keys of the dictionary are the identities of the loggers.
@@ -63,7 +62,6 @@ def get_all_loggers():
 
 def register(identity, metadata):
 	"""
-	.. function:: register(identity, metadata)
 	Registers a new logger plug-in to log with.
 
 	This expects the metadata to already be verified as a logger's metadata.
@@ -86,7 +84,6 @@ def register(identity, metadata):
 
 def validate_metadata(metadata):
 	"""
-	.. function:: validate_metadata(metadata)
 	Validates whether the specified metadata is valid for logger plug-ins.
 
 	Logger's metadata must have a "logger" field, which contains an

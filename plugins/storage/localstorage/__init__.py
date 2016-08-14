@@ -32,7 +32,6 @@ import localstorage.local_storage #The storage implementation.
 
 def metadata():
 	"""
-	.. function:: metadata()
 	Provides the metadata for the local storage plug-in.
 
 	:returns: Dictionary of metadata.

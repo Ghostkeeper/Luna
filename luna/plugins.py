@@ -69,7 +69,7 @@ This is a named tuple consisting of the following fields:
 * api: The class that provides the API for the plug-ins of this type.
 * register: The function that plug-ins of this type must register with.
 * validate_metadata: The function that verifies that the metadata is valid for
-this type.
+	this type.
 """
 
 class MetadataValidationError(Exception):
@@ -79,7 +79,6 @@ class MetadataValidationError(Exception):
 
 def add_plugin_location(location):
 	"""
-	.. function:: addPluginLocation(location)
 	Adds a location to the list of locations where the application looks for
 	plug-ins.
 
@@ -93,7 +92,6 @@ def add_plugin_location(location):
 
 def api(plugin_type):
 	"""
-	.. function:: api(plugin_type)
 	Gets the API to interact with plug-ins of the specified type.
 
 	These APIs provide sets of functions to interact with the plug-ins of that
@@ -112,7 +110,6 @@ def api(plugin_type):
 
 def discover():
 	"""
-	.. function:: discover()
 	Discovers all plug-ins it can find.
 
 	This goes through all folders of all plug-in types, and finds out what
@@ -200,7 +197,6 @@ def discover():
 
 def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
 	"""
-	.. function:: _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity)
 	Checks whether a candidate meets the requirements set by a dependant
 	plug-in.
 
@@ -244,15 +240,14 @@ def _meets_requirements(candidate_metadata, requirements, candidate_identity, de
 
 def _find_candidates():
 	"""
-	.. function:: _find_candidates()
 	Finds candidates for what looks like might be plug-ins.
 
 	A candidate is a folder inside a plug-in location, which has a file
 	``__init__.py``. The file is not yet executed at this point.
 
 	:returns: A set of tuples of the form (<identity>, <path>), containing
-	respectively the identity of the plug-in and the path to the plug-in's
-	folder.
+		respectively the identity of the plug-in and the path to the plug-in's
+		folder.
 	"""
 	candidates = set()
 	for location in _plugin_locations:
@@ -267,7 +262,6 @@ def _find_candidates():
 
 def _load_candidate(identity, folder):
 	"""
-	.. function:: _load_candidate(identity, folder)
 	Loads a plug-in candidate as a Python package.
 
 	This is intended to be used on Python packages, containing an init
@@ -312,7 +306,6 @@ def _load_candidate(identity, folder):
 
 def _validate_metadata_global(metadata):
 	"""
-	.. function:: _validate_metadata_global(metadata)
 	Checks if the global part of the metadata of a plug-in is correct.
 
 	If it is incorrect, an exception is raised.
@@ -335,7 +328,6 @@ def _validate_metadata_global(metadata):
 
 def _validate_metadata_type(metadata):
 	"""
-	.. function:: _validate_metadata_type(metadata)
 	Checks if the metadata of a plug-in type plug-in is correct.
 
 	If it is incorrect, an exception is raised. At this point, the metadata must

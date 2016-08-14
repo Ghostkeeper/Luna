@@ -45,13 +45,13 @@ class Luna:
 
 	def run(self):
 		"""
-		.. function:: run()
 		Starts the application.
 
 		This process will start the plug-in registering, and then selects a user
 		interface based on the command line arguments.
 
-		:returns: ``True`` if the application was finished successfully, or ``False`` if something went wrong.
+		:returns: ``True`` if the application was finished successfully, or
+			``False`` if something went wrong.
 		"""
 		base_dir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
 		luna.plugins.add_plugin_location(os.path.join(base_dir, "plugins"))

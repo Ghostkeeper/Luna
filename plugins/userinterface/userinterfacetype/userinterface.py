@@ -35,7 +35,6 @@ _running = set() #Set of user interfaces that are currently running, by identity
 
 def join(user_interface):
 	"""
-	.. function:: join(user_interface)
 	Blocks the current thread until the specified user interface has stopped.
 
 	:param user_interface: The identity of the user interface to wait for.
@@ -52,7 +51,6 @@ def join(user_interface):
 
 def start(user_interface):
 	"""
-	.. function:: start(user_interface)
 	Launches a new instance of the specified user interface.
 
 	Only one instance of a specific plug-in may be run at the same time.
@@ -74,7 +72,6 @@ def start(user_interface):
 
 def stop_all():
 	"""
-	.. function:: stop_all()
 	Stops all user interfaces that are still running.
 	"""
 	for user_interface, user_interface_object in userinterfacetype.userinterfaceregistrar.get_all_user_interfaces().items():

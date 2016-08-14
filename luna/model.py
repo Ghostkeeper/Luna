@@ -39,7 +39,6 @@ import weakref #To automatically remove listeners if their class instances are r
 
 def model(original_class):
 	"""
-	.. function:: model(original_class)
 	Decorator that modifies a class such that it becomes part of the model.
 
 	This adds a ``listen`` function to the class, which can be used to listen to
@@ -55,7 +54,6 @@ def model(original_class):
 	@functools.wraps(original_class.__init__)
 	def new_init(self, *args, **kwargs):
 		"""
-		.. function:: new_init(...)
 		Initialises the model such that lists of listeners are tracked.
 
 		:param self: The model instance.
@@ -79,15 +77,14 @@ def model(original_class):
 		@functools.wraps(old_function)
 		def new_function(old_function, self, *args, **kwargs):
 			"""
-			.. function:: new_function(...)
 			Changes the model and calls the instance listeners of the model.
 
 			:param old_function: The function that changes the model.
 			:param self: The model instance.
 			:param args: Positional arguments passed to the function that
-			changes the model.
+				changes the model.
 			:param kwargs: Key-word arguments passed to the function that
-			changes the model.
+				changes the model.
 			:return: The result of the function that changed the model.
 			"""
 			result = old_function(self, *args, **kwargs)
@@ -112,7 +109,6 @@ def model(original_class):
 	@functools.wraps(old_setattr)
 	def new_setattr(self, name, value):
 		"""
-		.. function:: new_setattr(name, value)
 		Changes an attribute of the model and calls the listeners of the model.
 
 		It calls the attribute listeners of the changed attribute, and all
@@ -148,7 +144,6 @@ def model(original_class):
 
 	def listen(self, listener, attribute=None):
 		"""
-		.. function:: listen(self, listener[, attribute])
 		Causes a listener to be called when the instance or an attribute of it
 		changes.
 
@@ -162,9 +157,9 @@ def model(original_class):
 
 		:param self: The instance to listen to for changes.
 		:param listener: A callable object to call when any or all of the
-		attributes in this instance changes.
+			attributes in this instance changes.
 		:param attribute: If provided, the listener will only be called when
-		this attribute is changed. Must be a str if provided.
+			this attribute is changed. Must be a str if provided.
 		"""
 		#Take a weak reference to the listener.
 		if inspect.ismethod(listener) and hasattr(listener, "__self__"): #Is a bound method.

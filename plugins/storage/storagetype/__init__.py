@@ -40,7 +40,6 @@ import storagetype.storageregistrar #Where storage plug-ins must register.
 
 def metadata():
 	"""
-	.. function:: metadata()
 	Provides the metadata for the StorageType plug-in.
 
 	This gives human-readable information on the plug-in, dependency resolution
