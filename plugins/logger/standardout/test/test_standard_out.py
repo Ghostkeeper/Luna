@@ -54,7 +54,9 @@ class TestStandardOut(luna.test_case.TestCase):
 
 	@luna.test_case.parametrise({
 		"simple": {"message": "Message.", "title": "Title"},
-		"empty": {"message": "", "title": ""}
+		"empty": {"message": "", "title": ""},
+		"multiline": {"message": "First line.\nSecond line.", "title": "Multiline"},
+		"unicode": {"message": "☽", "title": "☾"}
 	})
 	def test_info(self, message, title):
 		"""
