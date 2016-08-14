@@ -28,11 +28,11 @@ Tests the behaviour of the standard_out logger implementation.
 
 import io #Provides a replacement I/O channel to mock stdout.
 import sys #To capture stdout.
-import unittest
+import luna.test_case #To get parametrised tests.
 
 import standardout.standard_out #The module to test.
 
-class TestStandardOut(unittest.TestCase):
+class TestStandardOut(luna.test_case.TestCase):
 	"""
 	Tests the behaviour of the standard_out logger implementation.
 	"""
@@ -52,13 +52,15 @@ class TestStandardOut(unittest.TestCase):
 		sys.stdout = self._actual_stdout
 		self._mock_stdout.close()
 
-	def test_info(self):
+	@luna.test_case.parametrise({
+		"simple": {"message": "Message.", "title": "Title"},
+		"empty": {"message": "", "title": ""}
+	})
+	def test_info(self, message, title):
 		"""
 		.. function:: test_info()
 		Tests printing a simple info message.
 		"""
-		message = "Message."
-		title = "Title"
 		standardout.standard_out.info(message, title=title)
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
