@@ -57,6 +57,30 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertIn(message, self._mock_stdout.getvalue())
 
 	@luna.test_case.parametrise(_test_messages)
+	def test_debug(self, message, title):
+		"""
+		Tests printing a debug message.
+
+		:param message: The message to print.
+		:param title: The title to give the message.
+		"""
+		standardout.standard_out.debug(message, title=title)
+		self.assertIn(title, self._mock_stdout.getvalue())
+		self.assertIn(message, self._mock_stdout.getvalue())
+
+	@luna.test_case.parametrise(_test_messages)
+	def test_error(self, message, title):
+		"""
+		Tests printing an error message.
+
+		:param message: The message to print.
+		:param title: The title to give the message.
+		"""
+		standardout.standard_out.error(message, title=title)
+		self.assertIn(title, self._mock_stdout.getvalue())
+		self.assertIn(message, self._mock_stdout.getvalue())
+
+	@luna.test_case.parametrise(_test_messages)
 	def test_info(self, message, title):
 		"""
 		Tests printing an information message.
@@ -65,6 +89,18 @@ class TestStandardOut(luna.test_case.TestCase):
 		:param title: The title to give the message.
 		"""
 		standardout.standard_out.info(message, title=title)
+		self.assertIn(title, self._mock_stdout.getvalue())
+		self.assertIn(message, self._mock_stdout.getvalue())
+
+	@luna.test_case.parametrise(_test_messages)
+	def test_warning(self, message, title):
+		"""
+		Tests printing a warning message.
+
+		:param message: The message to print.
+		:param title: The title to give the message.
+		"""
+		standardout.standard_out.warning(message, title=title)
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
 
