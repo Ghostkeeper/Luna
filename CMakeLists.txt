@@ -11,6 +11,20 @@ set(LUNA_VERSION_MAJOR 0 CACHE STRING "Major version number. The major version n
 set(LUNA_VERSION_MINOR 0 CACHE STRING "Minor version number. The minor version number must increase for every release that introduces new features and does not alter any pre-existing API.")
 set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version number must increase for every release that only fixes bugs and does not alter any pre-existing API.")
 
+#-----------------------------Plug-in Directories-------------------------------
+#We need a list of these directories at multiple places, so get them here for convenience.
+set(PLUGIN_DIRECTORIES "")
+file(GLOB_RECURSE PLUGIN_INIT_FILES __init__.py) #All directories with __init__.py files.
+foreach(INIT_FILE ${PLUGIN_INIT_FILES})
+	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)
+	if(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
+		list(REMOVE_ITEM PLUGIN_INIT_FILES ${INIT_FILE}) #Exclude files in the build directory.
+	else(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
+		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
+		list(APPEND PLUGIN_DIRECTORIES ${PACKAGE_DIR})
+	endif(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
+endforeach(INIT_FILE ${PLUGIN_INIT_FILES})
+
 #-----------------------------------Targets-------------------------------------
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
@@ -100,18 +114,31 @@ else(BUILD_MISSING_DEPENDENCIES)
 	find_package(PythonInterp 3.4.0 REQUIRED)
 endif(BUILD_MISSING_DEPENDENCIES)
 
-#Tests
+#------------------------------------Tests--------------------------------------
 if(BUILD_TESTING)
 	enable_testing()
 
 	#Code style validation.
 	find_python_module(pylint REQUIRED)
-	file(GLOB_RECURSE python_files *.py)
-	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${python_files})
+	file(GLOB_RECURSE PYTHON_FILES *.py)
+	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${PYTHON_FILES})
 	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
+
+	#Plug-in unit tests.
+	foreach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
+		get_filename_component(PLUGIN_NAME ${PLUGIN_DIRECTORY} NAME)
+		get_filename_component(PARENT_DIRECTORY ${PLUGIN_DIRECTORY} DIRECTORY) #Run the test from the parent directory such that all imports are correct.
+		file(GLOB_RECURSE UNIT_TESTS RELATIVE ${PLUGIN_DIRECTORY} ${PLUGIN_DIRECTORY}/test/*.py)
+		foreach(UNIT_TEST ${UNIT_TESTS})
+			string(REGEX REPLACE "\\.py$" "" UNIT_TEST2 ${UNIT_TEST}) #Turn filename into Python module.
+			string(REGEX REPLACE "\\/" "." UNIT_TEST3 ${UNIT_TEST2})
+			add_test(NAME ${PLUGIN_NAME}.${UNIT_TEST3} COMMAND ${PYTHON_EXECUTABLE} -m unittest ${PLUGIN_NAME}.${UNIT_TEST3} WORKING_DIRECTORY ${PARENT_DIRECTORY})
+			set_tests_properties(${PLUGIN_NAME}.${UNIT_TEST3} PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
+		endforeach(UNIT_TEST ${UNIT_TESTS})
+	endforeach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
 endif(BUILD_TESTING)
 
-#Documentation
+#--------------------------------Documentation----------------------------------
 if(BUILD_DOCUMENTATION)
 	find_package(Sphinx REQUIRED)
 	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_BINARY_DIR}/documentation" CACHE FILEPATH "Where to save generated documentation.")
@@ -119,18 +146,16 @@ if(BUILD_DOCUMENTATION)
 
 	#Information to put in the Sphinx configuration file.
 	string(TIMESTAMP DOCUMENTATION_YEAR "%Y")
-	file(GLOB_RECURSE DOCUMENTATION_INIT_FILES __init__.py) #All directories with __init__.py files.
 	configure_file("${CMAKE_SOURCE_DIR}/sphinx_configuration.py.in" "${CMAKE_BINARY_DIR}/conf.py")
 
 	#Get all plug-in directories.
 	set(DOCUMENTATION_APIDOC_COMMANDS "")
 	set(DOCUMENTATION_COPY_SOURCES_COMMANDS "")
-	FOREACH(INIT_FILE ${DOCUMENTATION_INIT_FILES})
-		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
-		get_filename_component(PACKAGE_NAME ${PACKAGE_DIR} NAME)
-		list(APPEND DOCUMENTATION_APIDOC_COMMANDS ${SPHINX_APIDOC_EXECUTABLE} -o ${DOCUMENTATION_TEMP_DIR}/technical -e ${PACKAGE_DIR} &&) #Generate the documentation.
-		list(APPEND DOCUMENTATION_COPY_SOURCES_COMMANDS ${CMAKE_COMMAND} -E copy_directory "${PACKAGE_DIR}" "${DOCUMENTATION_TEMP_DIR}/${PACKAGE_NAME}" &&) #Copy sources so that any other .rst files are included.
-	ENDFOREACH(INIT_FILE ${DOCUMENTATION_INIT_FILES})
+	foreach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
+		get_filename_component(PACKAGE_NAME ${PLUGIN_DIRECTORY} NAME)
+		list(APPEND DOCUMENTATION_APIDOC_COMMANDS ${SPHINX_APIDOC_EXECUTABLE} -o ${DOCUMENTATION_TEMP_DIR}/technical -e ${PLUGIN_DIRECTORY} &&) #Generate the documentation.
+		list(APPEND DOCUMENTATION_COPY_SOURCES_COMMANDS ${CMAKE_COMMAND} -E copy_directory "${PLUGIN_DIRECTORY}" "${DOCUMENTATION_TEMP_DIR}/${PACKAGE_NAME}" &&) #Copy sources so that any other .rst files are included.
+	endforeach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
 
 	add_custom_target(documentation ALL
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/documentation" "${DOCUMENTATION_TEMP_DIR}" &&

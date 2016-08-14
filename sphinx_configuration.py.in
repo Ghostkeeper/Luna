@@ -267,5 +267,5 @@ autosummary_generate = True
 import os.path #To get the paths to put on the environment path.
 import sys #To append stuff to the environment path.
 sys.path.insert(0, os.path.join("${CMAKE_SOURCE_DIR}"))
-for init_file in "${DOCUMENTATION_INIT_FILES}".split(";"): #Add all plug-in directories.
+for init_file in "${PLUGIN_INIT_FILES}".split(";"): #Add all plug-in directories.
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(init_file), "..")))
