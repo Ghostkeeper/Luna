@@ -28,17 +28,13 @@ These are the functions that need to be implemented by a logger plug-in. All of 
 
 ----
 
-::
-
-	join()
+	.. function:: join()
 
 Blocks the current thread until the user interface has stopped.
 
 ----
 
-::
-
-	start()
+	.. function:: start()
 
 Starts the user interface.
 
@@ -46,9 +42,7 @@ Starting a user interface that has already started should have no effect, but st
 
 ----
 
-::
-
-	stop()
+	.. function:: stop()
 
 Stops the user interface.
 

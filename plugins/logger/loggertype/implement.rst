@@ -29,9 +29,7 @@ These are the functions that need to be implemented by a logger plug-in. All of 
 
 ----
 
-::
-
-	critical(message[, title][, stack_trace])
+	.. function:: critical(message[, title][, stack_trace])
 
 Logs a critical message.
 
@@ -41,9 +39,7 @@ Logs a critical message.
 
 ----
 
-::
-
-	debug(message[, title][, stack_trace])
+	.. function:: debug(message[, title][, stack_trace])
 
 Logs a debug message.
 
@@ -53,9 +49,7 @@ Logs a debug message.
 
 ----
 
-::
-
-	error(message[, title][, stack_trace])
+	.. function:: error(message[, title][, stack_trace])
 
 Logs an error message.
 
@@ -65,9 +59,7 @@ Logs an error message.
 
 ----
 
-::
-
-	info(message[, title][, stack_trace])
+	.. function:: info(message[, title][, stack_trace])
 
 Logs an information message.
 
@@ -77,9 +69,7 @@ Logs an information message.
 
 ----
 
-::
-
-	warning(message[, title][, stack_trace])
+	.. function:: warning(message[, title][, stack_trace])
 
 Logs a warning message.
 

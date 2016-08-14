@@ -22,9 +22,7 @@ These are the functions that need to be implemented by a storage plug-in. All of
 
 ----
 
-::
-
-	can_read(uri)
+	.. function:: can_read(uri)
 
 Determines whether the storage plug-in can read data from the specified URI.
 
@@ -33,9 +31,7 @@ Determines whether the storage plug-in can read data from the specified URI.
 
 ----
 
-::
-
-	can_write(uri)
+	.. function:: can_write(uri)
 
 Determines whether the storage plug-in can write data to the specified URI.
 
@@ -44,9 +40,7 @@ Determines whether the storage plug-in can write data to the specified URI.
 
 ----
 
-::
-
-	delete(uri)
+	.. function:: delete(uri)
 
 Removes a resource from the specified URI.
 
@@ -55,9 +49,7 @@ Removes a resource from the specified URI.
 
 ----
 
-::
-
-	exists(uri)
+	.. function:: exists(uri)
 
 Checks if a resource exists at the specified URI.
 
@@ -67,9 +59,7 @@ Checks if a resource exists at the specified URI.
 
 ----
 
-::
-
-	move(source, destination)
+	.. function:: move(source, destination)
 
 Moves data from one place to another.
 
@@ -81,9 +71,7 @@ If there is already a resource at the destination, that resource will be lost.
 
 ----
 
-::
-
-	read(uri)
+	.. function:: read(uri)
 
 Reads the data in a specified location.
 
@@ -93,9 +81,7 @@ Reads the data in a specified location.
 
 ----
 
-::
-
-	write(uri, data)
+	.. function:: write(uri, data)
 
 Writes the specified data to a new resource at the specified location.
 
