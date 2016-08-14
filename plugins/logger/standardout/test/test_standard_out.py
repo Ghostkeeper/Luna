@@ -41,7 +41,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		"simple":    {"message": "Message.",                 "title": "Title"},
 		"empty":     {"message": "",                         "title": ""},
 		"multiline": {"message": "First line\nSecond line.", "title": "Multiline"},
-		"unicode":   {"message": "☽",                        "title": "☾"}
+		"unicode":   {"message": "\u263d",                   "title": "\u263e"}
 	}
 	"""
 	Messages that every message logging test should test with.
@@ -63,10 +63,26 @@ class TestStandardOut(luna.test_case.TestCase):
 		self._mock_stdout.close()
 
 	@luna.test_case.parametrise(_test_messages)
+	def test_critical(self, message, title):
+		"""
+		.. function:: test_critical()
+		Tests printing a critical message.
+
+		:param message: The message to print.
+		:param title: The title to give the message.
+		"""
+		standardout.standard_out.critical(message, title=title)
+		self.assertIn(title, self._mock_stdout.getvalue())
+		self.assertIn(message, self._mock_stdout.getvalue())
+
+	@luna.test_case.parametrise(_test_messages)
 	def test_info(self, message, title):
 		"""
 		.. function:: test_info()
-		Tests printing a simple info message.
+		Tests printing an information message.
+
+		:param message: The message to print.
+		:param title: The title to give the message.
 		"""
 		standardout.standard_out.info(message, title=title)
 		self.assertIn(title, self._mock_stdout.getvalue())
