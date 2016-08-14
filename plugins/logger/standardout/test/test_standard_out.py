@@ -37,6 +37,16 @@ class TestStandardOut(luna.test_case.TestCase):
 	Tests the behaviour of the standard_out logger implementation.
 	"""
 
+	_test_messages = {
+		"simple":    {"message": "Message.",                 "title": "Title"},
+		"empty":     {"message": "",                         "title": ""},
+		"multiline": {"message": "First line\nSecond line.", "title": "Multiline"},
+		"unicode":   {"message": "☽",                        "title": "☾"}
+	}
+	"""
+	Messages that every message logging test should test with.
+	"""
+
 	def setUp(self):
 		"""
 		Prepares for a test by intercepting the stdout channel.
@@ -52,12 +62,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		sys.stdout = self._actual_stdout
 		self._mock_stdout.close()
 
-	@luna.test_case.parametrise({
-		"simple": {"message": "Message.", "title": "Title"},
-		"empty": {"message": "", "title": ""},
-		"multiline": {"message": "First line.\nSecond line.", "title": "Multiline"},
-		"unicode": {"message": "☽", "title": "☾"}
-	})
+	@luna.test_case.parametrise(_test_messages)
 	def test_info(self, message, title):
 		"""
 		.. function:: test_info()
