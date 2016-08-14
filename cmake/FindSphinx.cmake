@@ -1,3 +1,6 @@
+#This software is distributed under the Creative Commons license (CC0) version 1.0. A copy of this license should have been distributed with this software.
+#The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
+
 find_program(SPHINX_EXECUTABLE NAMES sphinx-build HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx documentation generator.")
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Sphinx DEFAULT_MSG SPHINX_EXECUTABLE)
