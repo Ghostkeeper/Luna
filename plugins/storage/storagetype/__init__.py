@@ -18,7 +18,7 @@ devise a custom scheme for the URI.
 """
 
 import storagetype.storage #The API for other plug-ins to use storage with.
-import storagetype.storageregistrar #Where storage plug-ins must register.
+import storagetype.storage_registrar #Where storage plug-ins must register.
 
 def metadata():
 	"""
@@ -38,8 +38,8 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "storage",
 			"api": storagetype.storage,
-			"register": storagetype.storageregistrar.register,
-			"unregister": storagetype.storageregistrar.unregister,
-			"validate_metadata": storagetype.storageregistrar.validate_metadata
+			"register": storagetype.storage_registrar.register,
+			"unregister": storagetype.storage_registrar.unregister,
+			"validate_metadata": storagetype.storage_registrar.validate_metadata
 		}
 	}

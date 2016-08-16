@@ -13,7 +13,7 @@ an interface for logger plug-ins to implement.
 """
 
 import loggertype.log #The API for other plug-ins to use loggers with.
-import loggertype.loggerregistrar #Where logger plug-ins must register.
+import loggertype.logger_registrar #Where logger plug-ins must register.
 
 def metadata():
 	"""
@@ -33,8 +33,8 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "logger",
 			"api": loggertype.log,
-			"register": loggertype.loggerregistrar.register,
-			"unregister": loggertype.loggerregistrar.unregister,
-			"validate_metadata": loggertype.loggerregistrar.validate_metadata
+			"register": loggertype.logger_registrar.register,
+			"unregister": loggertype.logger_registrar.unregister,
+			"validate_metadata": loggertype.logger_registrar.validate_metadata
 		}
 	}

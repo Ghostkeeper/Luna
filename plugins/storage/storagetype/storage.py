@@ -16,7 +16,7 @@ import os.path #To get absolute paths.
 import pathlib #To get URIs from relative paths.
 
 import luna.plugins #To use the logger API.
-import storagetype.storageregistrar #To get the logger plug-ins to log with.
+import storagetype.storage_registrar #To get the logger plug-ins to log with.
 
 def delete(uri):
 	"""
@@ -34,7 +34,7 @@ def delete(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storageregistrar.get_all_storages().values():
+	for storage in storagetype.storage_registrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
 				return storage.delete(uri)
@@ -61,7 +61,7 @@ def exists(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storageregistrar.get_all_storages().values():
+	for storage in storagetype.storage_registrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
 				return storage.exists(uri)
@@ -93,7 +93,7 @@ def move(source, destination):
 	source = _to_absolute_uri(source)
 	destination = _to_absolute_uri(destination)
 	readers = set()
-	storages = storagetype.storageregistrar.get_all_storages()
+	storages = storagetype.storage_registrar.get_all_storages()
 	for storage in storages:
 		if storages[storage].can_read(source):
 			readers.add(storage)
@@ -142,7 +142,7 @@ def read(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storageregistrar.get_all_storages().values():
+	for storage in storagetype.storage_registrar.get_all_storages().values():
 		if storage.can_read(uri):
 			try:
 				return storage.read(uri)
@@ -170,7 +170,7 @@ def write(uri, data):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storageregistrar.get_all_storages().values():
+	for storage in storagetype.storage_registrar.get_all_storages().values():
 		if storage.can_write(uri):
 			try:
 				storage.write(uri, data)

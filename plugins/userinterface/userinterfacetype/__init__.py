@@ -16,7 +16,7 @@ The plug-in registers an API to launch the user interface with, and to allow
 """
 
 import userinterfacetype.userinterface #The API for other plug-ins to use the user interface with.
-import userinterfacetype.userinterfaceregistrar #Where user interface plug-ins must register.
+import userinterfacetype.userinterface_registrar #Where user interface plug-ins must register.
 
 def metadata():
 	"""
@@ -36,8 +36,8 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "userinterface",
 			"api": userinterfacetype.userinterface,
-			"register": userinterfacetype.userinterfaceregistrar.register,
-			"unregister": userinterfacetype.userinterfaceregistrar.unregister,
-			"validate_metadata": userinterfacetype.userinterfaceregistrar.validate_metadata
+			"register": userinterfacetype.userinterface_registrar.register,
+			"unregister": userinterfacetype.userinterface_registrar.unregister,
+			"validate_metadata": userinterfacetype.userinterface_registrar.validate_metadata
 		}
 	}

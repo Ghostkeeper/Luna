@@ -16,7 +16,7 @@ import inspect #To dissect the stack trace.
 import logging #As fallback if there are no logger plug-ins.
 import sys #To get the stack trace.
 
-import loggertype.loggerregistrar #To get the logger plug-ins to log with.
+import loggertype.logger_registrar #To get the logger plug-ins to log with.
 
 class Level(enum.Enum):
 	"""
@@ -67,7 +67,7 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 		``str.format`` for more details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.loggerregistrar.get_all_loggers()
+	loggers = loggertype.logger_registrar.get_all_loggers()
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -100,7 +100,7 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 		``str.format`` for more details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.loggerregistrar.get_all_loggers()
+	loggers = loggertype.logger_registrar.get_all_loggers()
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -128,7 +128,7 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 		``str.format`` for more details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.loggerregistrar.get_all_loggers()
+	loggers = loggertype.logger_registrar.get_all_loggers()
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -161,7 +161,7 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 		``str.format`` for more details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.loggerregistrar.get_all_loggers()
+	loggers = loggertype.logger_registrar.get_all_loggers()
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -214,7 +214,7 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 		``str.format`` for more details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.loggerregistrar.get_all_loggers()
+	loggers = loggertype.logger_registrar.get_all_loggers()
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
