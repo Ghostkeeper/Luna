@@ -103,6 +103,3 @@ class TestStandardOut(luna.test_case.TestCase):
 		standardout.standard_out.warning(message, title=title)
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
-
-if __name__ == "__main__":
-	unittest.main()
