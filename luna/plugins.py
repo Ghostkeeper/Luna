@@ -212,7 +212,7 @@ def unregister(identity):
 		_plugin_types[plugin_type].unregister(identity)
 		api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
 	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
-		del _plugin_types[identity]["type"]["type_name"]
+		del _plugin_types[_plugins[identity]["type"]["type_name"]]
 		api("logger").info("Unregistered plug-in {plugin} as plug-in type.", plugin=identity)
 	dependees = [dependee_identity for dependee_identity, dependee in _plugins.items() if identity in dependee["dependencies"]]
 	for dependee_identity in dependees:
