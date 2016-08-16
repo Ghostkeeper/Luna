@@ -82,7 +82,7 @@ def validate_metadata(metadata):
 		if not required_functions <= metadata["logger"].keys(): #All functions must be present.
 			raise luna.plugins.MetadataValidationError("The logger specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["logger"].keys())))
 		for function_name in required_functions:
-			if not hasattr(metadata["logger"][function_name], "__call__"): #Each must be a callable object (such as a function).
+			if not callable(metadata["logger"][function_name]): #Each must be a callable object (such as a function).
 				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The logger metadata is not a dictionary.")
