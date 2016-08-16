@@ -35,7 +35,7 @@ class _TestCaseMeta(type):
 		"""
 		members_copy = dict(members)
 		for member in members_copy:
-			if hasattr(members_copy[member], "__call__") and hasattr(members_copy[member], "parameters"): #It's a function that's marked with the @parametrise annotation.
+			if callable(members_copy[member]) and hasattr(members_copy[member], "parameters"): #It's a function that's marked with the @parametrise annotation.
 				for test_name, parameters in members_copy[member].parameters.items(): #Copy the function for each set of parameters.
 					new_function = functools.partialmethod(members_copy[member], **parameters) #Fill in only the parameters. The rest is filled in at calling (such as "self").
 					members[member + "_" + test_name] = new_function #Store the filled-in function along with the test name to make it unique.
