@@ -123,8 +123,9 @@ if(BUILD_TESTING)
 
 	#Code style validation.
 	find_python_module(pylint REQUIRED)
+	configure_file("${CMAKE_SOURCE_DIR}/pylintrc.in" "${CMAKE_BINARY_DIR}/pylintrc")
 	file(GLOB_RECURSE PYTHON_FILES *.py)
-	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_SOURCE_DIR}/pylintrc ${PYTHON_FILES})
+	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
 	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
 
 	#Plug-in unit tests.
