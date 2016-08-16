@@ -10,8 +10,8 @@ Tests the behaviour of the standard_out logger implementation.
 
 import io #Provides a replacement I/O channel to mock stdout.
 import sys #To capture stdout.
-import luna.test_case #To get parametrised tests.
 
+import luna.test_case #To get parametrised tests.
 import standardout.standard_out #The module to test.
 
 class TestStandardOut(luna.test_case.TestCase):
