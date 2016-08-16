@@ -27,13 +27,14 @@ def metadata():
 	return {
 		"name": "Logger Type",
 		"description": "Defines a type of plug-in that keeps a log of messages, intended to show what's happening behind the scenes of the application.",
-		"version": 1,
+		"version": 2,
 		"dependencies": {},
 
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "logger",
 			"api": loggertype.log,
 			"register": loggertype.loggerregistrar.register,
+			"unregister": loggertype.loggerregistrar.unregister,
 			"validate_metadata": loggertype.loggerregistrar.validate_metadata
 		}
 	}

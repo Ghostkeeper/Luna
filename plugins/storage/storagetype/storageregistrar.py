@@ -65,6 +65,19 @@ def register(identity, metadata):
 		write=metadata["storage"]["write"],
 	)
 
+def unregister(identity):
+	"""
+	Undoes the registration of a storage plug-in.
+
+	You can then no longer store persistent data with that plug-in.
+
+	:param identity: The identity of the plug-in to unregister.
+	"""
+	if identity not in _storages:
+		luna.plugins.api("logger").warning("Storage {storage} is not registered, so I can't unregister it.", storage=identity)
+		return
+	del _storages[identity] #The actual unregistration.
+
 def validate_metadata(metadata):
 	"""
 	Validates whether the specified metadata is valid for storage plug-ins.

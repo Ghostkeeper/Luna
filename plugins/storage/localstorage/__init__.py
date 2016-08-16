@@ -25,7 +25,7 @@ def metadata():
 		"dependencies": {
 			"storagetype": {
 				"version_min": 1,
-				"version_max": 1
+				"version_max": 2
 			},
 		},
 

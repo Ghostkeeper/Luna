@@ -23,7 +23,7 @@ def metadata():
 		"dependencies": {
 			"loggertype": {
 				"version_min": 1,
-				"version_max": 1
+				"version_max": 2
 			},
 		},
 

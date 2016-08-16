@@ -70,6 +70,19 @@ def register(identity, metadata):
 		stop=metadata["userinterface"]["stop"]
 	)
 
+def unregister(identity):
+	"""
+	Undoes the registration of a user interface plug-in.
+
+	You can then no longer communicate to the user with that plug-in.
+
+	:param identity: The identity of the plug-in to unregister.
+	"""
+	if identity not in _user_interfaces:
+		luna.plugins.api("logger").warning("User interface {user_interface} is not registered, so I can't unregister it.", user_interface=identity)
+		return
+	del _user_interfaces[identity] #The actual unregistration.
+
 def validate_metadata(metadata):
 	"""
 	Validates whether the specified metadata is valid for user interface

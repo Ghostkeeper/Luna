@@ -32,13 +32,14 @@ def metadata():
 	return {
 		"name": "Storage Type",
 		"description": "Defines a type of plug-in that stores and loads data to and from a persistent storage location.",
-		"version": 1,
+		"version": 2,
 		"dependencies": {},
 
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "storage",
 			"api": storagetype.storage,
 			"register": storagetype.storageregistrar.register,
+			"unregister": storagetype.storageregistrar.unregister,
 			"validate_metadata": storagetype.storageregistrar.validate_metadata
 		}
 	}

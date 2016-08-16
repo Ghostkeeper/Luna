@@ -64,6 +64,19 @@ def register(identity, metadata):
 		warning=metadata["logger"]["warning"]
 	)
 
+def unregister(identity):
+	"""
+	Undoes the registration of a logger plug-in.
+
+	You can then no longer log with that plug-in.
+
+	:param identity: The identity of the plug-in to unregister.
+	"""
+	if identity not in _loggers:
+		luna.plugins.api("logger").warning("Logger {logger} is not registered, so I can't unregister it.", logger=identity)
+		return
+	del _loggers[identity] #The actual unregistration.
+
 def validate_metadata(metadata):
 	"""
 	Validates whether the specified metadata is valid for logger plug-ins.

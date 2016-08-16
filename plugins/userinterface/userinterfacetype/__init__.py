@@ -30,13 +30,14 @@ def metadata():
 	return {
 		"name": "User Interface Type",
 		"description": "Defines a type of plug-in that communicates with the user by showing information to the user and allowing the user to control the application.",
-		"version": 1,
+		"version": 2,
 		"dependencies": {},
 
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "userinterface",
 			"api": userinterfacetype.userinterface,
 			"register": userinterfacetype.userinterfaceregistrar.register,
+			"unregister": userinterfacetype.userinterfaceregistrar.unregister,
 			"validate_metadata": userinterfacetype.userinterfaceregistrar.validate_metadata
 		}
 	}

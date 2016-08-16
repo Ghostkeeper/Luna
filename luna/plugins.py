@@ -29,6 +29,13 @@ The keys are the type names of the plug-in types. The values are the plug-in
 types as named tuples.
 """
 
+_plugins = {}
+"""
+All plug-ins, by their identities.
+
+This also includes all plug-ins that are not registered.
+"""
+
 _required_metadata_fields = {"dependencies", "description", "name", "version"}
 """
 Fields that must be present in every plug-in's metadata.
@@ -47,13 +54,14 @@ This is a named tuple consisting of the following fields:
 * dependencies: A list of plug-in identities on which this plug-in depends.
 """
 
-_PluginType = collections.namedtuple("_PluginType", "api register validate_metadata")
+_PluginType = collections.namedtuple("_PluginType", "api register unregister validate_metadata")
 """
 Represents a plug-in type plug-in.
 
 This is a named tuple consisting of the following fields:
 * api: The class that provides the API for the plug-ins of this type.
 * register: The function that plug-ins of this type must register with.
+* unregister: The function that plug-ins of this type get unregistered with.
 * validate_metadata: The function that verifies that the metadata is valid for
 	this type.
 """
@@ -142,7 +150,7 @@ def discover():
 				except ImportError: #Logger type hasn't loaded yet.
 					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 				continue
-			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
+			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
 
 		unvalidated_candidates.append(_UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
@@ -179,7 +187,29 @@ def discover():
 				except Exception as e:
 					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
+			_plugins[candidate.identity] = candidate.metadata
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
+
+def unregister(identity):
+	"""
+	Unregisters a plug-in, so that it will no longer be used.
+
+	The plug-in will be unregistered from all plug-in types it implements.
+
+	:param identity: The identity of the plug-in to unregister.
+	"""
+	if identity not in _plugins:
+		api("logger").warning("Can't unregister plug-in {plugin}: It was never loaded.", plugin=identity)
+		return
+	for plugin_type in _plugins[identity]:
+		if plugin_type == "type": #We're unregistering a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
+			continue
+		if plugin_type not in _plugin_types:
+			api("logger").warning("Can't unregister plug-in {plugin} as {plugin_type}. Type doesn't exist.", plugin=identity, plugin_type=plugin_type)
+			continue
+		_plugin_types[plugin_type].unregister(identity)
+	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
+		del _plugin_types[identity]["type"]["type_name"]
 
 def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
 	"""
@@ -325,13 +355,17 @@ def _validate_metadata_type(metadata):
 	if "type" not in metadata:
 		raise MetadataValidationError("This is not a plug-in type plug-in.")
 	try:
-		required_fields = {"type_name", "api", "register", "validate_metadata"}
+		required_fields = {"type_name", "api", "register", "unregister", "validate_metadata"}
 		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
 		if not callable(metadata["type"]["register"]):
 			raise MetadataValidationError("The register must be callable.")
 		if metadata["type"]["register"].__code__.co_argcount != 2:
 			raise MetadataValidationError("The register function must take exactly two arguments: The plug-in's identity and its metadata.")
+		if not callable(metadata["type"]["unregister"]):
+			raise MetadataValidationError("The unregister must be callable.")
+		if metadata["type"]["unregister"].__code__.co_argcount != 1:
+			raise MetadataValidationError("The unregister function must take exactly one argument: The plug-in's identity.")
 		if not callable(metadata["type"]["validate_metadata"]):
 			raise MetadataValidationError("The metadata validator must be callable.")
 		if metadata["type"]["validate_metadata"].__code__.co_argcount != 1:
