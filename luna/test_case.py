@@ -39,7 +39,7 @@ class _TestCaseMeta(type):
 				for test_name, parameters in members_copy[member]._parameters.items(): #Copy the function for each set of parameters.
 					new_function = functools.partialmethod(members_copy[member], **parameters) #Fill in only the parameters. The rest is filled in at calling (such as "self").
 					members[member + "_" + test_name] = new_function #Store the filled-in function along with the test name to make it unique.
-				del(members[member]) #Delete the original parametrised function.
+				del members[member] #Delete the original parametrised function.
 		return type.__new__(cls, name, bases, members)
 
 class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
