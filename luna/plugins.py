@@ -10,7 +10,11 @@ Handles all administration on plug-ins.
 
 import collections #For namedtuple.
 import imp #Imports Python modules dynamically.
+import logging #Fallback logging for if the logger plug-ins aren't loaded yet.
 import os #To search through folders to find the plug-ins.
+import sys #Make fallback logger output to stdout instead of stderr.
+
+logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO, stream=sys.stdout) #Set the fallback log level to the default for the application.
 
 _plugin_locations = []
 """
@@ -119,7 +123,7 @@ def discover():
 			try:
 				api("logger").warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				print("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+				logging.exception("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
 		try:
 			_validate_metadata_global(metadata)
@@ -127,7 +131,7 @@ def discover():
 			try:
 				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				print("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
+				logging.exception("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
@@ -136,7 +140,7 @@ def discover():
 				try:
 					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 				except ImportError: #Logger type hasn't loaded yet.
-					print("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
+					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
 				continue
 			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
@@ -259,7 +263,7 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
 		except ImportError: #Logger type module isn't loaded yet.
-			print("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity))
+			logging.exception("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity))
 		return None
 	try:
 		file, path, description = imp.find_module(identity, [folder])
@@ -267,7 +271,7 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			print("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+			logging.exception("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 		return None
 	try:
 		module = imp.load_module(identity, file, path, description)
@@ -275,14 +279,14 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			print("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+			logging.exception("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
 		return None
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
 			try:
 				api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			except ImportError: #Logger type module isn't loaded yet.
-				print("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+				logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			file.close()
 	return module
 

@@ -13,6 +13,7 @@ messages with those levels.
 
 import enum #To define the logging importance levels.
 import inspect #To dissect the stack trace.
+import logging #As fallback if there are no logger plug-ins.
 import sys #To get the stack trace.
 
 import loggertype.loggerregistrar #To get the logger plug-ins to log with.
@@ -76,7 +77,12 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 		if Level.CRITICAL in _logger_levels[logger]:
 			loggers[logger].critical(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
-		print(title + ": " + substituted)
+		if title != "Critical": #The word "Critical" is already put there by the logger.
+			substituted = title + ": " + substituted
+		if include_stack_trace:
+			logging.exception(substituted)
+		else:
+			logging.critical(substituted)
 
 def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	"""
@@ -128,7 +134,12 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 		if Level.ERROR in _logger_levels[logger]:
 			loggers[logger].error(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
-		print(title + ": " + substituted)
+		if title != "Error": #The word "Error" is already put there by the logger.
+			substituted = title + ": " + substituted
+		if include_stack_trace:
+			logging.exception(substituted)
+		else:
+			logging.error(substituted)
 
 def info(message, title="Information", include_stack_trace=True, **kwargs):
 	"""
@@ -154,7 +165,13 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 		if Level.INFO in _logger_levels[logger]:
 			loggers[logger].info(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
-		print(title + ": " + substituted)
+		if title != "Information": #The word "Information" is already put there by the logger.
+			substituted = title + ": " + substituted
+		if include_stack_trace and sys.exc_info()[2]:
+			logging.exception(substituted)
+		else:
+			print("COPY: " + substituted)
+			logging.info(substituted)
 
 def set_levels(levels, identity=None):
 	"""
@@ -200,4 +217,9 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 		if Level.WARNING in _logger_levels[logger]:
 			loggers[logger].warning(substituted, title, stack_trace)
 	if not loggers: #There are no loggers.
-		print(title + ": " + substituted)
+		if title != "Warning": #The word "Warning" is already put there by the logger.
+			substituted = title + ": " + substituted
+		if include_stack_trace:
+			logging.exception(substituted)
+		else:
+			logging.warning(substituted)
