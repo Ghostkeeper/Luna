@@ -124,6 +124,11 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 				"logger": None
 			}
 		},
+		"almost_dictionary": {
+			"metadata": {
+				"logger": _AlmostDictionary()
+			}
+		},
 		"empty": {
 			"metadata": {
 				"logger": {}
@@ -144,17 +149,6 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 				"logger": {
 					"critical": _arbitrary_function,
 					"debug": "This is not a callable object.",
-					"error": _arbitrary_function,
-					"info": _arbitrary_function,
-					"warning": _arbitrary_function
-				}
-			}
-		},
-		"almost_dictionary": {
-			"metadata": {
-				"logger": {
-					"critical": _arbitrary_function,
-					"debug": _AlmostDictionary(),
 					"error": _arbitrary_function,
 					"info": _arbitrary_function,
 					"warning": _arbitrary_function
