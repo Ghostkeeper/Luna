@@ -206,8 +206,7 @@ def unregister(identity):
 			continue
 		if plugin_type == "type": #We're unregistering a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
 			continue
-		if plugin_type not in _plugin_types:
-			api("logger").warning("Can't unregister plug-in {plugin} as type {plugin_type}. Type doesn't exist.", plugin=identity, plugin_type=plugin_type)
+		if plugin_type not in _plugin_types: #The type was deleted prior, because it was a dependency.
 			continue
 		_plugin_types[plugin_type].unregister(identity)
 		api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
