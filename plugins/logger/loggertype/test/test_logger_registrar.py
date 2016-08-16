@@ -65,6 +65,7 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 		"""
 		pass
 
+	#pylint: disable=no-self-use
 	@luna.test_case.parametrise({
 		"functions": {
 			"metadata": {
