@@ -212,6 +212,9 @@ def unregister(identity):
 		_plugin_types[plugin_type].unregister(identity)
 	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
 		del _plugin_types[identity]["type"]["type_name"]
+	dependees = [dependee_identity for dependee_identity, dependee in _plugins.items() if identity in dependee["dependencies"]]
+	for dependee_identity in dependees:
+		unregister(dependee_identity)
 
 def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
 	"""
