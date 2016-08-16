@@ -62,6 +62,12 @@ def parametrise(parameters):
 	:return: A parametrised test case.
 	"""
 	def parametrise_decorator(original_function):
+		"""
+		Adds the parameters with which the test must be run to the function.
+
+		:param original_function: The function to parametrise.
+		:return: A function with the parameters attached.
+		"""
 		original_function.parameters = parameters
 		return original_function
 	return parametrise_decorator
