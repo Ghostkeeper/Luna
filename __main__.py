@@ -38,8 +38,7 @@ class Luna:
 		base_dir = os.path.dirname(os.path.abspath(__file__)) #Add the plugin directories.
 		luna.plugins.add_plugin_location(os.path.join(base_dir, "plugins"))
 		luna.plugins.discover()
-		logger = luna.plugins.api("logger")
-		logger.set_levels([logger.Level.ERROR, logger.Level.CRITICAL, logger.Level.WARNING, logger.Level.INFO, logger.Level.DEBUG])
+		luna.plugins.api("logger").set_levels([luna.plugins.api("logger").Level.ERROR, luna.plugins.api("logger").Level.CRITICAL, luna.plugins.api("logger").Level.WARNING, luna.plugins.api("logger").Level.INFO, luna.plugins.api("logger").Level.DEBUG])
 
 		user_interface_name = self.DEFAULT_USER_INTERFACE
 		if len(sys.argv) >= 2:
@@ -48,9 +47,9 @@ class Luna:
 			luna.plugins.api("userinterface").start(user_interface_name)
 			luna.plugins.api("userinterface").join(user_interface_name)
 		except ImportError:
-			logger.error("Could not load the user interface plug-in type. Aborting.")
+			luna.plugins.api("logger").error("Could not load the user interface plug-in type. Aborting.")
 		except Exception:
-			logger.error("A fatal error occurred. Luna must close.")
+			luna.plugins.api("logger").error("A fatal error occurred. Luna must close.")
 			return False
 		return True #Success.
 
