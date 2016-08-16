@@ -49,7 +49,7 @@ class Luna:
 			luna.plugins.api("userinterface").join(user_interface_name)
 		except ImportError:
 			logger.error("Could not load the user interface plug-in type. Aborting.")
-		except:
+		except Exception:
 			logger.error("A fatal error occurred. Luna must close.")
 			return False
 		return True #Success.
