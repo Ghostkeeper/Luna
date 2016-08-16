@@ -226,4 +226,4 @@ def _print_stack_trace(stack_trace, exception=None):
 		for line in frame.code_context:
 			print("\t\t" + line.strip())
 	if exception:
-		print(str(exception))
+		print(exception.__class__.__name__ + ": " + str(exception))
