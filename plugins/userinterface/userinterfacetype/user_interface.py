@@ -10,7 +10,7 @@ An API for managing the user interfaces.
 This allows for launching and stopping user interfaces.
 """
 
-import userinterfacetype.userinterface_registrar #To get the user interface plug-ins.
+import userinterfacetype.user_interface_registrar #To get the user interface plug-ins.
 import luna.plugins #To log messages.
 
 _running = set() #Set of user interfaces that are currently running, by identity.
@@ -21,7 +21,7 @@ def join(user_interface):
 
 	:param user_interface: The identity of the user interface to wait for.
 	"""
-	user_interface_object = userinterfacetype.userinterface_registrar.get_user_interface(user_interface)
+	user_interface_object = userinterfacetype.user_interface_registrar.get_user_interface(user_interface)
 	if not user_interface_object:
 		luna.plugins.api("logger").warning("There is no user interface \"{plugin}\" to wait for.", plugin=user_interface)
 		return
@@ -43,7 +43,7 @@ def start(user_interface):
 	if user_interface in _running:
 		luna.plugins.api("logger").warning("User interface \"{plugin}\" is already running.", plugin=user_interface)
 		return
-	user_interface_object = userinterfacetype.userinterface_registrar.get_user_interface(user_interface)
+	user_interface_object = userinterfacetype.user_interface_registrar.get_user_interface(user_interface)
 	if not user_interface_object:
 		luna.plugins.api("logger").error("There is no user interface \"{plugin}\" to launch.", plugin=user_interface)
 		return
@@ -56,6 +56,6 @@ def stop_all():
 	"""
 	Stops all user interfaces that are still running.
 	"""
-	for user_interface, user_interface_object in userinterfacetype.userinterface_registrar.get_all_user_interfaces().items():
+	for user_interface, user_interface_object in userinterfacetype.user_interface_registrar.get_all_user_interfaces().items():
 		user_interface_object.stop()
 		_running.remove(user_interface)
