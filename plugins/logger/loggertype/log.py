@@ -170,7 +170,6 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 		if include_stack_trace and sys.exc_info()[2]:
 			logging.exception(substituted)
 		else:
-			print("COPY: " + substituted)
 			logging.info(substituted)
 
 def set_levels(levels, identity=None):
