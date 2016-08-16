@@ -32,7 +32,7 @@ def metadata():
 			},
 			"standardout": {
 				"version_min": 5,
-				"version_max": 5
+				"version_max": 6
 			}
 		},
 

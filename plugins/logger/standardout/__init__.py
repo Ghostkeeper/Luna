@@ -19,11 +19,11 @@ def metadata():
 	return {
 		"name": "Standard Out",
 		"description": "Outputs log messages through standard out.",
-		"version": 5,
+		"version": 6,
 		"dependencies": {
 			"loggertype": {
-				"version_min": 1,
-				"version_max": 2
+				"version_min": 3,
+				"version_max": 3
 			},
 		},
 

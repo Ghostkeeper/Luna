@@ -34,7 +34,7 @@ if _win_kernel: #We're on Windows Bash.
 	if _pre_buffer_state.wAttributes == _post_buffer_state.wAttributes: #Didn't change.
 		_win_kernel = None #We have the Windows kernel, but this terminal doesn't support changes to it. Fall back to ANSI.
 
-def critical(message, title="Critical", stack_trace=None):
+def critical(message, title="Critical", stack_trace=None, exception=None):
 	"""
 	Logs a new critical message.
 
@@ -46,6 +46,7 @@ def critical(message, title="Critical", stack_trace=None):
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
 		as a list of ``FrameInfo`` objects, most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Critical": #Only include the title if it is special, because the default is already indicated by the colour.
@@ -53,9 +54,9 @@ def critical(message, title="Critical", stack_trace=None):
 	formatted += message
 	_colour_print(formatted, "magenta")
 	if stack_trace:
-		_print_stack_trace(stack_trace)
+		_print_stack_trace(stack_trace, exception)
 
-def debug(message, title="Debug", stack_trace=None):
+def debug(message, title="Debug", stack_trace=None, exception=None):
 	"""
 	Logs a new debug message.
 
@@ -67,6 +68,7 @@ def debug(message, title="Debug", stack_trace=None):
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
 		as a list of ``FrameInfo`` objects, most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Debug": #Only include the title if it is special, because the default is already indicated by the colour.
@@ -74,9 +76,9 @@ def debug(message, title="Debug", stack_trace=None):
 	formatted += message
 	_colour_print(formatted, "blue")
 	if stack_trace:
-		_print_stack_trace(stack_trace)
+		_print_stack_trace(stack_trace, exception)
 
-def error(message, title="Error", stack_trace=None):
+def error(message, title="Error", stack_trace=None, exception=None):
 	"""
 	Logs a new error message.
 
@@ -88,6 +90,7 @@ def error(message, title="Error", stack_trace=None):
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
 		as a list of ``FrameInfo`` objects, most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Error": #Only include the title if it is special, because the default is already indicated by the colour.
@@ -95,9 +98,9 @@ def error(message, title="Error", stack_trace=None):
 	formatted += message
 	_colour_print(formatted, "red")
 	if stack_trace:
-		_print_stack_trace(stack_trace)
+		_print_stack_trace(stack_trace, exception)
 
-def info(message, title="Information", stack_trace=None):
+def info(message, title="Information", stack_trace=None, exception=None):
 	"""
 	Logs a new information message.
 
@@ -109,6 +112,7 @@ def info(message, title="Information", stack_trace=None):
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
 		as a list of ``FrameInfo`` objects, most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Information": #Only include the title if it is special, because the default is already indicated by the colour.
@@ -116,9 +120,9 @@ def info(message, title="Information", stack_trace=None):
 	formatted += message
 	_colour_print(formatted, "green")
 	if stack_trace:
-		_print_stack_trace(stack_trace)
+		_print_stack_trace(stack_trace, exception)
 
-def warning(message, title="Warning", stack_trace=None):
+def warning(message, title="Warning", stack_trace=None, exception=None):
 	"""
 	Logs a new warning message.
 
@@ -130,6 +134,7 @@ def warning(message, title="Warning", stack_trace=None):
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
 		as a list of ``FrameInfo`` objects, most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
 	if title != "Warning": #Only include the title if it is special, because the default is already indicated by the colour.
@@ -137,7 +142,7 @@ def warning(message, title="Warning", stack_trace=None):
 	formatted += message
 	_colour_print(formatted, "yellow")
 	if stack_trace:
-		_print_stack_trace(stack_trace)
+		_print_stack_trace(stack_trace, exception)
 
 _win_colour_codes = {
 	"red": 12,
@@ -203,7 +208,7 @@ def _colour_print(message, colour="default"):
 		else:
 			print(message) #Stay on default colour.
 
-def _print_stack_trace(stack_trace):
+def _print_stack_trace(stack_trace, exception=None):
 	"""
 	Prints a formatted stack trace.
 
@@ -213,9 +218,12 @@ def _print_stack_trace(stack_trace):
 	:param stack_trace: A stack trace, as a list of ``FrameInfo`` objects
 		resulting from ``inspect.getouterframes`` or ``inspect.getinnerframes``,
 		most recent frame first.
+	:param exception: An exception that was raised, if any.
 	"""
 	print("Stack trace:")
 	for frame in stack_trace:
 		print("\tFile \"{file_name}\", line {line_number}, in {function}".format(file_name=frame.filename, line_number=frame.lineno, function=frame.function))
 		for line in frame.code_context:
 			print("\t\t" + line.strip())
+	if exception:
+		print(str(exception))

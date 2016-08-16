@@ -27,7 +27,7 @@ def metadata():
 	return {
 		"name": "Logger Type",
 		"description": "Defines a type of plug-in that keeps a log of messages, intended to show what's happening behind the scenes of the application.",
-		"version": 2,
+		"version": 3,
 		"dependencies": {},
 
 		"type": { #This is a "plug-in type" plug-in.

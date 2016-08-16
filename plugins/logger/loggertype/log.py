@@ -69,13 +69,15 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	stack_trace = []
+	exception = None
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
 			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.CRITICAL in _logger_levels[logger]:
-			loggers[logger].critical(substituted, title, stack_trace)
+			loggers[logger].critical(substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Critical": #The word "Critical" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -100,13 +102,15 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	stack_trace = []
+	exception = None
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
 			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.DEBUG in _logger_levels[logger]:
-			loggers[logger].debug(substituted, title, stack_trace)
+			loggers[logger].debug(substituted, title, stack_trace, exception)
 	#Since debug log messages aren't activated by default, there is no fallback for this level.
 	#The fallback doesn't have this level set by default and there is no way to set it.
 
@@ -126,13 +130,15 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	stack_trace = []
+	exception = None
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
 			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.ERROR in _logger_levels[logger]:
-			loggers[logger].error(substituted, title, stack_trace)
+			loggers[logger].error(substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Error": #The word "Error" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -157,13 +163,15 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	stack_trace = []
+	exception = None
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
-			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			stack_trace = list(reverse(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.INFO in _logger_levels[logger]:
-			loggers[logger].info(substituted, title, stack_trace)
+			loggers[logger].info(substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Information": #The word "Information" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -208,13 +216,15 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
 	loggers = loggertype.loggerregistrar.get_all_loggers()
 	stack_trace = []
+	exception = None
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
 			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.WARNING in _logger_levels[logger]:
-			loggers[logger].warning(substituted, title, stack_trace)
+			loggers[logger].warning(substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Warning": #The word "Warning" is already put there by the logger.
 			substituted = title + ": " + substituted
