@@ -202,6 +202,8 @@ def unregister(identity):
 		api("logger").warning("Can't unregister plug-in {plugin}: It was never loaded.", plugin=identity)
 		return
 	for plugin_type in _plugins[identity]:
+		if plugin_type in _required_metadata_fields: #It's a global metadata field, not a type definition.
+			continue
 		if plugin_type == "type": #We're unregistering a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
 			continue
 		if plugin_type not in _plugin_types:
