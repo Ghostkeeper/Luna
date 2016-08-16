@@ -190,13 +190,13 @@ def discover():
 			_plugins[candidate.identity] = candidate.metadata
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 
-def unregister(identity):
+def deactivate(identity):
 	"""
-	Unregisters a plug-in, so that it will no longer be used.
+	Deactivates a plug-in, so that it will no longer be used.
 
 	The plug-in will be unregistered from all plug-in types it implements.
 
-	:param identity: The identity of the plug-in to unregister.
+	:param identity: The identity of the plug-in to deactivate.
 	"""
 	if identity not in _plugins:
 		api("logger").warning("Can't unregister plug-in {plugin}: It was never loaded.", plugin=identity)
@@ -204,7 +204,7 @@ def unregister(identity):
 	for plugin_type in _plugins[identity]:
 		if plugin_type in _required_metadata_fields: #It's a global metadata field, not a type definition.
 			continue
-		if plugin_type == "type": #We're unregistering a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
+		if plugin_type == "type": #We're deactivating a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
 			continue
 		if plugin_type not in _plugin_types: #The type was deleted prior, because it was a dependency.
 			continue
@@ -215,7 +215,7 @@ def unregister(identity):
 		api("logger").info("Unregistered plug-in {plugin} as plug-in type.", plugin=identity)
 	dependees = [dependee_identity for dependee_identity, dependee in _plugins.items() if identity in dependee["dependencies"]]
 	for dependee_identity in dependees:
-		unregister(dependee_identity)
+		deactivate(dependee_identity)
 
 def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
 	"""
