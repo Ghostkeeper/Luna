@@ -92,6 +92,25 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
 
+	def test_multiple_messages(self):
+		"""
+		Tests printing multiple messages after each other.
+
+		It tests whether all messages are present and in correct order.
+		"""
+		standardout.standard_out.info("First")
+		standardout.standard_out.error("Second")
+		standardout.standard_out.info("Third")
+		buffer_state = self._mock_stdout.getvalue()
+		first_position = buffer_state.find("First")
+		second_position = buffer_state.find("Second")
+		third_position = buffer_state.find("Third")
+		self.assertGreaterEqual(first_position, 0, msg="The first message is not in the log.")
+		self.assertGreaterEqual(second_position, 0, msg="The second message is not in the log.")
+		self.assertGreaterEqual(third_position, 0, msg="The third message is not in the log.")
+		self.assertGreater(second_position, first_position, msg="The second message comes before the first message.")
+		self.assertGreater(third_position, second_position, msg="The third message comes before the second message.")
+
 	@luna.test_case.parametrise(_test_messages)
 	def test_warning(self, message, title):
 		"""
