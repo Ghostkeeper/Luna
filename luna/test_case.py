@@ -22,7 +22,7 @@ class _TestCaseMeta(type):
 	their parameter sets.
 	"""
 
-	def __new__(cls, name, bases, members):
+	def __new__(mcs, name, bases, members):
 		"""
 		Defines a new TestCase class.
 
@@ -40,7 +40,7 @@ class _TestCaseMeta(type):
 					new_function = functools.partialmethod(members_copy[member], **parameters) #Fill in only the parameters. The rest is filled in at calling (such as "self").
 					members[member + "_" + test_name] = new_function #Store the filled-in function along with the test name to make it unique.
 				del members[member] #Delete the original parametrised function.
-		return type.__new__(cls, name, bases, members)
+		return type.__new__(mcs, name, bases, members)
 
 class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 	"""
