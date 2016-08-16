@@ -52,7 +52,7 @@ class _AlmostDictionary:
 
 		:return: A list of keys.
 		"""
-		return ["mock_key"]
+		return dir(self).keys()
 
 class TestLoggerRegistrar(luna.test_case.TestCase):
 	"""
