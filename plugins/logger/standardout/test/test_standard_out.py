@@ -20,10 +20,10 @@ class TestStandardOut(luna.test_case.TestCase):
 	"""
 
 	_test_messages = {
-		"simple":    {"message": "Message.",                 "title": "Title"},
-		"empty":     {"message": "",                         "title": ""},
+		"simple":    {"message": "Message.",                 "title": "Title"}, #pylint: disable=bad-whitespace
+		"empty":     {"message": "",                         "title": ""}, #pylint: disable=bad-whitespace
 		"multiline": {"message": "First line\nSecond line.", "title": "Multiline"},
-		"unicode":   {"message": "\u263d",                   "title": "\u263e"}
+		"unicode":   {"message": "\u263d",                   "title": "\u263e"} #pylint: disable=bad-whitespace
 	}
 	"""
 	Messages that every message logging test should test with.
