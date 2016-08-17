@@ -14,6 +14,7 @@ Welcome to Luna's documentation.
 	:maxdepth: 2
 
 	*
+	contributing/*
 	*/implement
 	technical/luna
 	technical/luna*
