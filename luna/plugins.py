@@ -213,7 +213,11 @@ def deactivate(identity):
 			continue
 		if plugin_type not in _plugin_types: #The type was deleted prior, because it was a dependency.
 			continue
-		_plugin_types[plugin_type].unregister(identity)
+		try:
+			_plugin_types[plugin_type].unregister(identity)
+		except:
+			api("logger").error("Couldn't unregister plug-in {plugin} as type {plugin_type}.", plugin=identity, plugin_type=plugin_type)
+			continue
 		api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
 	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
 		del _plugin_types[_plugins[identity]["type"]["type_name"]]
