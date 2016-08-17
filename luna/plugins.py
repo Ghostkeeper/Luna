@@ -168,6 +168,7 @@ def discover():
 			unresolved_candidates.append(candidate) #Goes on to the third stage.
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
+	failed_to_register = set()
 	for candidate in unresolved_candidates:
 		for dependency, requirements in candidate.dependencies.items():
 			for dependency_candidate in unresolved_candidates:
@@ -185,10 +186,12 @@ def discover():
 				try:
 					_plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
 				except Exception as e:
-					api("logger").error("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
-					#Cannot guarantee that dependencies have been met now. But still continue to try to register as many other types as possible.
+					api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
+					failed_to_register.add(candidate.identity)
 			_plugins[candidate.identity] = candidate.metadata
 			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
+	for candidate_identity in failed_to_register: #These plug-ins couldn't be registered. Unregister them and their dependees.
+		deactivate(candidate_identity)
 
 def deactivate(identity):
 	"""
