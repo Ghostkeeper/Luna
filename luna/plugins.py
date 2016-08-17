@@ -181,6 +181,7 @@ def discover():
 				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
 				break
 		else: #All dependencies are resolved!
+			_plugins[candidate.identity] = candidate.metadata
 			candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 			for candidate_type in candidate_types:
 				try:
@@ -188,8 +189,9 @@ def discover():
 				except Exception as e:
 					api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 					failed_to_register.add(candidate.identity)
-			_plugins[candidate.identity] = candidate.metadata
-			api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
+					break #Don't try to register with any types. We're going to unregister it anyway.
+			else: #No registration failed.
+				api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
 	for candidate_identity in failed_to_register: #These plug-ins couldn't be registered. Unregister them and their dependees.
 		deactivate(candidate_identity)
 
