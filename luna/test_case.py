@@ -111,131 +111,143 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 	source_code = "".join(source_lines)
 	syntax_tree = ast.parse(source_code)
 
-	class YieldInserter(ast.NodeTransformer):
+	class FunctionInserter(ast.NodeTransformer):
 		"""
-		An AST ``NodeTransformer`` that inserts yield statements everywhere.
+		An AST ``NodeTransformer`` that inserts function calls everywhere.
 		"""
-		_yield_node = ast.Expr(value=ast.Yield())
 
-		def __init__(self):
+		def __init__(self, inserted_function, *inserted_args, **inserted_kwargs):
 			"""
-			Create a new YieldInserter instance.
+			Create a new ``FunctionInserter`` instance.
 
-			This prepares for storing the outer function name.
+			This prepares an AST node to insert in the outer function.
+
+			:param inserted_function: The function to insert in the outer
+				function.
+			:param inserted_args: Positional arguments to call the inserted
+				function with.
+			:param inserted_kwargs: Key-word arguments to call the inserted
+				function with.
 			"""
-			self._outer_function_name = None
+			self._outer_function_name = None #The name of the outer function, stored when we encounter it in our walk.
+			self._additional_context = {} #Extra variables added to the context to facilitate the call of the inserted method.
+
+			positional_arguments = []
+			for index, argument in enumerate(inserted_args): #Convert each positional argument to an expression.
+				name = "_arg" + str(index)
+				self._additional_context[name] = argument #Store the actual argument in the context with a unique name.
+				argument_node = ast.Starred(value=ast.Name(id=name, ctx=ast.Load()), ctx=ast.Load()) #The expression refers to a name in the context.
+				positional_arguments.append(argument_node)
+
+			keyword_arguments = []
+			for key, value in inserted_kwargs.items(): #Convert each key-word argument to an expression.
+				name = "_kwarg" + key
+				self._additional_context[name] = value #Store the actual argument in the context with a unique name.
+				argument_node = ast.keyword(key, ast.Name(id=name, ctx=ast.Load())) #The expression refers to a name in the context.
+				keyword_arguments.append(argument_node)
+
+			self._additional_context[inserted_function.__name__] = inserted_function #Add to context so that we can call it.
+			self._call_node = ast.Expr(value=ast.Call(func=ast.Name(id=inserted_function.__name__, ctx=ast.Load()), args=positional_arguments, keywords=keyword_arguments)) #Construct the actual node.
 
 		def visit_ExceptHandler(self, node):
 			"""
-			Insert yield statements inside an exception handler.
+			Insert function calls inside an exception handler.
 
-			:param node: The exception handler to insert yield statements in.
-			:return: A modified exception handler with yield statements in its
+			:param node: The exception handler to insert function calls in.
+			:return: A modified exception handler with function calls in its
 				body.
 			"""
-			node.body = self._insert_yields(node.body)
+			node.body = self._insert_calls(node.body)
 			return node
 
 		def visit_For(self, node):
 			"""
-			Inserts yield statements inside a for node.
+			Inserts function calls inside a for node.
 
-			:param node: The for node to insert yield statements in.
-			:return: A modified for node with yield statements in its body.
+			:param node: The for node to insert function calls in.
+			:return: A modified for node with function calls in its body.
 			"""
-			node.body = self._insert_yields(node.body)
-			node.orelse = self._insert_yields(node.orelse)
+			node.body = self._insert_calls(node.body)
+			node.orelse = self._insert_calls(node.orelse)
 			return node
 
 		def visit_FunctionDef(self, node):
 			"""
-			Insert yield statements inside a function definition.
+			Insert function calls inside a function definition.
 
-			:param node: The function definition to insert yield statements in.
-			:return: A modified function definition with yield statements in its
+			:param node: The function definition to insert function calls in.
+			:return: A modified function definition with function calls in its
 				body.
 			"""
 			if not self._outer_function_name: #This is the first function declaration we're getting.
 				self._outer_function_name = node.name
-			node.body = self._insert_yields(node.body)
+			node.body = self._insert_calls(node.body)
 			return node
 
 		def visit_If(self, node):
 			"""
-			Inserts yield statements inside an if node.
+			Inserts function calls inside an if node.
 
-			:param node: The if node to insert yield statements in.
-			:return: A modified if node with yield statements in its body.
+			:param node: The if node to insert function calls in.
+			:return: A modified if node with function calls in its body.
 			"""
-			node.body = self._insert_yields(node.body)
-			node.orelse = self._insert_yields(node.orelse)
+			node.body = self._insert_calls(node.body)
+			node.orelse = self._insert_calls(node.orelse)
 			return node
 
 		def visit_Try(self, node):
 			"""
-			Insert yield statements inside a try node.
-			:param node: The try node to insert yield statements in.
-			:return: A modified try node with yield statements in its body.
+			Insert function calls inside a try node.
+
+			:param node: The try node to insert function calls in.
+			:return: A modified try node with function calls in its body.
 			"""
-			node.body = self._insert_yields(node.body)
-			node.orelse = self._insert_yields(node.orelse)
-			node.finalbody = self._insert_yields(node.finalbody)
+			node.body = self._insert_calls(node.body)
+			node.orelse = self._insert_calls(node.orelse)
+			node.finalbody = self._insert_calls(node.finalbody)
 			return node
 
 		def visit_While(self, node):
 			"""
-			Insert yield statements inside a while node.
+			Insert function calls inside a while node.
 
-			:param node: The while node to insert yield statements in.
-			:return: A modified while node with yield statements in its body.
+			:param node: The while node to insert function calls in.
+			:return: A modified while node with function calls in its body.
 			"""
-			node.body = self._insert_yields(node.body)
-			node.orelse = self._insert_yields(node.orelse)
+			node.body = self._insert_calls(node.body)
+			node.orelse = self._insert_calls(node.orelse)
 			return node
 
 		def visit_With(self, node):
 			"""
-			Insert yield statements inside a with node.
+			Insert function calls inside a with node.
 
-			:param node: The with node to insert yield statements in.
-			:return: A modified with node with yield statements in its body.
+			:param node: The with node to insert function calls in.
+			:return: A modified with node with function calls in its body.
 			"""
-			node.body = self._insert_yields(node.body)
+			node.body = self._insert_calls(node.body)
 			return node
 
-		def _insert_yields(self, body):
+		def _insert_calls(self, body):
 			"""
-			Insert yield statements into a list of expressions.
+			Insert function calls into a list of expressions.
 
-			:param body: The list of expressions to insert the yield statements
+			:param body: The list of expressions to insert the function calls
 				in.
-			:return: A new list of expressions, with yield statements.
+			:return: A new list of expressions, with function calls.
 			"""
-			new_body = [self._yield_node]
+			new_body = [self._call_node]
 			for child in body:
 				new_body.append(child)
-				new_body.append(self._yield_node)
+				new_body.append(self._call_node)
 			return new_body
 
-	yield_inserter = YieldInserter()
-	transformed_syntax = yield_inserter.visit(syntax_tree) #Insert all yield statements.
+	call_inserter = FunctionInserter(inserted_function, inserted_function_args, inserted_function_kwargs)
+	transformed_syntax = call_inserter.visit(syntax_tree) #Insert function calls everywhere.
 	ast.fix_missing_locations(transformed_syntax)
-	compiled = compile(transformed_syntax, filename="<yield_inserter>", mode="exec")
-	scope = {}
+	compiled = compile(transformed_syntax, filename="<call_inserter>", mode="exec")
+	scope = call_inserter._additional_context
 	exec(compiled, scope) #Execute the transformed code inside an empty scope.
-	new_func = scope[yield_inserter._outer_function_name] #The function definition inside the code is now the only name in this scope.
+	new_func = scope[call_inserter._outer_function_name] #The function definition inside the code is now the only name in this scope.
 
-	functools.wraps(new_func)
-	def func_wrapper(*args, **kwargs):
-		"""
-		Wrapper function to return, which calls the transformed function with
-		any parameters it may have had.
-
-		:param args: Positional arguments to call the transformed function with.
-		:param kwargs: Key-word arguments to call the transformed function with.
-		:return: TODO. Nothing yet.
-		"""
-		for yield_result in new_func(*args, **kwargs):
-			if yield_result == None:
-				inserted_function(*inserted_function_args, **inserted_function_kwargs)
-	return func_wrapper
+	return new_func
