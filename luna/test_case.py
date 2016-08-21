@@ -13,7 +13,9 @@ package. But as long as these features are small and few, we should not
 introduce an external dependency.
 """
 
-import functools #For partial functions.
+import ast #To get the AST of functions in order to insert other function calls in between.
+import functools #For partial functions and wrapper functions.
+import inspect #To get source code for inserting function in between.
 import unittest #For unittest's test case, which we extend.
 
 class _TestCaseMeta(type):
@@ -71,3 +73,169 @@ def parametrise(parameters):
 		original_function.parameters = parameters
 		return original_function
 	return parametrise_decorator
+
+def execute_in_between(function, inserted_function, *inserted_function_args, **inserted_function_kwargs):
+	"""
+	Modifies a function such that another function executes as often as possible
+	in between.
+
+	It creates a copy of the function which behaves exactly the same, except
+	that it calls ``inserted_function`` between every expression, with the
+	supplied parameters.
+
+	This function is intended to be used for testing atomicity. You can insert a
+	function that checks for the state of something modified by the function
+	that is under scrutiny. This will test whether the state is modified
+	atomically between expressions. Note that it is not an exhaustive test,
+	since it can't test atomicity of single expressions. That means that it's
+	pretty easy to circumvent by calling a single expression that is not atomic,
+	such as a function. Still, it catches a lot of mistakes in concurrency.
+
+	:param function: The function to insert functions in. Built-in functions are
+		not allowed.
+	:param inserted_function: The function to insert in the other function.
+	:param inserted_function_args: The positional arguments to supply to the
+		inserted function.
+	:param inserted_function_kwargs: The key-word arguments to supply to the
+		inserted function.
+	:return: A modified function that calls ``inserted_function`` as often as
+		possible during execution.
+	"""
+	source_lines, _ = inspect.getsourcelines(function)
+
+	#Correct indentation so that AST can parse the code.
+	indentation = len(source_lines[0]) - len(source_lines[0].lstrip())
+	for index, line in enumerate(source_lines):
+		source_lines[index] = line[indentation:]
+
+	source_code = "".join(source_lines)
+	syntax_tree = ast.parse(source_code)
+
+	class YieldInserter(ast.NodeTransformer):
+		"""
+		An AST ``NodeTransformer`` that inserts yield statements everywhere.
+		"""
+		_yield_node = ast.Expr(value=ast.Yield())
+
+		def __init__(self):
+			"""
+			Create a new YieldInserter instance.
+
+			This prepares for storing the outer function name.
+			"""
+			self._outer_function_name = None
+
+		def visit_ExceptHandler(self, node):
+			"""
+			Insert yield statements inside an exception handler.
+
+			:param node: The exception handler to insert yield statements in.
+			:return: A modified exception handler with yield statements in its
+				body.
+			"""
+			node.body = self._insert_yields(node.body)
+			return node
+
+		def visit_For(self, node):
+			"""
+			Inserts yield statements inside a for node.
+
+			:param node: The for node to insert yield statements in.
+			:return: A modified for node with yield statements in its body.
+			"""
+			node.body = self._insert_yields(node.body)
+			node.orelse = self._insert_yields(node.orelse)
+			return node
+
+		def visit_FunctionDef(self, node):
+			"""
+			Insert yield statements inside a function definition.
+
+			:param node: The function definition to insert yield statements in.
+			:return: A modified function definition with yield statements in its
+				body.
+			"""
+			if not self._outer_function_name: #This is the first function declaration we're getting.
+				self._outer_function_name = node.name
+			node.body = self._insert_yields(node.body)
+			return node
+
+		def visit_If(self, node):
+			"""
+			Inserts yield statements inside an if node.
+
+			:param node: The if node to insert yield statements in.
+			:return: A modified if node with yield statements in its body.
+			"""
+			node.body = self._insert_yields(node.body)
+			node.orelse = self._insert_yields(node.orelse)
+			return node
+
+		def visit_Try(self, node):
+			"""
+			Insert yield statements inside a try node.
+			:param node: The try node to insert yield statements in.
+			:return: A modified try node with yield statements in its body.
+			"""
+			node.body = self._insert_yields(node.body)
+			node.orelse = self._insert_yields(node.orelse)
+			node.finalbody = self._insert_yields(node.finalbody)
+			return node
+
+		def visit_While(self, node):
+			"""
+			Insert yield statements inside a while node.
+
+			:param node: The while node to insert yield statements in.
+			:return: A modified while node with yield statements in its body.
+			"""
+			node.body = self._insert_yields(node.body)
+			node.orelse = self._insert_yields(node.orelse)
+			return node
+
+		def visit_With(self, node):
+			"""
+			Insert yield statements inside a with node.
+
+			:param node: The with node to insert yield statements in.
+			:return: A modified with node with yield statements in its body.
+			"""
+			node.body = self._insert_yields(node.body)
+			return node
+
+		def _insert_yields(self, body):
+			"""
+			Insert yield statements into a list of expressions.
+
+			:param body: The list of expressions to insert the yield statements
+				in.
+			:return: A new list of expressions, with yield statements.
+			"""
+			new_body = [self._yield_node]
+			for child in body:
+				new_body.append(child)
+				new_body.append(self._yield_node)
+			return new_body
+
+	yield_inserter = YieldInserter()
+	transformed_syntax = yield_inserter.visit(syntax_tree) #Insert all yield statements.
+	ast.fix_missing_locations(transformed_syntax)
+	compiled = compile(transformed_syntax, filename="<yield_inserter>", mode="exec")
+	scope = {}
+	exec(compiled, scope) #Execute the transformed code inside an empty scope.
+	new_func = scope[yield_inserter._outer_function_name] #The function definition inside the code is now the only name in this scope.
+
+	functools.wraps(new_func)
+	def func_wrapper(*args, **kwargs):
+		"""
+		Wrapper function to return, which calls the transformed function with
+		any parameters it may have had.
+
+		:param args: Positional arguments to call the transformed function with.
+		:param kwargs: Key-word arguments to call the transformed function with.
+		:return: TODO. Nothing yet.
+		"""
+		for yield_result in new_func(*args, **kwargs):
+			if yield_result == None:
+				inserted_function(*inserted_function_args, **inserted_function_kwargs)
+	return func_wrapper
