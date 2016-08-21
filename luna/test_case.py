@@ -247,7 +247,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 	ast.fix_missing_locations(transformed_syntax)
 	compiled = compile(transformed_syntax, filename="<call_inserter>", mode="exec")
 	scope = call_inserter._additional_context
-	exec(compiled, scope) #Execute the transformed code inside an empty scope.
+	exec(compiled, scope) #Execute the transformed code inside the pre-defined scope (which has all the arguments and the function definition).
 	new_func = scope[call_inserter._outer_function_name] #The function definition inside the code is now the only name in this scope.
 
 	return new_func
