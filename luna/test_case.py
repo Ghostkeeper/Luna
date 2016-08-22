@@ -147,7 +147,64 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				keyword_arguments.append(argument_node)
 
 			self._additional_context[inserted_function.__name__] = inserted_function #Add to context so that we can call it.
-			self._call_node = ast.Expr(value=ast.Call(func=ast.Name(id=inserted_function.__name__, ctx=ast.Load()), args=positional_arguments, keywords=keyword_arguments)) #Construct the actual node.
+			self._call_node = ast.Call(func=ast.Name(id=inserted_function.__name__, ctx=ast.Load()), args=positional_arguments, keywords=keyword_arguments) #Construct the actual nodes.
+			self._expr_node = ast.Expr(value=self._call_node)
+
+		def visit_BinOp(self, node):
+			"""
+			Insert function calls inside any binary operator.
+
+			:param node: The binary operator to insert function calls in.
+			:return: A modified binary operator with a function call around its
+				expressions.
+			"""
+			self.visit(node.left)
+			self.visit(node.right)
+			return ast.BinOp(
+				left=ast.IfExp(test=self._call_node, body=node.left, orelse=node.left),
+				op=node.op,
+				right=ast.IfExp(test=self._call_node, body=node.right, orelse=node.right)
+			)
+
+		def visit_BoolOp(self, node):
+			"""
+			Insert function calls inside any boolean operator.
+
+			:param node: The boolean operator to insert function calls in.
+			:return: A modified boolean operator with a function call around its
+				expressions.
+			"""
+			node.values = self._add_calls_exprs(node.values)
+			return node
+
+		def visit_Call(self, node):
+			"""
+			Insert a function call around a function call.
+
+			:param node: The call node to surround with a function call.
+			:return: A modified call node that calls the inserted function
+				before making the specified function call.
+			"""
+			return ast.Call(
+				func=node.func,
+				args=self._add_calls_exprs(node.args),
+				keywords=self._add_calls_keywords(node.keywords)
+			)
+
+		def visit_Compare(self, node):
+			"""
+			Insert function calls inside any comparison operator.
+
+			:param node: The comparison operator to insert function calls in.
+			:return: A modified comparison operator with a function call around
+				its expressions.
+			"""
+			self.visit(node.left)
+			return ast.Compare(
+				left=ast.IfExp(test=self._call_node, body=node.left, orelse=node.right),
+				ops=node.ops,
+				comparators=self._add_calls_exprs(node.comparators)
+			)
 
 		def visit_ExceptHandler(self, node):
 			"""
@@ -157,8 +214,18 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:return: A modified exception handler with function calls in its
 				body.
 			"""
-			node.body = self._insert_calls(node.body)
+			node.body = self._add_calls_stmts(node.body)
 			return node
+
+		def visit_Expr(self, node):
+			"""
+			Insert function calls around an expression.
+
+			:param node: The expression to insert function calls around.
+			:return: A modified expression with function calls around it.
+			"""
+			self.visit(node.value)
+			return ast.Expr(value=ast.IfExp(test=self._call_node, body=node, orelse=node)) #Turn the inserted call into the test of an if-expression, and return the original expression in both cases.
 
 		def visit_For(self, node):
 			"""
@@ -167,8 +234,8 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:param node: The for node to insert function calls in.
 			:return: A modified for node with function calls in its body.
 			"""
-			node.body = self._insert_calls(node.body)
-			node.orelse = self._insert_calls(node.orelse)
+			node.body = self._add_calls_stmts(node.body)
+			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
 
 		def visit_FunctionDef(self, node):
@@ -181,7 +248,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			"""
 			if not self._outer_function_name: #This is the first function declaration we're getting.
 				self._outer_function_name = node.name
-			node.body = self._insert_calls(node.body)
+			node.body = self._add_calls_stmts(node.body)
 			return node
 
 		def visit_If(self, node):
@@ -191,9 +258,104 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:param node: The if node to insert function calls in.
 			:return: A modified if node with function calls in its body.
 			"""
-			node.body = self._insert_calls(node.body)
-			node.orelse = self._insert_calls(node.orelse)
+			node.body = self._add_calls_stmts(node.body)
+			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
+
+		def visit_IfExp(self, node):
+			"""
+			Inserts function calls inside an if-expression node.
+
+			:param node: The if-expression node to insert function calls in.
+			:return: A modified if-expression node with function calls in its
+				body.
+			"""
+			self.visit(node.test)
+			self.visit(node.body)
+			self.visit(node.orelse)
+			return ast.IfExp(
+				test=ast.IfExp(test=self._call_node, body=node.test, orelse=node.test),
+				body=ast.IfExp(test=self._call_node, body=node.body, orelse=node.orelse),
+				orelse=ast.IfExp(test=self._call_node, body=node.orelse, orelse=node.orelse)
+			)
+
+		def visit_Index(self, node):
+			"""
+			Insert function calls inside a subscript index.
+
+			:param node: The subscript index to insert function calls in.
+			:return: A modified subscript index with function calls around its
+				value.
+			"""
+			self.visit(node.value)
+			return ast.Index(value=ast.IfExp(test=self._call_node, body=node.value, orelse=node.value))
+
+		def visit_List(self, node):
+			"""
+			Insert function calls inside a list node.
+
+			:param node: The list node to insert function calls in.
+			:return: A modified list node with function calls around all its
+				elements.
+			"""
+			node.elts = self._add_calls_exprs(node.elts)
+			return node
+
+		def visit_Set(self, node):
+			"""
+			Insert function calls inside a set node.
+
+			:param node: The set node to insert function calls in.
+			:return: A modified set node with function calls around all its
+				elements.
+			"""
+			node.elts = self._add_calls_exprs(node.elts)
+			return node
+
+		def visit_Slice(self, node):
+			"""
+			Insert function calls inside a subscript slice.
+
+			:param node: The subscript slice to insert function calls in.
+			:return: A modified subscript slice with function calls around its
+				values.
+			"""
+			if node.lower:
+				self.visit(node.lower)
+				lower_node = ast.IfExp(test=self._call_node, body=node.lower, orelse=node.lower)
+			else:
+				lower_node = None
+			if node.upper:
+				self.visit(node.upper)
+				upper_node = ast.IfExp(test=self._call_node, body=node.upper, orelse=node.upper)
+			else:
+				upper_node = None
+			if node.step:
+				self.visit(node.step)
+				step_node = ast.IfExp(test=self._call_node, body=node.step, orelse=node.step)
+			else:
+				step_node = None
+			return ast.Slice(
+				lower=lower_node,
+				upper=upper_node,
+				step=step_node
+			)
+
+		def visit_Subscript(self, node):
+			"""
+			Insert function calls inside a subscript node.
+
+			:param node: The subscript node to insert function calls in.
+			:return: A modified subscript node with function calls around its
+				value.
+			"""
+			self.visit(node.value)
+			self.visit(node.slice)
+			return ast.Subscript(
+				value=ast.IfExp(test=self._call_node, body=node.upper, orelse=node.lower),
+				slice=node.slice,
+				ctx=node.ctx
+			)
 
 		def visit_Try(self, node):
 			"""
@@ -202,10 +364,32 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:param node: The try node to insert function calls in.
 			:return: A modified try node with function calls in its body.
 			"""
-			node.body = self._insert_calls(node.body)
-			node.orelse = self._insert_calls(node.orelse)
-			node.finalbody = self._insert_calls(node.finalbody)
+			node.body = self._add_calls_stmts(node.body)
+			node.orelse = self._add_calls_stmts(node.orelse)
+			node.finalbody = self._add_calls_stmts(node.finalbody)
 			return node
+
+		def visit_Tuple(self, node):
+			"""
+			Insert function calls inside a tuple node.
+
+			:param node: The tuple node to insert function calls in.
+			:return: A modified tuple node with function calls around all its
+				elements.
+			"""
+			node.elts = self._add_calls_exprs(node.elts)
+			return node
+
+		def visit_UnaryOp(self, node):
+			"""
+			Insert function calls inside any unary operator.
+
+			:param node: The unary operator to insert function calls in.
+			:return: A modified unary operator with a function call around its
+				expression.
+			"""
+			self.visit(node.operand)
+			return ast.UnaryOp(op=node.op, operand=ast.IfExp(test=self._call_node, body=node.operand, orelse=node.operand))
 
 		def visit_While(self, node):
 			"""
@@ -214,8 +398,8 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:param node: The while node to insert function calls in.
 			:return: A modified while node with function calls in its body.
 			"""
-			node.body = self._insert_calls(node.body)
-			node.orelse = self._insert_calls(node.orelse)
+			node.body = self._add_calls_stmts(node.body)
+			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
 
 		def visit_With(self, node):
@@ -225,26 +409,59 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			:param node: The with node to insert function calls in.
 			:return: A modified with node with function calls in its body.
 			"""
-			node.body = self._insert_calls(node.body)
+			node.body = self._add_calls_stmts(node.body)
 			return node
 
-		def _insert_calls(self, body):
+		def _add_calls_exprs(self, expressions):
 			"""
-			Insert function calls into a list of expressions.
+			Surround each element in a list of expression with a function call.
 
-			:param body: The list of expressions to insert the function calls
-				in.
-			:return: A new list of expressions, with function calls.
+			The expression will get replaced with an ``IfExp`` which calls the
+			inserted function as the test, and returns the expression regardless
+			of whether the test was ``True`` or ``False``.
+
+			:param expressions: A list of expressions.
+			:return: A new list of expressions, with function calls around every
+				expression.
 			"""
-			new_body = [self._call_node]
-			for child in body:
-				new_body.append(child)
-				new_body.append(self._call_node)
-			return new_body
+			result = []
+			for expression in expressions:
+				self.visit(expression)
+				result.append(ast.IfExp(test=self._call_node, body=expression, orelse=expression))
+			return result
+
+		def _add_calls_keywords(self, keywords):
+			"""
+			Surround the value of each keyword with a function call.
+
+			:param keywords: A list of keywords.
+			:return: A new list of keywords, with function calls around every
+				keyword.
+			"""
+			result = []
+			for keyword in keywords:
+				self.visit(keyword.value)
+				result.append(ast.keyword(arg=keyword.arg, value=ast.IfExp(test=self._call_node, body=keyword.value, orelse=keyword.value)))
+			return result
+
+		def _add_calls_stmts(self, statements):
+			"""
+			Insert function calls into a list of statements.
+
+			:param statements: The list of statements to insert the function
+				calls in.
+			:return: A new list of statements, with function calls in between.
+			"""
+			result = [self._expr_node]
+			for statement in statements:
+				self.visit(statement)
+				result.append(statement)
+				result.append(self._expr_node)
+			return result
 
 	call_inserter = FunctionInserter(inserted_function, inserted_function_args, inserted_function_kwargs)
 	transformed_syntax = call_inserter.visit(syntax_tree) #Insert function calls everywhere.
-	ast.fix_missing_locations(transformed_syntax)
+	ast.fix_missing_locations(transformed_syntax) #Add lineno and col_offset markers to the new nodes.
 	compiled = compile(transformed_syntax, filename="<call_inserter>", mode="exec")
 	scope = call_inserter._additional_context
 	exec(compiled, scope) #Execute the transformed code inside the pre-defined scope (which has all the arguments and the function definition).
