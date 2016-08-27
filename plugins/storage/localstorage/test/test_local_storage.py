@@ -14,7 +14,7 @@ atomicity of operations even more so. The concurrency tests should therefore be
 assumed to only hold for the operating system that the tests are running on.
 """
 
-import functools #For partial, to create mock functions with access to the TestLocalStorage class.
+import functools #For partialmethod, to wrap arbitrary method calls with the __getattr__ function.
 import unittest.mock #To replace file reading/writing with something that simulates external influence.
 
 import luna.test_case #To get parametrised tests.
@@ -102,6 +102,7 @@ class ConcurrentIOWrapper:
 		This needs to exist for the with-clause to allow being called on the
 		wrapper. It is a completely transparent wrapper around the actual I/O
 		stream.
+
 		:param args: Positional arguments to pass to the I/O stream.
 		:param kwargs: Key-word arguments to pass to the I/O stream.
 		:return: The result of exiting the I/O stream's scope.
@@ -207,3 +208,5 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"123456789",
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
+
+		os
