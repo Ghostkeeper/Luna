@@ -16,6 +16,7 @@ assumed to only hold for the operating system that the tests are running on.
 
 import functools #For partialmethod, to wrap arbitrary method calls with the __getattr__ function.
 import unittest.mock #To replace file reading/writing with something that simulates external influence.
+import os
 
 import luna.test_case #To get parametrised tests.
 import localstorage.local_storage #The module we're testing.
@@ -209,4 +210,4 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
 
-		os
+		os.remove(_unsafe_target_file)
