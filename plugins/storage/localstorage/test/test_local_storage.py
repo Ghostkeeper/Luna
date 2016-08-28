@@ -129,7 +129,7 @@ class ConcurrentIOWrapper:
 			with _original_open(_unsafe_target_file, "ab") as concurrent_handle:
 				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
 				self._written_bytes += 1
-		result = function(*args, **kwargs) #The actual read in between.
+		result = function(*args, **kwargs) #The actual call in between.
 		if self._written_bytes < len(self._write_string): #Append one byte again.
 			with _original_open(_unsafe_target_file, "ab") as concurrent_handle:
 				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
