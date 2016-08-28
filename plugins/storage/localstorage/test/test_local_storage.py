@@ -224,3 +224,14 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"123456789",
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
+
+	def test_write_atomicity(self):
+		"""
+		Tests the write function to see whether it is an atomic write.
+		"""
+		test_bytes = b"Test"
+		with unittest.mock.patch("builtins.open", _open_simulate_concurrency):
+			localstorage.local_storage.write(_unsafe_target_file, test_bytes)
+		with open(_unsafe_target_file, "rb") as written_file_handle:
+			result = written_file_handle.read()
+			self.assertEqual(result, test_bytes, "File write is not atomic.")
