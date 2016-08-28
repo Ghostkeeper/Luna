@@ -195,6 +195,13 @@ class TestLocalStorage(luna.test_case.TestCase):
 	Tests the behaviour of the local_storage storage implementation.
 	"""
 
+	def tearDown(self):
+		"""
+		Removes any files that may have been written during these tests.
+		"""
+		if os.path.isfile(_unsafe_target_file):
+			os.remove(_unsafe_target_file)
+
 	def test_read_atomicity(self):
 		"""
 		Tests the read function to see whether it is an atomic read.
@@ -217,5 +224,3 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"123456789",
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
-
-		os.remove(_unsafe_target_file)
