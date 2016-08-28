@@ -53,6 +53,14 @@ class ConcurrentIOWrapper:
 	Simulates concurrent writes to the I/O stream being wrapped.
 	"""
 
+	_written_bytes = 0
+	"""
+	How many bytes are written in this test.
+
+	Stop writing if the whole string is written. This allows algorithms that are
+	not wait-free to still pass the test.
+	"""
+
 	def __init__(self, stream, write_string):
 		"""
 		Creates a new I/O wrapper around a specified stream.
@@ -67,7 +75,6 @@ class ConcurrentIOWrapper:
 		"""
 		self._stream = stream
 		self._write_string = write_string
-		self._written_bytes = 0 #How many bytes are written. Stop writing if the whole string is written. This allows algorithms that are not wait-free to still pass the test.
 
 	def __getattr__(self, item):
 		"""
@@ -122,18 +129,18 @@ class ConcurrentIOWrapper:
 		:param kwargs: The key-word arguments to call the function with.
 		:return: The result of the function call.
 		"""
-		if self._written_bytes == 0: #The first time, completely overwrite the original file.
+		if ConcurrentIOWrapper._written_bytes == 0: #The first time, completely overwrite the original file.
 			with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
 				concurrent_handle.write(b"") #Clear the file.
-		if self._written_bytes < len(self._write_string): #Append one byte.
+		if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte.
 			with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
-				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
-				self._written_bytes += 1
+				concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
+				ConcurrentIOWrapper._written_bytes += 1
 		result = function(*args, **kwargs) #The actual call in between.
-		if self._written_bytes < len(self._write_string): #Append one byte again.
+		if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte again.
 			with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
-				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
-				self._written_bytes += 1
+				concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
+				ConcurrentIOWrapper._written_bytes += 1
 		return result
 
 	def _concurrent_write_and_read(self, *args, **kwargs):
@@ -145,15 +152,15 @@ class ConcurrentIOWrapper:
 		:param kwargs: The key-word arguments passed to the ``read`` function.
 		:return: The result of the ``read`` function.
 		"""
-		if self._written_bytes < len(self._write_string):
+		if ConcurrentIOWrapper._written_bytes < len(self._write_string):
 			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
-			if self._written_bytes < len(self._write_string): #Append one byte.
-				if self._written_bytes == 0: #The first time, completely overwrite the original file.
+			if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte.
+				if ConcurrentIOWrapper._written_bytes == 0: #The first time, completely overwrite the original file.
 					with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
 						concurrent_handle.write(b"") #Clear the file.
 				with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
-					concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
-					self._written_bytes += 1
+					concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
+					ConcurrentIOWrapper._written_bytes += 1
 			second_part = self._stream.read(*args, **kwargs) #Read the rest of the file.
 			return first_part + second_part
 		else: #Don't do the concurrent write. After some amount of calls the "writing" is done. We assume that there comes a time where this is the case in real situations.
@@ -193,6 +200,12 @@ class TestLocalStorage(luna.test_case.TestCase):
 	"""
 	Tests the behaviour of the local_storage storage implementation.
 	"""
+
+	def setUp(self):
+		"""
+		Resets the number of bytes written concurrently in this test.
+		"""
+		ConcurrentIOWrapper._written_bytes = 0
 
 	def tearDown(self):
 		"""
