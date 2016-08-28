@@ -147,17 +147,13 @@ class ConcurrentIOWrapper:
 		"""
 		if self._written_bytes < len(self._write_string):
 			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
-			if self._written_bytes == 0: #The first time, completely overwrite the original file.
-				#Because the seek position stays put after the initial read, we need to make the initial write larger than the original file size.
-				#If we don't, the second read will already be at the end of the file, and consist entirely of the initial file contents.
-				original_size = os.stat(_unsafe_target_file).st_size
-				assert original_size <= len(self._write_string) #Broken test. Make the written bytes longer than the original file size.
-				with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
-					concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + original_size]) #Put it somewhat further than the single byte we're writing.
-					self._written_bytes = original_size
-			with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle: #Append one byte.
-				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
-				self._written_bytes += 1
+			if self._written_bytes < len(self._write_string): #Append one byte.
+				if self._written_bytes == 0: #The first time, completely overwrite the original file.
+					with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
+						concurrent_handle.write(b"") #Clear the file.
+				with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
+					concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
+					self._written_bytes += 1
 			second_part = self._stream.read(*args, **kwargs) #Read the rest of the file.
 			return first_part + second_part
 		else: #Don't do the concurrent write. After some amount of calls the "writing" is done. We assume that there comes a time where this is the case in real situations.
