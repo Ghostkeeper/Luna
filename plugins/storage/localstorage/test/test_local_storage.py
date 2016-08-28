@@ -16,7 +16,7 @@ assumed to only hold for the operating system that the tests are running on.
 
 import functools #For partialmethod, to wrap arbitrary method calls with the __getattr__ function.
 import unittest.mock #To replace file reading/writing with something that simulates external influence.
-import os
+import os #Cleaning up test files afterwards, and getting file size to design a good test.
 
 import luna.test_case #To get parametrised tests.
 import localstorage.local_storage #The module we're testing.
@@ -123,9 +123,13 @@ class ConcurrentIOWrapper:
 		:return: The result of the function call.
 		"""
 		if self._written_bytes == 0: #The first time, completely overwrite the original file.
+			#Because the seek position stays put after the initial read, we need to make the initial write larger than the original file size.
+			#If we don't, the second read will already be at the end of the file, and consist entirely of the initial file contents.
+			original_size = os.stat(_unsafe_target_file).st_size
+			assert original_size <= len(self._write_string) #Broken test. Make the written bytes longer than the original file size.
 			with _original_open(_unsafe_target_file, "wb") as concurrent_handle:
-				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 5]) #Put it somewhat further than the single byte we're writing.
-				self._written_bytes = 5
+				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + original_size]) #Put it somewhat further than the single byte we're writing.
+				self._written_bytes = original_size
 		if self._written_bytes < len(self._write_string): #Append one byte.
 			with _original_open(_unsafe_target_file, "ab") as concurrent_handle:
 				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
@@ -149,9 +153,13 @@ class ConcurrentIOWrapper:
 		if self._written_bytes < len(self._write_string):
 			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
 			if self._written_bytes == 0: #The first time, completely overwrite the original file.
+				#Because the seek position stays put after the initial read, we need to make the initial write larger than the original file size.
+				#If we don't, the second read will already be at the end of the file, and consist entirely of the initial file contents.
+				original_size = os.stat(_unsafe_target_file).st_size
+				assert original_size <= len(self._write_string) #Broken test. Make the written bytes longer than the original file size.
 				with _original_open(_unsafe_target_file, "wb") as concurrent_handle:
-					concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 5]) #Put it somewhat further than the single byte we're writing.
-					self._written_bytes = 5
+					concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + original_size]) #Put it somewhat further than the single byte we're writing.
+					self._written_bytes = original_size
 			with _original_open(_unsafe_target_file, "ab") as concurrent_handle: #Append one byte.
 				concurrent_handle.write(self._write_string[self._written_bytes:self._written_bytes + 1])
 				self._written_bytes += 1
