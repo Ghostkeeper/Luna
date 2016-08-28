@@ -81,7 +81,7 @@ class ConcurrentIOWrapper:
 			if item == "read": #Catch ``read`` with a special function that also interjects halfway.
 				return self._concurrent_write_and_read
 			else:
-				return functools.partialmethod(self._concurrent_write_and_call, self._stream.__getattribute__(item))
+				return functools.partial(self._concurrent_write_and_call, self._stream.__getattribute__(item))
 		else:
 			return self._stream.__getattribute__(item)
 
