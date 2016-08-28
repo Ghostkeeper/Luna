@@ -182,7 +182,15 @@ def _open_simulate_concurrency(file, *args, **kwargs):
 		function.
 	:return: A wrapped IO stream that simulates concurrent writes to the
 	"""
-	original_io_stream = _original_open(file, *args, **kwargs)
+	if len(args) >= 2:
+		args_list = list(args)
+		args_list[1] = 0 #Change the "buffering" parameter.
+		args = tuple(args_list)
+		original_io_stream = _original_open(file, *args, **kwargs)
+	else: #Provide our own "buffering" parameter.
+		if "buffering" in kwargs:
+			del kwargs["buffering"]
+		original_io_stream = _original_open(file, buffering=0, *args, **kwargs)
 	return ConcurrentIOWrapper(original_io_stream, b"1234567890")
 
 class TestLocalStorage(luna.test_case.TestCase):
