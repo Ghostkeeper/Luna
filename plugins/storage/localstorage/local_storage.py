@@ -90,6 +90,22 @@ def read(uri):
 	However, this algorithm is simple to implement and introduces very little
 	overhead if there is nobody writing, which is the main use case.
 
+	This algorithm is only atomic in the theoretical case of infinite time
+	resolution on the last modification time stamp of the file system. This is
+	obviously incorrect, but nothing better can be achieved without requiring
+	all writers to the file to keep record of their precise modification count
+	or something like that. On UNIX-based file systems, the time resolution is
+	typically 1ns, which is more than enough. On Windows's file system, NTFS,
+	the resolution is 100ns, which is often enough, except for very small files.
+	On FAT, however, the time resolution is 2s, which basically obliterates the
+	atomicity of this function for all but the largest files.
+	This could be fixed by introducing a sleep just before the file read that is
+	equal to the resolution of the time stamp, but this is deemed too costly for
+	the time cost of a file read operation. It could also be improved by reading
+	the file twice, and re-trying until the last two reads are equal, but that
+	is also too costly, since it requires two reads for the base case where
+	nothing modifies the file.
+
 	:param uri: The URI of the resource to read.
 	:return: The contents of the resource, as a bytes string.
 	:raises IOError: The data could not be read.
@@ -98,6 +114,8 @@ def read(uri):
 
 	while True:
 		last_modified = os.path.getmtime(path)
+		#To guarantee atomic file reads, insert a sleep here (see documentation). Disabled for speed.
+		#time.sleep(0.0001) #Must be equal to the minimum resolution of the file system's last modification time stamp.
 		with open(path, "rb") as file_handle: #Read in binary mode.
 			result = file_handle.read()
 		if os.path.getmtime(path) == last_modified: #Still not modified. We've got a good copy.
