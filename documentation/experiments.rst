@@ -35,10 +35,12 @@ One of the goals listed in :doc:`goals` is to explore more exotic programming te
 |             |           | which requires them to be used in a less elegant   |
 |             |           | manner.                                            |
 +-------------+-----------+----------------------------------------------------+
-| Unit tests  | In        | Probably not possible to interweave threads at     |
-| for         | Progress  | bytecode-level. Will nonetheless catch a lot of    |
-| concurrency |           | bugs. Similar experiments in other languages       |
-|             |           | failed. Keeping it small for now to prevent this.  |
+| Unit tests  | Completed | Failed to make generic unit tests. Making tests    |
+| for         |           | for individual cases was successful though, and    |
+| concurrency |           | this technique can be applied to other atomicity   |
+|             |           | tests as well in a similar way, but the            |
+|             |           | implementation needs to be so vastly different     |
+|             |           | that no generic library could be made.             |
 +-------------+-----------+----------------------------------------------------+
 | Declarative | Planned   | Seems to make defining UI's very elegant. Involves |
 | UI          |           | some complicated hacks. Integrates with other      |
