@@ -10,7 +10,7 @@ Tests the behaviour of the registrar that registers logger plug-ins.
 
 import functools #To test filling in partials via metadata.
 
-import loggertype.loggerregistrar #The module we're testing.
+import loggertype.logger_registrar #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.test_case #For parametrised tests.
 
@@ -101,7 +101,7 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 
 		:param metadata: Correct metadata.
 		"""
-		loggertype.loggerregistrar.validate_metadata(metadata) #Should not give an exception.
+		loggertype.logger_registrar.validate_metadata(metadata) #Should not give an exception.
 
 	@luna.test_case.parametrise({
 		"no_logger": {
@@ -168,4 +168,4 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 		:param metadata: Incorrect metadata.
 		"""
 		with self.assertRaises(luna.plugins.MetadataValidationError): #Should give this exception.
-			loggertype.loggerregistrar.validate_metadata(metadata)
+			loggertype.logger_registrar.validate_metadata(metadata)
