@@ -215,6 +215,29 @@ class TestLocalStorage(luna.test_case.TestCase):
 		if os.path.isfile(_unsafe_target_file):
 			os.remove(_unsafe_target_file)
 
+	def test_exists_after_deleting(self):
+		"""
+		Tests whether a file is said to exist if it was just deleted.
+		"""
+		with open(_unsafe_target_file, "w") as file_handle: #Create the file.
+			file_handle.write("Test!")
+		os.remove(_unsafe_target_file) #Delete it.
+		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to exist, but it was just deleted.".format(file_name=_unsafe_target_file))
+
+	def test_exists_just_created(self):
+		"""
+		Tests whether a file is said to exist if it has just been created.
+		"""
+		with open(_unsafe_target_file, "w") as file_handle: #Create the file.
+			file_handle.write("Test!")
+		self.assertTrue(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to not exist, but it was just created.".format(file_name=_unsafe_target_file))
+
+	def test_exists_never_created(self):
+		"""
+		Tests whether a file is said to not exist if it was never created.
+		"""
+		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to be existing, though it shouldn't exist.".format(file_name=_unsafe_target_file)) #If stuff was cleaned up properly after each test, this should not exist.
+
 	def test_read_atomicity(self):
 		"""
 		Tests the read function to see whether it is an atomic read.
