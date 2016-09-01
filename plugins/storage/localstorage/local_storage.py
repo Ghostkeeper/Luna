@@ -31,7 +31,10 @@ def can_read(uri):
 	:return: ``True`` if this plug-in can read from the specified URI, or
 		``False`` if it can't.
 	"""
-	return urllib.parse.urlparse(uri).scheme == "file" #Can only read from file schemes.
+	try:
+		return urllib.parse.urlparse(uri).scheme == "file" #Can only read from file schemes.
+	except ValueError: #Badly-formed IPv6 address.
+		return False #We don't care. We can only read locally anyway.
 
 def can_write(uri):
 	"""
@@ -44,7 +47,10 @@ def can_write(uri):
 	:return: ``True`` if this plug-in can write to the specified URI, or
 		``False`` if it can't.
 	"""
-	return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
+	try:
+		return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
+	except ValueError: #Badly-formed IPv6 address.
+		return False #We don't care. We can only write locally anyway.
 
 def delete(uri):
 	"""
