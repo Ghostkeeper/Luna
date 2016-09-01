@@ -202,6 +202,30 @@ class TestLocalStorage(luna.test_case.TestCase):
 	Tests the behaviour of the local_storage storage implementation.
 	"""
 
+	_bad_uris = {
+		"http": {
+			"uri": "http://www.example.com/file.txt"
+		},
+		"empty": {
+			"uri": ""
+		},
+		"parse error": {
+			"uri": "http://[invalid/file.txt"
+		}
+	}
+
+	_good_uris = {
+		"unix file": {
+			"uri": "file:///home/username/file.txt"
+		},
+		"windows file": {
+			"uri": "file://C:/Users/username/file.txt"
+		},
+		"windows network file": {
+			"uri": "file://server/file.txt"
+		}
+	}
+
 	def setUp(self):
 		"""
 		Resets the number of bytes written concurrently in this test.
@@ -215,17 +239,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		if os.path.isfile(_unsafe_target_file):
 			os.remove(_unsafe_target_file)
 
-	@luna.test_case.parametrise({
-		"unix file": {
-			"uri": "file:///home/username/file.txt"
-		},
-		"windows file": {
-			"uri": "file://C:/Users/username/file.txt"
-		},
-		"windows network file": {
-			"uri": "file://server/file.txt"
-		}
-	})
+	@luna.test_case.parametrise(_good_uris)
 	def test_can_read(self, uri):
 		"""
 		Tests whether the plug-in says it can read files that it should be able
@@ -236,17 +250,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertTrue(localstorage.local_storage.can_read(uri))
 
-	@luna.test_case.parametrise({
-		"http": {
-			"uri": "http://www.example.com/file.txt"
-		},
-		"empty": {
-			"uri": ""
-		},
-		"parse error": {
-			"uri": "http://[invalid/file.txt"
-		}
-	})
+	@luna.test_case.parametrise(_bad_uris)
 	def test_cannot_read(self, uri):
 		"""
 		Tests whether the plug-in says it cannot read files that it should not
