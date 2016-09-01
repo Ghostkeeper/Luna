@@ -364,6 +364,25 @@ class TestLocalStorage(luna.test_case.TestCase):
 		result = localstorage.local_storage.read(_unsafe_target_file)
 		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
 
+	def test_move(self):
+		"""
+		Tests moving a file.
+
+		This is just a simple move.
+		"""
+		with open("start.txt", "w") as file_handle: #Create a file.
+			file_handle.write("Test!")
+		#Assumes that the file exists now.
+		try:
+			localstorage.local_storage.move("start.txt", "end.txt")
+			self.assertFalse(os.path.isfile("start.txt"), msg="Move origin file may no longer exist after the move.")
+			self.assertTrue(os.path.isfile("end.txt"), msg="Move destination file must exist after the move.")
+		finally: #Clean up.
+			if os.path.isfile("start.txt"):
+				os.remove("start.txt")
+			if os.path.isfile("end.txt"):
+				os.remove("end.txt")
+
 	def test_read_atomicity(self):
 		"""
 		Tests the read function to see whether it is an atomic read.
