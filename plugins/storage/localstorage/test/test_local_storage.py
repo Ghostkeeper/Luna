@@ -250,6 +250,17 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertTrue(localstorage.local_storage.can_read(uri))
 
+	@luna.test_case.parametrise(_good_uris)
+	def test_can_write(self, uri):
+		"""
+		Tests whether the plug-in says it can write files that it should be able
+		to write.
+
+		:param uri: A URI of a file that the local storage plug-in should be
+		able to write.
+		"""
+		self.assertTrue(localstorage.local_storage.can_write(uri))
+
 	@luna.test_case.parametrise(_bad_uris)
 	def test_cannot_read(self, uri):
 		"""
@@ -260,6 +271,17 @@ class TestLocalStorage(luna.test_case.TestCase):
 		not be able to read.
 		"""
 		self.assertFalse(localstorage.local_storage.can_read(uri))
+
+	@luna.test_case.parametrise(_bad_uris)
+	def test_cannot_write(self, uri):
+		"""
+		Tests whether the plug-in says it cannot write files that it should not
+		be able to write.
+
+		:param uri: A URI of a resource that the local storage plug-in should
+		not be able to write.
+		"""
+		self.assertFalse(localstorage.local_storage.can_write(uri))
 
 	def test_exists_after_deleting(self):
 		"""
