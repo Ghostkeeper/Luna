@@ -49,6 +49,9 @@ class Automatic:
 
 		#Run the program here. Not implemented yet.
 
+		#A bug in PyLint gives a false positive of redefining a variable to a different class when using enums.
+		#See https://github.com/PyCQA/pylint/issues/777.
+		#pylint: disable=redefined-variable-type
 		self.state = automatic.state.State.stopped
 
 def join():
