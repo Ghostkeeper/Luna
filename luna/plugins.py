@@ -215,7 +215,7 @@ def deactivate(identity):
 			continue
 		try:
 			_plugin_types[plugin_type].unregister(identity)
-		except:
+		except Exception:
 			api("logger").error("Couldn't unregister plug-in {plugin} as type {plugin_type}.", plugin=identity, plugin_type=plugin_type)
 			continue
 		api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
