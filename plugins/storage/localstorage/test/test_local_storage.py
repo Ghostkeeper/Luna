@@ -283,6 +283,15 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.can_write(uri))
 
+	def test_delete(self):
+		"""
+		Tests deleting a file.
+		"""
+		with open(_unsafe_target_file, "w") as file_handle: #Create the file.
+			file_handle.write("Test!")
+		localstorage.local_storage.delete(_unsafe_target_file)
+		self.assertFalse(os.path.isfile(_unsafe_target_file))
+
 	def test_exists_after_deleting(self):
 		"""
 		Tests whether a file is said to exist if it was just deleted.
