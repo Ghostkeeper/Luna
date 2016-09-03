@@ -131,7 +131,7 @@ def discover():
 			try:
 				api("logger").warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				logging.exception("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+				logging.exception("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 			continue
 		try:
 			_validate_metadata_global(metadata)
@@ -139,7 +139,7 @@ def discover():
 			try:
 				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 			except ImportError: #Logger type hasn't loaded yet.
-				logging.exception("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
+				logging.exception("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 			continue
 		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
 			try:
@@ -148,7 +148,7 @@ def discover():
 				try:
 					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
 				except ImportError: #Logger type hasn't loaded yet.
-					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e)))
+					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 				continue
 			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
@@ -308,7 +308,7 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
 		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity))
+			logging.exception("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity)) #pylint: disable=logging-format-interpolation
 		return None
 	try:
 		file, path, description = imp.find_module(identity, [folder])
@@ -316,7 +316,7 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+			logging.exception("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 		return None
 	try:
 		module = imp.load_module(identity, file, path, description)
@@ -324,14 +324,14 @@ def _load_candidate(identity, folder):
 		try:
 			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
 		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e)))
+			logging.exception("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 		return None
 	finally:
 		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
 			try:
 				api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
 			except ImportError: #Logger type module isn't loaded yet.
-				logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+				logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file)) #pylint: disable=logging-format-interpolation
 			file.close()
 	return module
 
