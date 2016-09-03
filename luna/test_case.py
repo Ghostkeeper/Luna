@@ -136,15 +136,15 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			for index, argument in enumerate(inserted_args): #Convert each positional argument to an expression.
 				name = "_arg" + str(index)
 				self._additional_context[name] = argument #Store the actual argument in the context with a unique name.
-				argument_node = ast.Starred(value=ast.Name(id=name, ctx=ast.Load()), ctx=ast.Load()) #The expression refers to a name in the context.
-				positional_arguments.append(argument_node)
+				args_node = ast.Starred(value=ast.Name(id=name, ctx=ast.Load()), ctx=ast.Load()) #The expression refers to a name in the context.
+				positional_arguments.append(args_node)
 
 			keyword_arguments = []
 			for key, value in inserted_kwargs.items(): #Convert each key-word argument to an expression.
 				name = "_kwarg" + key
 				self._additional_context[name] = value #Store the actual argument in the context with a unique name.
-				argument_node = ast.keyword(key, ast.Name(id=name, ctx=ast.Load())) #The expression refers to a name in the context.
-				keyword_arguments.append(argument_node)
+				kwargs_node = ast.keyword(key, ast.Name(id=name, ctx=ast.Load())) #The expression refers to a name in the context.
+				keyword_arguments.append(kwargs_node)
 
 			self._additional_context[inserted_function.__name__] = inserted_function #Add to context so that we can call it.
 			self._call_node = ast.Call(func=ast.Name(id=inserted_function.__name__, ctx=ast.Load()), args=positional_arguments, keywords=keyword_arguments) #Construct the actual nodes.
