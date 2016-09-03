@@ -61,6 +61,15 @@ class ConcurrentIOWrapper:
 	not wait-free to still pass the test.
 	"""
 
+	@classmethod
+	def reset(cls):
+		"""
+		Resets the written bytes count, to appear as if newly constructed.
+
+		This causes the inserted bytes to start from the beginning again.
+		"""
+		cls._written_bytes = 0
+
 	def __init__(self, stream, write_string):
 		"""
 		Creates a new I/O wrapper around a specified stream.
@@ -230,7 +239,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		Resets the number of bytes written concurrently in this test.
 		"""
-		ConcurrentIOWrapper._written_bytes = 0
+		ConcurrentIOWrapper.reset()
 
 	def tearDown(self):
 		"""
