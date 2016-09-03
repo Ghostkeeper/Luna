@@ -167,7 +167,7 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 	if include_stack_trace:
 		traceback = sys.exc_info()[2]
 		if traceback:
-			stack_trace = list(reverse(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
+			stack_trace = list(reversed(inspect.getouterframes(traceback.tb_frame)[1:])) + inspect.getinnerframes(traceback)
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.INFO in _logger_levels[logger]:
