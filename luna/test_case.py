@@ -150,7 +150,9 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			self._call_node = ast.Call(func=ast.Name(id=inserted_function.__name__, ctx=ast.Load()), args=positional_arguments, keywords=keyword_arguments) #Construct the actual nodes.
 			self._expr_node = ast.Expr(value=self._call_node)
 
-		def visit_BinOp(self, node):
+		#These functions overwrite functions of the NodeTransformer, so they must have these names.
+
+		def visit_BinOp(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside any binary operator.
 
@@ -166,7 +168,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				right=ast.IfExp(test=self._call_node, body=node.right, orelse=node.right)
 			)
 
-		def visit_BoolOp(self, node):
+		def visit_BoolOp(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside any boolean operator.
 
@@ -177,7 +179,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.values = self._add_calls_exprs(node.values)
 			return node
 
-		def visit_Call(self, node):
+		def visit_Call(self, node): #pylint: disable=invalid-name
 			"""
 			Insert a function call around a function call.
 
@@ -191,7 +193,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				keywords=self._add_calls_keywords(node.keywords)
 			)
 
-		def visit_Compare(self, node):
+		def visit_Compare(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside any comparison operator.
 
@@ -206,7 +208,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				comparators=self._add_calls_exprs(node.comparators)
 			)
 
-		def visit_ExceptHandler(self, node):
+		def visit_ExceptHandler(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside an exception handler.
 
@@ -217,7 +219,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.body = self._add_calls_stmts(node.body)
 			return node
 
-		def visit_Expr(self, node):
+		def visit_Expr(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls around an expression.
 
@@ -227,7 +229,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			self.visit(node.value)
 			return ast.Expr(value=ast.IfExp(test=self._call_node, body=node, orelse=node)) #Turn the inserted call into the test of an if-expression, and return the original expression in both cases.
 
-		def visit_For(self, node):
+		def visit_For(self, node): #pylint: disable=invalid-name
 			"""
 			Inserts function calls inside a for node.
 
@@ -238,7 +240,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
 
-		def visit_FunctionDef(self, node):
+		def visit_FunctionDef(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a function definition.
 
@@ -251,7 +253,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.body = self._add_calls_stmts(node.body)
 			return node
 
-		def visit_If(self, node):
+		def visit_If(self, node): #pylint: disable=invalid-name
 			"""
 			Inserts function calls inside an if node.
 
@@ -262,7 +264,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
 
-		def visit_IfExp(self, node):
+		def visit_IfExp(self, node): #pylint: disable=invalid-name
 			"""
 			Inserts function calls inside an if-expression node.
 
@@ -279,7 +281,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				orelse=ast.IfExp(test=self._call_node, body=node.orelse, orelse=node.orelse)
 			)
 
-		def visit_Index(self, node):
+		def visit_Index(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a subscript index.
 
@@ -290,7 +292,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			self.visit(node.value)
 			return ast.Index(value=ast.IfExp(test=self._call_node, body=node.value, orelse=node.value))
 
-		def visit_List(self, node):
+		def visit_List(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a list node.
 
@@ -301,7 +303,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.elts = self._add_calls_exprs(node.elts)
 			return node
 
-		def visit_Set(self, node):
+		def visit_Set(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a set node.
 
@@ -312,7 +314,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.elts = self._add_calls_exprs(node.elts)
 			return node
 
-		def visit_Slice(self, node):
+		def visit_Slice(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a subscript slice.
 
@@ -341,7 +343,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				step=step_node
 			)
 
-		def visit_Subscript(self, node):
+		def visit_Subscript(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a subscript node.
 
@@ -357,7 +359,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 				ctx=node.ctx
 			)
 
-		def visit_Try(self, node):
+		def visit_Try(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a try node.
 
@@ -369,7 +371,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.finalbody = self._add_calls_stmts(node.finalbody)
 			return node
 
-		def visit_Tuple(self, node):
+		def visit_Tuple(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a tuple node.
 
@@ -380,7 +382,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.elts = self._add_calls_exprs(node.elts)
 			return node
 
-		def visit_UnaryOp(self, node):
+		def visit_UnaryOp(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside any unary operator.
 
@@ -391,7 +393,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			self.visit(node.operand)
 			return ast.UnaryOp(op=node.op, operand=ast.IfExp(test=self._call_node, body=node.operand, orelse=node.operand))
 
-		def visit_While(self, node):
+		def visit_While(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a while node.
 
@@ -402,7 +404,7 @@ def execute_in_between(function, inserted_function, *inserted_function_args, **i
 			node.orelse = self._add_calls_stmts(node.orelse)
 			return node
 
-		def visit_With(self, node):
+		def visit_With(self, node): #pylint: disable=invalid-name
 			"""
 			Insert function calls inside a with node.
 
