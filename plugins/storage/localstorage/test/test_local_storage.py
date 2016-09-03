@@ -162,7 +162,6 @@ class ConcurrentIOWrapper:
 		:return: The result of the ``read`` function.
 		"""
 		if ConcurrentIOWrapper._written_bytes < len(self._write_string):
-			#TODO: Wait for a while, equal to the minimum resolution of the file modification time stamp of the current file system. This prevents testing the non-atomic case of the current read implementation.
 			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
 			if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte.
 				if ConcurrentIOWrapper._written_bytes == 0: #The first time, completely overwrite the original file.
