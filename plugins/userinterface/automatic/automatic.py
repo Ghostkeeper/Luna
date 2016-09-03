@@ -10,6 +10,8 @@ Implements the user interface plug-in interface.
 
 import luna.plugins #To get the interface we must implement and access to the logging API.
 
+import automatic.state #To keep track of the interface's global state.
+
 class Automatic:
 	"""
 	A user interface that allows no control by the user.
@@ -33,6 +35,7 @@ class Automatic:
 		Creates a new instance of the Automatic user interface.
 		"""
 		super().__init__()
+		self.state = automatic.state.State.stopped
 
 	def start(self):
 		"""
@@ -41,7 +44,12 @@ class Automatic:
 		For now this just prints a message that the Automatic interface is
 		started.
 		"""
-		luna.plugins.api("logger").info("Starting Automatic interface.") #Not implemented yet.
+		luna.plugins.api("logger").info("Starting Automatic interface.")
+		self.state = automatic.state.State.started
+
+		#Run the program here. Not implemented yet.
+
+		self.state = automatic.state.State.stopped
 
 def join():
 	"""
