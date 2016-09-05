@@ -15,8 +15,8 @@ assumed to only hold for the operating system that the tests are running on.
 """
 
 import functools #For partialmethod, to wrap arbitrary method calls with the __getattr__ function.
-import unittest.mock #To replace file reading/writing with something that simulates external influence.
 import os #Cleaning up test files afterwards, and getting file size to design a good test.
+import unittest.mock #To replace file reading/writing with something that simulates external influence.
 
 import luna.test_case #To get parametrised tests.
 import localstorage.local_storage #The module we're testing.
