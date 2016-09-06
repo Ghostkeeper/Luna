@@ -1,7 +1,7 @@
 #This software is distributed under the Creative Commons license (CC0) version 1.0. A copy of this license should have been distributed with this software.
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
-option(BUILD_SPHINX "Build the Sphinx dependency from source." FALSE)
+option(BUILD_SPHINX "Build the Sphinx dependency from source. If you build this, the newly-built version will get used by Luna. If not, it will search for a pre-installed version on your system." FALSE)
 
 if(BUILD_SPHINX)
 	if(NOT SPHINX_FOUND)
