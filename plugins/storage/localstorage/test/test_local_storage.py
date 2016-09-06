@@ -235,6 +235,30 @@ class TestLocalStorage(luna.test_case.TestCase):
 		}
 	}
 
+	_test_bytes = {
+		"word": {
+			"content": b"Test"
+		},
+		"empty": {
+			"content": b""
+		},
+		"null_character": {
+			"content": b"null\x00character"
+		},
+		"last_character": {
+			"content": b"last\xFFcharacter"
+		},
+		"long": {
+			"content": b"x" * (io.DEFAULT_BUFFER_SIZE + 10) #Be larger than the default buffer size so it has to do at least 2 reads.
+		}
+	}
+	"""
+	Simple sequences of bytes to write and read from files to test with.
+
+	These include some of the special cases that may result in problems, such as
+	empty content and null characters.
+	"""
+
 	def setUp(self):
 		"""
 		Resets the number of bytes written concurrently in this test.
@@ -324,23 +348,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to be existing, though it shouldn't exist.".format(file_name=_unsafe_target_file)) #If stuff was cleaned up properly after each test, this should not exist.
 
-	@luna.test_case.parametrise({
-		"word": {
-			"content": b"Test"
-		},
-		"empty": {
-			"content": b""
-		},
-		"null_character": {
-			"content": b"null\x00character"
-		},
-		"last_character": {
-			"content": b"last\xFFcharacter"
-		},
-		"long": {
-			"content": b"x" * (io.DEFAULT_BUFFER_SIZE + 10) #Be larger than the default buffer size so it has to do at least 2 reads.
-		}
-	})
+	@luna.test_case.parametrise(_test_bytes)
 	def test_read(self, content):
 		"""
 		Tests whether reading a simple file is successful.
