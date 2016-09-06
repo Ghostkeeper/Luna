@@ -355,6 +355,8 @@ class TestLocalStorage(luna.test_case.TestCase):
 
 		This writes some content to a file, reads it back and sees whether it is
 		the same.
+
+		:param content: The content to put in the file before reading.
 		"""
 		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
 			file_handle.write(content)
