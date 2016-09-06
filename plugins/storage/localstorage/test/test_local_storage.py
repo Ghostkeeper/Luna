@@ -15,6 +15,7 @@ assumed to only hold for the operating system that the tests are running on.
 """
 
 import functools #For partialmethod, to wrap arbitrary method calls with the __getattr__ function.
+import io #To get the default buffer size.
 import os #Cleaning up test files afterwards, and getting file size to design a good test.
 import unittest.mock #To replace file reading/writing with something that simulates external influence.
 
@@ -345,6 +346,36 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"123456789",
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
+
+	@luna.test_case.parametrise({
+		"word": {
+			"content": b"Test"
+		},
+		"empty": {
+			"content": b""
+		},
+		"null_character": {
+			"content": b"null\x00character"
+		},
+		"last_character": {
+			"content": b"last\xFFcharacter"
+		},
+		"long": {
+			"content": b"x" * (io.DEFAULT_BUFFER_SIZE + 10) #Be larger than the default buffer size so it has to do at least 2 reads.
+		}
+	})
+	def test_read(self, content):
+		"""
+		Tests whether reading a simple file is successful.
+
+		This writes some content to a file, reads it back and sees whether it is
+		the same.
+		"""
+		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
+			file_handle.write(content)
+
+		result = localstorage.local_storage.read(_unsafe_target_file)
+		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
 
 	def test_write_atomicity(self):
 		"""
