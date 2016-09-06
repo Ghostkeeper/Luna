@@ -324,29 +324,6 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to be existing, though it shouldn't exist.".format(file_name=_unsafe_target_file)) #If stuff was cleaned up properly after each test, this should not exist.
 
-	def test_read_atomicity(self):
-		"""
-		Tests the read function to see whether it is an atomic read.
-		"""
-		with open(_unsafe_target_file, "wb") as unsafe_file_handle:
-			unsafe_file_handle.write(b"Test") #Some initial data to test with. This is not tested.
-
-		with unittest.mock.patch("builtins.open", _open_simulate_concurrency):
-			result = localstorage.local_storage.read(_unsafe_target_file)
-			self.assertIn(result, [ #At any stage during the writing.
-				b"Test",
-				b"1",
-				b"12",
-				b"123",
-				b"1234",
-				b"12345",
-				b"123456",
-				b"1234567",
-				b"12345678",
-				b"123456789",
-				b"1234567890"
-			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
-
 	@luna.test_case.parametrise({
 		"word": {
 			"content": b"Test"
@@ -376,6 +353,29 @@ class TestLocalStorage(luna.test_case.TestCase):
 
 		result = localstorage.local_storage.read(_unsafe_target_file)
 		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
+
+	def test_read_atomicity(self):
+		"""
+		Tests the read function to see whether it is an atomic read.
+		"""
+		with open(_unsafe_target_file, "wb") as unsafe_file_handle:
+			unsafe_file_handle.write(b"Test") #Some initial data to test with. This is not tested.
+
+		with unittest.mock.patch("builtins.open", _open_simulate_concurrency):
+			result = localstorage.local_storage.read(_unsafe_target_file)
+			self.assertIn(result, [ #At any stage during the writing.
+				b"Test",
+				b"1",
+				b"12",
+				b"123",
+				b"1234",
+				b"12345",
+				b"123456",
+				b"1234567",
+				b"12345678",
+				b"123456789",
+				b"1234567890"
+			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
 
 	def test_write_atomicity(self):
 		"""
