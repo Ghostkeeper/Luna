@@ -413,3 +413,21 @@ class TestLocalStorage(luna.test_case.TestCase):
 		with open(_unsafe_target_file, "rb") as written_file_handle:
 			result = written_file_handle.read()
 			self.assertEqual(result, test_bytes, "File write is not atomic.")
+
+	@luna.test_case.parametrise(_test_bytes)
+	def test_write_existing(self, content):
+		"""
+		Tests writing to a file that already exists.
+
+		The old file must get overwritten by the new file.
+
+		:param content: The content to write to the file, as `bytes`.
+		"""
+		with open(_unsafe_target_file, "w") as file_handle: #Make sure the file exists.
+			file_handle.write("Original file contents.")
+
+		localstorage.local_storage.write(_unsafe_target_file, content) #Overwrite with new data.
+
+		with open(_unsafe_target_file, "rb") as file_handle:
+			result = file_handle.read()
+			self.assertEqual(result, content, "Write must overwrite the old file and put the exact content in the file.")
