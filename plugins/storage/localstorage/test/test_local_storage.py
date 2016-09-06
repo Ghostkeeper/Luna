@@ -385,6 +385,22 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
 
+	@luna.test_case.parametrise(_test_bytes)
+	def test_write(self, content):
+		"""
+		Tests whether writing a simple file is successful.
+
+		This uses the write functionality to write content to a file, then reads
+		it back to verify that the content was written correctly.
+
+		:param content: The content to write to the file, as `bytes`.
+		"""
+		localstorage.local_storage.write(_unsafe_target_file, content)
+
+		with open(_unsafe_target_file, "rb") as file_handle:
+			result = file_handle.read()
+			self.assertEqual(result, content, "Write must put the exact content in the file.")
+
 	def test_write_atomicity(self):
 		"""
 		Tests the write function to see whether it is an atomic write.
