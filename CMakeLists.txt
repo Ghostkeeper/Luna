@@ -65,28 +65,6 @@ if(BUILD_MISSING_DEPENDENCIES)
 			set(PythonInterp_FOUND TRUE)
 		endif(BUILD_PYTHON)
 	endif(NOT PYTHONINTERP_FOUND)
-
-	#PyLint.
-	if(BUILD_TESTING) #PyLint is only required for testing.
-		find_python_module(pylint)
-		if(NOT PYTHON_PYLINT_FOUND)
-			option(BUILD_PYLINT "Build PyLint from source." TRUE)
-			if(BUILD_PYLINT)
-				if(NOT PYTHON_EXECUTABLE)
-					message(ERROR "Building PyLint from source requires Python.")
-				endif(NOT PYTHON_EXECUTABLE)
-				message(STATUS "Dependency PyLint is missing and will be built from source.")
-				ExternalProject_Add(PyLint
-					URL https://pypi.python.org/packages/4e/4b/2f14a233e6c86bbfff9568d3357860573dea51be7c96eecab9471ab6ca6f/pylint-1.6.4.tar.gz#md5=66ba9c27e067568bdabcdd7c21303903
-					URL_HASH SHA512=8252A46F8A7FF6A70F2EA10A94A9E8618A903014210CF87C061E649FBE0C2106FB1B63643605AE0ED3F4652E8ED09442F4FD32A0DF11F3639E6E35128E432D51
-					CONFIGURE_COMMAND ""
-					BUILD_COMMAND ${PYTHON_EXECUTABLE} setup.py build
-					INSTALL_COMMAND ${PYTHON_EXECUTABLE} setup.py install
-					BUILD_IN_SOURCE 1
-				)
-			endif(BUILD_PYLINT)
-		endif(NOT PYTHON_PYLINT_FOUND)
-	endif(BUILD_TESTING)
 else(BUILD_MISSING_DEPENDENCIES)
 	#Python.
 	find_package(PythonInterp 3.4.0 REQUIRED)
@@ -97,7 +75,7 @@ if(BUILD_TESTING)
 	enable_testing()
 
 	#Code style validation.
-	find_python_module(pylint REQUIRED)
+	find_package(PyLint REQUIRED)
 	configure_file("${CMAKE_SOURCE_DIR}/pylintrc.in" "${CMAKE_BINARY_DIR}/pylintrc")
 	file(GLOB_RECURSE PYTHON_FILES *.py)
 	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
