@@ -4,6 +4,9 @@
 option(BUILD_PYTHON "Build the Python dependency from source. If you build this, the newly-built version will get used by Luna. If not, it will search for a pre-installed version on your system." FALSE)
 
 if(BUILD_PYTHON)
+	if(WIN32)
+		message(WARNING "Building Python on Windows is not supported at the moment. You will probably run into problems.")
+	endif(WIN32)
 	ExternalProject_Add(Python
 		URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
 		URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
