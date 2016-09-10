@@ -7,7 +7,7 @@ if(BUILD_SPHINX)
 	if(NOT SPHINX_FOUND)
 		message(STATUS "Building Sphinx from source.")
 		include(ExternalProject)
-		find_package(PythonInterp 3.4.0 REQUIRED)
+		find_package(Python REQUIRED)
 		ExternalProject_Add(Sphinx
 			URL https://pypi.python.org/packages/8b/78/eeea2b837f911cdc301f5f05163f9729a2381cadd03ccf35b25afe816c90/Sphinx-1.4.5.tar.gz#md5=5c2cd2dac45dfa6123d067e32a89e89a
 			URL_HASH SHA512=E11CA5E02C44A2112CA31E1CFF4DB8A89AC0D58E410AEF43EAD48C74520DACAE61BA8AA5B91C5F6EF920851E35A2FF1470E74FD038CB50AC9BB6F689C495CEE7
