@@ -7,6 +7,7 @@ if(BUILD_PYTHON)
 	if(WIN32)
 		message(WARNING "Building Python on Windows is not supported at the moment. You will probably run into problems.")
 	endif()
+	message(STATUS "Building Python from source.")
 	include(ExternalProject)
 	ExternalProject_Add(Python
 		URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
