@@ -25,11 +25,11 @@ foreach(INIT_FILE ${PLUGIN_INIT_FILES})
 	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)
 	if(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
 		list(REMOVE_ITEM PLUGIN_INIT_FILES ${INIT_FILE}) #Exclude files in the build directory.
-	else(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
+	else()
 		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
 		list(APPEND PLUGIN_DIRECTORIES ${PACKAGE_DIR})
-	endif(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
-endforeach(INIT_FILE ${PLUGIN_INIT_FILES})
+	endif()
+endforeach()
 
 #-----------------------------------Targets-------------------------------------
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
@@ -57,9 +57,9 @@ if(BUILD_TESTING)
 			string(REGEX REPLACE "\\/" "." UNIT_TEST3 ${UNIT_TEST2})
 			add_test(NAME ${PLUGIN_NAME}.${UNIT_TEST3} COMMAND ${PYTHON_EXECUTABLE} -m unittest ${PLUGIN_NAME}.${UNIT_TEST3} WORKING_DIRECTORY ${PARENT_DIRECTORY})
 			set_tests_properties(${PLUGIN_NAME}.${UNIT_TEST3} PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
-		endforeach(UNIT_TEST ${UNIT_TESTS})
-	endforeach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
-endif(BUILD_TESTING)
+		endforeach()
+	endforeach()
+endif()
 
 #--------------------------------Documentation----------------------------------
 if(BUILD_DOCUMENTATION)
@@ -78,7 +78,7 @@ if(BUILD_DOCUMENTATION)
 		get_filename_component(PACKAGE_NAME ${PLUGIN_DIRECTORY} NAME)
 		list(APPEND DOCUMENTATION_APIDOC_COMMANDS ${SPHINX_APIDOC_EXECUTABLE} -o ${DOCUMENTATION_TEMP_DIR}/technical -e ${PLUGIN_DIRECTORY} &&) #Generate the documentation.
 		list(APPEND DOCUMENTATION_COPY_SOURCES_COMMANDS ${CMAKE_COMMAND} -E copy_directory "${PLUGIN_DIRECTORY}" "${DOCUMENTATION_TEMP_DIR}/${PACKAGE_NAME}" &&) #Copy sources so that any other .rst files are included.
-	endforeach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
+	endforeach()
 
 	add_custom_target(documentation ALL
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/documentation" "${DOCUMENTATION_TEMP_DIR}" &&
@@ -86,4 +86,4 @@ if(BUILD_DOCUMENTATION)
 		${DOCUMENTATION_APIDOC_COMMANDS}
 		${SPHINX_EXECUTABLE} -c ${CMAKE_BINARY_DIR} -n "${DOCUMENTATION_TEMP_DIR}" "${DOCUMENTATION_OUTPUT_DIR}" COMMENT "Generate documentation of the application."
 	)
-endif(BUILD_DOCUMENTATION)
+endif()

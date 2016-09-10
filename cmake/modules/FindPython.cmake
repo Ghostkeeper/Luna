@@ -6,7 +6,7 @@ option(BUILD_PYTHON "Build the Python dependency from source. If you build this,
 if(BUILD_PYTHON)
 	if(WIN32)
 		message(WARNING "Building Python on Windows is not supported at the moment. You will probably run into problems.")
-	endif(WIN32)
+	endif()
 	include(ExternalProject)
 	ExternalProject_Add(Python
 		URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
@@ -16,7 +16,7 @@ if(BUILD_PYTHON)
 	)
 	set(PYTHON_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/python3)
 	set(PYTHON_FOUND TRUE)
-else(BUILD_PYTHON) #Just find it on the system.
+else() #Just find it on the system.
 	if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED") #Pass the REQUIRED parameter on to the script. Perhaps also do other parameters?
 		find_package(PythonInterp 3.4.0 REQUIRED)
 	else()
@@ -25,4 +25,4 @@ else(BUILD_PYTHON) #Just find it on the system.
 	if(PYTHONINTERP_FOUND) #Rename this variable to our own conventions.
 		set(PYTHON_FOUND TRUE)
 	endif()
-endif(BUILD_PYTHON)
+endif()

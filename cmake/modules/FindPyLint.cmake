@@ -17,12 +17,12 @@ if(BUILD_PYLINT)
 			BUILD_IN_SOURCE 1
 		)
 		set(PYLINT_FOUND TRUE)
-	endif(NOT PYLINT_FOUND)
-else(BUILD_PYLINT) #Just find it on the system.
+	endif()
+else() #Just find it on the system.
 	include(${CMAKE_SOURCE_DIR}/cmake/FindPythonModule.cmake)
 	if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED")
 		find_python_module(pylint REQUIRED)
 	else()
 		find_python_module(pylint)
 	endif()
-endif(BUILD_PYLINT)
+endif()

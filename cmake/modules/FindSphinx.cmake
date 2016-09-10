@@ -19,14 +19,14 @@ if(BUILD_SPHINX)
 		set(SPHINX_EXECUTABLE sphinx-build)
 		set(SPHINX_APIDOC_EXECUTABLE sphinx-apidoc)
 		set(SPHINX_FOUND TRUE)
-	endif(NOT SPHINX_FOUND)
-else(BUILD_SPHINX) #Just find it on the system.
+	endif()
+else() #Just find it on the system.
 	include(FindPackageHandleStandardArgs)
 	find_program(SPHINX_EXECUTABLE NAMES sphinx-build HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx documentation generator.")
 	find_package_handle_standard_args(Sphinx DEFAULT_MSG SPHINX_EXECUTABLE)
 	find_program(SPHINX_APIDOC_EXECUTABLE NAMES sphinx-apidoc HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx generator for reStructuredText API files of Python source code.")
 	find_package_handle_standard_args(Sphinx-apidoc DEFAULT_MSG SPHINX_APIDOC_EXECUTABLE)
-endif(BUILD_SPHINX)
+endif()
 
 mark_as_advanced(SPHINX_EXECUTABLE)
 mark_as_advanced(SPHINX_APIDOC_EXECUTABLE)
