@@ -14,6 +14,9 @@ set(LUNA_VERSION_MAJOR 0 CACHE STRING "Major version number. The major version n
 set(LUNA_VERSION_MINOR 0 CACHE STRING "Minor version number. The minor version number must increase for every release that introduces new features and does not alter any pre-existing API.")
 set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version number must increase for every release that only fixes bugs and does not alter any pre-existing API.")
 
+#-----------------------------Global Dependencies-------------------------------
+find_package(Python REQUIRED)
+
 #-----------------------------Plug-in Directories-------------------------------
 #We need a list of these directories at multiple places, so get them here for convenience.
 set(PLUGIN_DIRECTORIES "")
@@ -32,43 +35,6 @@ endforeach(INIT_FILE ${PLUGIN_INIT_FILES})
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
 option(BUILD_MISSING_DEPENDENCIES "Dependencies that are missing should be built from source." FALSE)
-
-#---------------------------------Dependencies----------------------------------
-if(BUILD_MISSING_DEPENDENCIES)
-	include(ExternalProject)
-	set(DEPENDENCIES_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/inst)
-
-	#Python.
-	find_package(PythonInterp 3.4.0)
-	if(NOT PYTHONINTERP_FOUND)
-		option(BUILD_PYTHON "Build Python from source." TRUE)
-		if(BUILD_PYTHON)
-			message(STATUS "Dependency Python is missing and will be built from source.")
-			if(WIN32)
-				ExternalProject_Add(Python
-					URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
-					URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
-					CONFIGURE_COMMAND echo Skipping configure command on Windows.
-					BUILD_COMMAND ./PCBuild/build.bat -e
-					BUILD_IN_SOURCE 1
-				)
-				set(PYTHON_EXECUTABLE ${DEPENDENCIES_INSTALL_PREFIX}/bin/python3.exe)
-			else(WIN32)
-				ExternalProject_Add(Python
-					URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
-					URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
-					CONFIGURE_COMMAND ./configure --prefix=${DEPENDENCIES_INSTALL_PREFIX} --enable-shared --with-threads
-					BUILD_IN_SOURCE 1
-				)
-				set(PYTHON_EXECUTABLE ${DEPENDENCIES_INSTALL_PREFIX}/bin/python3)
-			endif(WIN32)
-			set(PythonInterp_FOUND TRUE)
-		endif(BUILD_PYTHON)
-	endif(NOT PYTHONINTERP_FOUND)
-else(BUILD_MISSING_DEPENDENCIES)
-	#Python.
-	find_package(PythonInterp 3.4.0 REQUIRED)
-endif(BUILD_MISSING_DEPENDENCIES)
 
 #------------------------------------Tests--------------------------------------
 if(BUILD_TESTING)
