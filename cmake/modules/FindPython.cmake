@@ -16,6 +16,10 @@ if(BUILD_PYTHON)
 		BUILD_IN_SOURCE 1
 	)
 	set(PYTHON_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/python3)
+	set(PYTHON_VERSION_STRING "3.5.2")
+	set(PYTHON_VERSION_MAJOR 3)
+	set(PYTHON_VERSION_MINOR 5)
+	set(PYTHON_VERSION_PATCH 2)
 	set(PYTHON_FOUND TRUE)
 else() #Just find it on the system.
 	if(ARGC GREATER 1 AND ARGV1 STREQUAL "REQUIRED") #Pass the REQUIRED parameter on to the script. Perhaps also do other parameters?
