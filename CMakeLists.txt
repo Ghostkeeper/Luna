@@ -34,7 +34,6 @@ endforeach()
 #-----------------------------------Targets-------------------------------------
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
-option(BUILD_MISSING_DEPENDENCIES "Dependencies that are missing should be built from source." FALSE)
 
 #------------------------------------Tests--------------------------------------
 if(BUILD_TESTING)
