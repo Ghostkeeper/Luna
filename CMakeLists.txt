@@ -31,11 +31,8 @@ foreach(INIT_FILE ${PLUGIN_INIT_FILES})
 	endif()
 endforeach()
 
-#-----------------------------------Targets-------------------------------------
-option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
-option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
-
 #------------------------------------Tests--------------------------------------
+option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
 	enable_testing()
 
@@ -61,6 +58,7 @@ if(BUILD_TESTING)
 endif()
 
 #--------------------------------Documentation----------------------------------
+option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
 if(BUILD_DOCUMENTATION)
 	find_package(Sphinx REQUIRED)
 	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_BINARY_DIR}/documentation" CACHE FILEPATH "Where to save generated documentation.")
