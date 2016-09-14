@@ -15,7 +15,7 @@ if(BUILD_PATCH)
 			INSTALL_COMMAND ""
 			BUILD_IN_SOURCE 1
 		)
-		set(PATCH_EXECUTABLE patch)
+		set(PATCH_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/Patch-prefix/src/Patch/patch-2.5/patch)
 		set(PATCH_FOUND TRUE)
 	endif()
 else() #Just find it on the system.
