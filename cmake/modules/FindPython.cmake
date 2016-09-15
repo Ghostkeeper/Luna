@@ -5,22 +5,138 @@ option(BUILD_PYTHON "Build the Python dependency from source. If you build this,
 
 if(BUILD_PYTHON)
 	if(NOT PYTHON_FOUND)
-		if(WIN32)
-			message(WARNING "Building Python on Windows is not supported at the moment. You will probably run into problems.")
-		endif()
 		message(STATUS "Building Python from source.")
-		include(ExternalProject)
-		ExternalProject_Add(Python
-			URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
-			URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
-			CONFIGURE_COMMAND ./configure --prefix=${CMAKE_INSTALL_PREFIX} --enable-shared --with-threads
-			BUILD_IN_SOURCE 1
-		)
-		set(PYTHON_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/python3)
-		set(PYTHON_VERSION_STRING "3.5.2")
-		set(PYTHON_VERSION_MAJOR 3)
-		set(PYTHON_VERSION_MINOR 5)
-		set(PYTHON_VERSION_PATCH 2)
+		if(MINGW)
+			find_package(Patch REQUIRED)
+			include(ExternalProject)
+			ExternalProject_Add(PythonMinGWPatches
+				GIT_REPOSITORY https://github.com/Alexpux/MINGW-packages.git
+				GIT_TAG e9c507d51e5d9b7a026cfd374dad38128ed8ca4a
+				CONFIGURE_COMMAND "" #Don't do anything with this but download it.
+				BUILD_COMMAND ""
+				INSTALL_COMMAND ""
+				BUILD_IN_SOURCE 1
+			)
+			set(PATCH_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/PythonMinGWPatches-prefix/src/PythonMinGWPatches)
+			set(PATCH_TARGET ${CMAKE_CURRENT_BINARY_DIR}/Python-prefix/src/Python)
+			set(PATCH_PYTHON_FOR_MINGW
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0000-make-_sysconfigdata.py-relocatable.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0001-fix-_nt_quote_args-using-subprocess-list2cmdline.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0100-MINGW-BASE-use-NT-thread-model.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0110-MINGW-translate-gcc-internal-defines-to-python-platf.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0130-MINGW-configure-MACHDEP-and-platform-for-build.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0140-MINGW-preset-configure-defaults.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0150-MINGW-configure-largefile-support-for-windows-builds.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0160-MINGW-add-wincrypt.h-in-Python-random.c.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0170-MINGW-add-srcdir-PC-to-CPPFLAGS.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0180-MINGW-init-system-calls.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0190-MINGW-detect-REPARSE_DATA_BUFFER.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0200-MINGW-build-in-windows-modules-winreg.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0210-MINGW-determine-if-pwdmodule-should-be-used.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0220-MINGW-default-sys.path-calculations-for-windows-plat.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0230-MINGW-AC_LIBOBJ-replacement-of-fileblocks.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0240-MINGW-use-main-to-start-execution.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0250-MINGW-compiler-customize-mingw-cygwin-compilers.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0260-MINGW-compiler-enable-new-dtags.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0270-CYGWIN-issue13756-Python-make-fail-on-cygwin.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0290-issue6672-v2-Add-Mingw-recognition-to-pyport.h-to-al.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0300-MINGW-configure-for-shared-build.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0310-MINGW-dynamic-loading-support.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0320-MINGW-implement-exec-prefix.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0330-MINGW-ignore-main-program-for-frozen-scripts.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0340-MINGW-setup-exclude-termios-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0350-MINGW-setup-_multiprocessing-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0360-MINGW-setup-select-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0370-MINGW-setup-_ctypes-module-with-system-libffi.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0380-MINGW-defect-winsock2-and-setup-_socket-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0390-MINGW-exclude-unix-only-modules.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0400-MINGW-setup-msvcrt-and-_winapi-modules.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0410-MINGW-build-extensions-with-GCC.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0420-MINGW-use-Mingw32CCompiler-as-default-compiler-for-m.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0430-MINGW-find-import-library.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0440-MINGW-setup-_ssl-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0460-MINGW-generalization-of-posix-build-in-sysconfig.py.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0462-MINGW-support-stdcall-without-underscore.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0464-use-replace-instead-rename-to-avoid-failure-on-windo.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0470-MINGW-avoid-circular-dependency-from-time-module-dur.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0480-MINGW-generalization-of-posix-build-in-distutils-sys.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0490-MINGW-customize-site.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0500-add-python-config-sh.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0510-cross-darwin-feature.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0520-py3k-mingw-ntthreads-vs-pthreads.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0530-mingw-system-libffi.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0540-mingw-semicolon-DELIM.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0550-mingw-regen-use-stddef_h.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0555-msys-mingw-prefer-unix-sep-if-MSYSTEM.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0560-mingw-use-posix-getpath.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0565-mingw-add-ModuleFileName-dir-to-PATH.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0570-mingw-add-BUILDIN_WIN32_MODULEs-time-msvcrt.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0590-mingw-INSTALL_SHARED-LDLIBRARY-LIBPL.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0610-msys-cygwin-semi-native-build-sysconfig.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0620-mingw-sysconfig-like-posix.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0630-mingw-_winapi_as_builtin_for_Popen_in_cygwinccompiler.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0640-mingw-x86_64-size_t-format-specifier-pid_t.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0650-cross-dont-add-multiarch-paths-if-cross-compiling.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0660-mingw-use-backslashes-in-compileall-py.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0670-msys-convert_path-fix-and-root-hack.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0690-allow-static-tcltk.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0700-CROSS-avoid-ncursesw-include-path-hack.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0710-CROSS-properly-detect-WINDOW-_flags-for-different-nc.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0720-mingw-pdcurses_ISPAD.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0730-mingw-fix-ncurses-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0740-grammar-fixes.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0750-builddir-fixes.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0760-msys-monkeypatch-os-system-via-sh-exe.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0770-msys-replace-slashes-used-in-io-redirection.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0790-mingw-add-_exec_prefix-for-tcltk-dlls.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0800-mingw-install-layout-as-posix.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0810-remove_path_max.default.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0820-dont-link-with-gettext.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0830-ctypes-python-dll.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0840-gdbm-module-includes.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0850-use-gnu_printf-in-format.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0860-fix-_Py_CheckPython3-prototype.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0870-mingw-fix-ssl-dont-use-enum_certificates.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0890-mingw-build-optimized-ext.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0900-cygwinccompiler-dont-strip-modules-if-pydebug.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0910-fix-using-dllhandle-and-winver-mingw.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0920-mingw-add-LIBPL-to-library-dirs.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0930-mingw-w64-build-overlapped-module.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0940-mingw-w64-Also-define-_Py_BEGIN_END_SUPPRESS_IPH-when-Py_BUILD_CORE_MODULE.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0950-mingw-w64-XP3-compat-GetProcAddress-GetTickCount64.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0960-mingw-w64-XP3-compat-GetProcAddress-GetFinalPathNameByHandleW.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0970-Add-AMD64-to-sys-config-so-msvccompiler-get_build_version-works.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/0980-mingw-readline-features-skip.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/1010-install-msilib.patch.patch
+				COMMAND ${PATCH_EXECUTABLE} -d ${PATCH_TARGET} -p 1 -i ${PATCH_SOURCE}/mingw-w64-python3/1500-mingw-w64-dont-look-in-DLLs-folder-for-python-dll.patch
+			)
+			ExternalProject_Add(Python
+				URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
+				URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
+				DEPENDS PythonMinGWPatches
+				PATCH_COMMAND ${PATCH_PYTHON_FOR_MINGW}
+				BUILD_COMMAND "" #TODO
+				INSTALL_COMMAND "" #TODO
+			)
+			set(PYTHON_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/python3)
+			set(PYTHON_VERSION_STRING "3.5.2")
+			set(PYTHON_VERSION_MAJOR 3)
+			set(PYTHON_VERSION_MINOR 5)
+			set(PYTHON_VERSION_PATCH 2)
+		else()
+			include(ExternalProject)
+			ExternalProject_Add(Python
+				URL https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz
+				URL_HASH SHA512=248B3EF2DEFEE7C013E8AC7472B9F2828B1C5B07A2F091EAD46EBDF209BE11DD37911978B590367699D9FAD50F1B98B998BCEEC34FA8369BA30950D3A5FB596F
+				CONFIGURE_COMMAND ./configure --prefix=${CMAKE_INSTALL_PREFIX} --enable-shared --with-threads
+				BUILD_IN_SOURCE 1
+			)
+			set(PYTHON_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/python3)
+			set(PYTHON_VERSION_STRING "3.5.2")
+			set(PYTHON_VERSION_MAJOR 3)
+			set(PYTHON_VERSION_MINOR 5)
+			set(PYTHON_VERSION_PATCH 2)
+		endif()
 		set(PYTHON_FOUND TRUE)
 	endif()
 else() #Just find it on the system.
