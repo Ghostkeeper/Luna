@@ -107,7 +107,7 @@ if(BUILD_PYTHON)
 				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/0960-mingw-w64-XP3-compat-GetProcAddress-GetFinalPathNameByHandleW.patch
 				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/0970-Add-AMD64-to-sys-config-so-msvccompiler-get_build_version-works.patch
 				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/0980-mingw-readline-features-skip.patch
-				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/1010-install-msilib.patch.patch
+				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/1010-install-msilib.patch
 				COMMAND ${GIT_EXECUTABLE} apply --directory=${PATCH_TARGET} ${PATCH_SOURCE}/mingw-w64-python3/1500-mingw-w64-dont-look-in-DLLs-folder-for-python-dll.patch
 			)
 			ExternalProject_Add(Python
