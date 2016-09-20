@@ -6,11 +6,12 @@ option(BUILD_PYLINT "Build the PyLint dependency from source. If you build this,
 if(BUILD_PYLINT)
 	if(NOT PYLINT_FOUND)
 		message(STATUS "Building PyLint from source.")
-		include(ExternalProject)
 		find_package(Python REQUIRED)
+		include(ExternalProject)
 		ExternalProject_Add(PyLint
 			URL https://pypi.python.org/packages/4e/4b/2f14a233e6c86bbfff9568d3357860573dea51be7c96eecab9471ab6ca6f/pylint-1.6.4.tar.gz#md5=66ba9c27e067568bdabcdd7c21303903
 			URL_HASH SHA512=8252A46F8A7FF6A70F2EA10A94A9E8618A903014210CF87C061E649FBE0C2106FB1B63643605AE0ED3F4652E8ED09442F4FD32A0DF11F3639E6E35128E432D51
+			DEPENDS Python
 			CONFIGURE_COMMAND ""
 			BUILD_COMMAND ${PYTHON_EXECUTABLE} setup.py build
 			INSTALL_COMMAND ${PYTHON_EXECUTABLE} setup.py install
