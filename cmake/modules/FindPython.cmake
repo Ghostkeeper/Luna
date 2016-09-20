@@ -7,8 +7,8 @@ if(BUILD_PYTHON)
 	if(NOT PYTHON_FOUND)
 		message(STATUS "Building Python from source.")
 		if(MINGW)
-			include(ExternalProject) #Include this BEFORE the Git requirement so FindGit can overwrite _ep_get_git_version.
 			find_package(Git REQUIRED) #Both to check out the repository and to apply patches.
+			include(ExternalProject)
 			ExternalProject_Add(PythonMinGWPatches
 				GIT_REPOSITORY https://github.com/Alexpux/MINGW-packages.git
 				GIT_TAG e9c507d51e5d9b7a026cfd374dad38128ed8ca4a
