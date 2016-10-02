@@ -23,7 +23,7 @@ def register(identity, metadata):
 	:param metadata: The metadata of a configuration plug-in.
 	"""
 	if identity in _configurations:
-		luna.plugins.api("logger").warning("Configuration {configuration} is already registered.", identity)
+		luna.plugins.api("logger").warning("Configuration {configuration} is already registered.", configuration=identity)
 		return
 	_configurations[identity] = metadata["configuration"]["class"]
 
