@@ -28,7 +28,18 @@ def register(identity, metadata):
 	_configurations[identity] = metadata["configuration"]["class"]
 
 def unregister(identity):
-	raise Exception("Not implemented yet.")
+	"""
+	Undoes the registration of a configuration plug-in.
+
+	The configuration plug-in will no longer keep track of any configuration.
+	Existing configuration will be stored persistently.
+
+	:param identity: The identity of the plug-in to unregister.
+	"""
+	if identity not in _configurations:
+		luna.plugins.api("logger").warning("Configuration {configuration} is not registered, so I can't unregister it.", configuration=identity)
+		return
+	del _configurations[identity] #The actual unregistration.
 
 def validate_metadata(metadata):
 	raise Exception("Not implemented yet.")
