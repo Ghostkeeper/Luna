@@ -62,9 +62,9 @@ def validate_metadata(metadata):
 
 		if "instance" not in metadata["configuration"]:
 			raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify an instance to keep track of the configuration.")
-		instance_attributes = set(dir(metadata["configuration"]["instance"]))
-		required_functions = {"__getattr__", "serialise", "deserialise"}
-		if required_functions > instance_attributes: #Instance is not implementing all required functions.
-			raise luna.plugins.MetadataValidationError("The configuration instance doesn't implement the required functions {functions}.".format(functions=", ".join(required_functions - instance_attributes)))
 	except TypeError:
 		raise luna.plugins.MetadataValidationError("The configuration metadata entry is not a dictionary.")
+	instance_attributes = set(dir(metadata["configuration"]["instance"]))
+	required_functions = {"__getattr__", "serialise", "deserialise"}
+	if required_functions > instance_attributes: #Instance is not implementing all required functions.
+		raise luna.plugins.MetadataValidationError("The configuration instance doesn't implement the required functions {functions}.".format(functions=", ".join(required_functions - instance_attributes)))
