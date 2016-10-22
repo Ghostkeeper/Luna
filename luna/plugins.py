@@ -116,9 +116,11 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	candidates = _find_candidates() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
+	candidates = _find_candidate_directories() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
 	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
-	for identity, folder in candidates:
+	for directory in candidates:
+		identity = os.path.basename(directory)
+		folder = os.path.dirname(directory)
 		#Loading the plug-in.
 		module = _load_candidate(identity, folder)
 		if not module: #Failed to load module.
@@ -269,27 +271,21 @@ def _meets_requirements(candidate_metadata, requirements, candidate_identity, de
 
 	return True
 
-def _find_candidates():
+def _find_candidate_directories():
 	"""
 	Finds candidates for what looks like might be plug-ins.
 
 	A candidate is a folder inside a plug-in location, which has a file
 	``__init__.py``. The file is not yet executed at this point.
 
-	:returns: A set of tuples of the form (<identity>, <path>), containing
-		respectively the identity of the plug-in and the path to the plug-in's
-		folder.
+	:returns: A sequence of directories that supposedly contain plug-ins.
 	"""
-	candidates = set()
 	for location in _plugin_locations:
 		for root, directories, files in os.walk(location, followlinks=True):
 			if "__init__.py" not in files: #The directory must have an __init__.py file.
 				continue
 			directories[:] = [] #Remove all subdirectories. We aren't going to look in submodules.
-			identity = os.path.basename(root) #The name of the folder becomes the plug-in's identity.
-			directory = os.path.dirname(root) #The location where the package is located.
-			candidates.add((identity, directory))
-	return candidates
+			yield root
 
 def _load_candidate(identity, folder):
 	"""
