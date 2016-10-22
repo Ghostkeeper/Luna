@@ -12,6 +12,17 @@ The configuration classes that have been registered here so far, keyed by their
 identities.
 """
 
+def get_all_configurations():
+	"""
+	Gets a dictionary of all configuration classes that have been registered
+	here so far.
+
+	The keys of the dictionary are the identities of the configurations.
+
+	:return: A dictionary of configurations, keyed by identity.
+	"""
+	return _configurations
+
 def register(identity, metadata):
 	"""
 	Registers a new configuration plug-in to track configuration with.
