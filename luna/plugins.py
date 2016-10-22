@@ -118,14 +118,7 @@ def discover():
 	"""
 	candidates = _find_candidate_directories() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
 	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
-	for directory in candidates:
-		identity = os.path.basename(directory)
-		folder = os.path.dirname(directory)
-		#Loading the plug-in.
-		module = _load_candidate(identity, folder)
-		if not module: #Failed to load module.
-			continue
-
+	for identity, module in _load_candidates(candidates):
 		#Parsing the metadata.
 		try:
 			metadata = module.metadata()
@@ -287,49 +280,50 @@ def _find_candidate_directories():
 			directories[:] = [] #Remove all subdirectories. We aren't going to look in submodules.
 			yield root
 
-def _load_candidate(identity, folder):
+def _load_candidates(directories):
 	"""
 	Loads a plug-in candidate as a Python package.
 
 	This is intended to be used on Python packages, containing an init
 	script.
 
-	:param identity: The identity of the plug-in to load. Hierarchical
-		identities are not supported.
-	:param folder: The path to the folder where the plug-in can be found.
+	:param directories: A sequence of paths where plug-ins can be found.
 	:returns: A Python package representing the plug-in. If anything went
 		wrong, ``None`` is returned.
 	"""
-	if "." in identity:
-		try:
-			api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
-		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity)) #pylint: disable=logging-format-interpolation
-		return None
-	try:
-		file, path, description = imp.find_module(identity, [folder])
-	except Exception as e:
-		try:
-			api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=identity, error_message=str(e))
-		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
-		return None
-	try:
-		module = imp.load_module(identity, file, path, description)
-	except Exception as e:
-		try:
-			api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
-		except ImportError: #Logger type module isn't loaded yet.
-			logging.exception("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
-		return None
-	finally:
-		if file: #Plug-in loading should not open any files, but if it does, close it immediately.
+	for directory in directories:
+		identity = os.path.basename(directory)
+		parent_directory = os.path.dirname(directory)
+		if "." in identity:
 			try:
-				api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+				api("logger").warning("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.", plugin=identity)
 			except ImportError: #Logger type module isn't loaded yet.
-				logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file)) #pylint: disable=logging-format-interpolation
-			file.close()
-	return module
+				logging.exception("Can't load plug-in {plugin}: Invalid plug-in identity; periods are forbidden.".format(plugin=identity)) #pylint: disable=logging-format-interpolation
+			continue
+		try:
+			file, path, description = imp.find_module(identity, [parent_directory])
+		except Exception as e:
+			try:
+				api("logger").warning("Failed to find module of plug-in in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+			except ImportError: #Logger type module isn't loaded yet.
+				logging.exception("Failed to find module of plug-in in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
+			continue
+		try:
+			module = imp.load_module(identity, file, path, description)
+		except Exception as e:
+			try:
+				api("logger").warning("Failed to load plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+			except ImportError: #Logger type module isn't loaded yet.
+				logging.exception("Failed to load plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
+			continue
+		finally:
+			if file: #Plug-in loading should not open any files, but if it does, close it immediately.
+				try:
+					api("logger").warning("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file))
+				except ImportError: #Logger type module isn't loaded yet.
+					logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file)) #pylint: disable=logging-format-interpolation
+				file.close()
+		yield (identity, module)
 
 def _validate_metadata_global(metadata):
 	"""
