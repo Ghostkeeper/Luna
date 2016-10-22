@@ -222,49 +222,6 @@ def deactivate(identity):
 	for dependee_identity in dependees:
 		deactivate(dependee_identity)
 
-def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
-	"""
-	Checks whether a candidate meets the requirements set by a dependant
-	plug-in.
-
-	The requirements dictionary has a few specific things that can be checked
-	for:
-	* ``version_min``: The minimum allowed version of the candidate.
-	* ``version_max``: The maximum allowed version of the candidate.
-
-	If a candidate doesn't meet the requirements, a warning is put in the log
-	and the method returns ``False``.
-
-	:param candidate_metadata: The metadata dictionary of a candidate dependency
-		of the plug-in.
-	:param requirements: The requirements set by a plug-in that depends on the
-		candidate.
-	:param candidate_identity: The identity of the candidate. Used for logging.
-	:param depending_identity: The identity of the plug-in that depends on the
-		candidate. Used for logging.
-	:return: ``True`` if the candidate meets the requirements, or ``False`` if
-		it doesn't.
-	"""
-	#Minimum version requirement.
-	try:
-		if "version_min" in requirements and candidate_metadata["version"] < requirements["version_min"]:
-			api("logger").warning("Plug-in {plugin} requires {dependency} version {version_min} or later.", plugin=depending_identity, dependency=candidate_identity, version_min=str(requirements["version_min"]))
-			return False
-	except TypeError: #Unorderable types.
-		api("logger").warning("Plug-in {plugin} requires {dependency} version {version_min} or later, but couldn't compare this with its actual version {version}.", plugin=depending_identity, dependency=candidate_identity, version_min=str(requirements["version_min"], version=str(candidate_metadata["version"])))
-		return False
-
-	#Maximum version requirement.
-	try:
-		if "version_max" in requirements and candidate_metadata["version"] > requirements["version_max"]:
-			api("logger").warning("Plug-in {plugin} requires {dependency} version {version_max} or earlier.", plugin=depending_identity, dependency=candidate_identity, version_max=str(requirements["version_max"]))
-			return False
-	except TypeError: #Unorderable types.
-		api("logger").warning("Plug-in {plugin} requires {dependency} version {version_max} or earlier, but couldn't compare this with its actual version {version}.", plugin=depending_identity, dependency=candidate_identity, version_max=str(requirements["version_max"], version=str(candidate_metadata["version"])))
-		return False
-
-	return True
-
 def _find_candidate_directories():
 	"""
 	Finds candidates for what looks like might be plug-ins.
@@ -325,6 +282,49 @@ def _load_candidates(directories):
 					logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file)) #pylint: disable=logging-format-interpolation
 				file.close()
 		yield module
+
+def _meets_requirements(candidate_metadata, requirements, candidate_identity, depending_identity):
+	"""
+	Checks whether a candidate meets the requirements set by a dependant
+	plug-in.
+
+	The requirements dictionary has a few specific things that can be checked
+	for:
+	* ``version_min``: The minimum allowed version of the candidate.
+	* ``version_max``: The maximum allowed version of the candidate.
+
+	If a candidate doesn't meet the requirements, a warning is put in the log
+	and the method returns ``False``.
+
+	:param candidate_metadata: The metadata dictionary of a candidate dependency
+		of the plug-in.
+	:param requirements: The requirements set by a plug-in that depends on the
+		candidate.
+	:param candidate_identity: The identity of the candidate. Used for logging.
+	:param depending_identity: The identity of the plug-in that depends on the
+		candidate. Used for logging.
+	:return: ``True`` if the candidate meets the requirements, or ``False`` if
+		it doesn't.
+	"""
+	#Minimum version requirement.
+	try:
+		if "version_min" in requirements and candidate_metadata["version"] < requirements["version_min"]:
+			api("logger").warning("Plug-in {plugin} requires {dependency} version {version_min} or later.", plugin=depending_identity, dependency=candidate_identity, version_min=str(requirements["version_min"]))
+			return False
+	except TypeError: #Unorderable types.
+		api("logger").warning("Plug-in {plugin} requires {dependency} version {version_min} or later, but couldn't compare this with its actual version {version}.", plugin=depending_identity, dependency=candidate_identity, version_min=str(requirements["version_min"], version=str(candidate_metadata["version"])))
+		return False
+
+	#Maximum version requirement.
+	try:
+		if "version_max" in requirements and candidate_metadata["version"] > requirements["version_max"]:
+			api("logger").warning("Plug-in {plugin} requires {dependency} version {version_max} or earlier.", plugin=depending_identity, dependency=candidate_identity, version_max=str(requirements["version_max"]))
+			return False
+	except TypeError: #Unorderable types.
+		api("logger").warning("Plug-in {plugin} requires {dependency} version {version_max} or earlier, but couldn't compare this with its actual version {version}.", plugin=depending_identity, dependency=candidate_identity, version_max=str(requirements["version_max"], version=str(candidate_metadata["version"])))
+		return False
+
+	return True
 
 def _validate_metadata_global(metadata):
 	"""
