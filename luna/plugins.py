@@ -116,9 +116,9 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	candidates = _find_candidate_directories() #Makes a set of (id, path) tuples indicating names and folder paths of possible plug-ins.
+	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
-	for identity, module in _load_candidates(candidates):
+	for identity, module in _load_candidates(candidate_directories):
 		#Parsing the metadata.
 		try:
 			metadata = module.metadata()
