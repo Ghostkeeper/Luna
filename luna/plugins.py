@@ -118,7 +118,8 @@ def discover():
 	"""
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
-	for identity, module in _load_candidates(candidate_directories):
+	for module in _load_candidates(candidate_directories):
+		identity = module.__name__
 		#Parsing the metadata.
 		try:
 			metadata = module.metadata()
@@ -323,7 +324,7 @@ def _load_candidates(directories):
 				except ImportError: #Logger type module isn't loaded yet.
 					logging.exception("Plug-in {plugin} is a file: {filename}", plugin=identity, filename=str(file)) #pylint: disable=logging-format-interpolation
 				file.close()
-		yield (identity, module)
+		yield module
 
 def _validate_metadata_global(metadata):
 	"""
