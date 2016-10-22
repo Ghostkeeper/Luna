@@ -4,7 +4,7 @@
 #This software is distributed under the Creative Commons license (CC0) version 1.0. A copy of this license should have been distributed with this software.
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
-import luna.plugins
+import luna.plugins #To log messages, and raise a MetadataValidationError if the metadata is invalid.
 
 _configurations = {}
 """
@@ -42,4 +42,13 @@ def unregister(identity):
 	del _configurations[identity] #The actual unregistration.
 
 def validate_metadata(metadata):
-	raise Exception("Not implemented yet.")
+	if "configuration" not in metadata:
+		raise luna.plugins.MetadataValidationError("This is not a configuration plug-in.")
+
+	if "name" not in metadata:
+		raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify a name.")
+
+	if "instance" not in metadata:
+		raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify an instance to keep track of the configuration.")
+	if not isinstance(metadata["instance"], configurationtype.configuration_base.ConfigurationBase):
+		raise luna.plugins.MetadataValidationError("The configuration instance is not a subclass of ConfigurationBase.")
