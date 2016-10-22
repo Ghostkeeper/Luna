@@ -42,6 +42,17 @@ def unregister(identity):
 	del _configurations[identity] #The actual unregistration.
 
 def validate_metadata(metadata):
+	"""
+	Validates whether the specified metadata is valid for configuration
+	plug-ins.
+
+	Configuration's metadata must have a ``configuration`` field, which must
+	have a ``name`` entry and an ``instance`` entry. The ``instance`` entry must
+	implement ``__getattr__``, ``serialise`` and ``deserialise``.
+
+	:param metadata: The metadata to validate.
+	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
+	"""
 	if "configuration" not in metadata:
 		raise luna.plugins.MetadataValidationError("This is not a configuration plug-in.")
 
