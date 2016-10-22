@@ -56,10 +56,10 @@ def validate_metadata(metadata):
 	if "configuration" not in metadata:
 		raise luna.plugins.MetadataValidationError("This is not a configuration plug-in.")
 
-	if "name" not in metadata:
+	if "name" not in metadata["configuration"]:
 		raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify a name.")
 
-	if "instance" not in metadata:
+	if "instance" not in metadata["configuration"]:
 		raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify an instance to keep track of the configuration.")
-	if not isinstance(metadata["instance"], configurationtype.configuration_base.ConfigurationBase):
+	if not isinstance(metadata["configuration"]["instance"], configurationtype.configuration_base.ConfigurationBase):
 		raise luna.plugins.MetadataValidationError("The configuration instance is not a subclass of ConfigurationBase.")
