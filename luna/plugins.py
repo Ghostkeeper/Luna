@@ -109,47 +109,16 @@ def discover():
 	This goes through all folders of all plug-in types, and finds out what
 	their metadata is. If the metadata is correct it will create a plug-in.
 	When all plug-ins are loaded, the plug-ins whose dependencies can be met
-	will be stored for later requesting. The plug-ins whose dependencies
-	cannot be met will be discarded.
+	will be stored for later requesting. Along the way, if any stage in the
+	progress goes wrong for a plug-in, the plug-in is discarded.
 
 	This method can also be used to update the plug-in repository, but
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
-	unvalidated_candidates = [] #Second stage of candidates. We could load these but haven't validated their typed metadata yet. List of _UnresolvedCandidate instances.
-	for module in _load_candidates(candidate_directories):
-		identity = module.__name__
-		#Parsing the metadata.
-		try:
-			metadata = module.metadata()
-		except Exception as e:
-			try:
-				api("logger").warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
-			except ImportError: #Logger type hasn't loaded yet.
-				logging.exception("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
-			continue
-		try:
-			_validate_metadata_global(metadata)
-		except MetadataValidationError as e:
-			try:
-				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
-			except ImportError: #Logger type hasn't loaded yet.
-				logging.exception("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
-			continue
-		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
-			try:
-				_validate_metadata_type(metadata)
-			except MetadataValidationError as e:
-				try:
-					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
-				except ImportError: #Logger type hasn't loaded yet.
-					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
-				continue
-			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
-			_plugin_types[metadata["type"]["type_name"]] = plugin_type
-
-		unvalidated_candidates.append(_UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])) #Goes on to the second stage.
+	candidate_modules = _load_candidates(candidate_directories)
+	unvalidated_candidates = _parse_metadata(candidate_modules)
 
 	unresolved_candidates = [] #Third stage of candidates. We could validate their metadata but haven't resolved their dependencies yet. List of _UnresolvedCandidate instances.
 	for candidate in unvalidated_candidates:
@@ -240,14 +209,13 @@ def _find_candidate_directories():
 
 def _load_candidates(directories):
 	"""
-	Loads a plug-in candidate as a Python package.
+	Loads plug-in candidates as Python packages.
 
 	This is intended to be used on Python packages, containing an init
 	script.
 
 	:param directories: A sequence of paths where plug-ins can be found.
-	:returns: A Python package representing the plug-in. If anything went
-		wrong, ``None`` is returned.
+	:return: A sequence of Python packages representing plug-ins.
 	"""
 	for directory in directories:
 		identity = os.path.basename(directory)
@@ -325,6 +293,52 @@ def _meets_requirements(candidate_metadata, requirements, candidate_identity, de
 		return False
 
 	return True
+
+def _parse_metadata(modules):
+	"""
+	Gets and parses the metadata of a sequence of modules.
+
+	The metadata is then split and stored as _UnresolvedCandidate instances for
+	further processing.
+
+	:param modules: A sequence of modules to parse the metadata of.
+	:return: A sequence of _UnresolvedCandidate instances representing the
+	modules and metadata.
+	"""
+	for module in modules:
+		identity = module.__name__
+
+		try:
+			metadata = module.metadata()
+		except Exception as e:
+			try:
+				api("logger").warning("Failed to load metadata of plug-in {plugin}: {error_message}", plugin=identity, error_message=str(e))
+			except ImportError: #Logger type hasn't loaded yet.
+				logging.exception("Failed to load metadata of plug-in {plugin}: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
+			continue
+
+		try:
+			_validate_metadata_global(metadata)
+		except MetadataValidationError as e:
+			try:
+				api("logger").warning("Metadata of plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
+			except ImportError: #Logger type hasn't loaded yet.
+				logging.exception("Metadata of plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
+			continue
+
+		if "type" in metadata: #For plug-in type definitions, we have a built-in metadata checker.
+			try:
+				_validate_metadata_type(metadata)
+			except MetadataValidationError as e:
+				try:
+					api("logger").warning("Metadata of type plug-in {plugin} is invalid: {error_message}", include_stack_trace=False, plugin=identity, error_message=str(e))
+				except ImportError: #Logger type hasn't loaded yet.
+					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
+				continue
+			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
+			_plugin_types[metadata["type"]["type_name"]] = plugin_type
+
+		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
 
 def _validate_metadata_global(metadata):
 	"""
