@@ -121,17 +121,8 @@ def discover():
 	unvalidated_candidates = _parse_metadata(candidate_modules)
 	unvalidated_candidates = list(unvalidated_candidates) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
 
-	unresolved_candidates = [] #Third stage of candidates. We could validate their metadata but haven't resolved their dependencies yet. List of _UnresolvedCandidate instances.
-	for candidate in unvalidated_candidates:
-		candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types this candidate proposes to implement.
-		for candidate_type in candidate_types:
-			try:
-				_plugin_types[candidate_type].validate_metadata(candidate.metadata)
-			except Exception as e:
-				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
-				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't have valid metadata.
-		else: #All types got validated properly.
-			unresolved_candidates.append(candidate) #Goes on to the third stage.
+	unresolved_candidates = _validate_metadata(unvalidated_candidates)
+	unresolved_candidates = list(unresolved_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
 
 	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
 	failed_to_register = set()
@@ -340,6 +331,28 @@ def _parse_metadata(modules):
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
 
 		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
+
+def _validate_metadata(candidates):
+	"""
+	Validates the metadata of the plug-in types of a sequence of candidates.
+
+	It validates the metadata of each plug-in type each candidate claims to
+	implement.
+
+	:param candidates: A sequence of candidates to validate.
+	:return: The same sequence, but filtered to only have candidates with valid
+	metadata.
+	"""
+	for candidate in candidates:
+		candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types this candidate claims to implement.
+		for candidate_type in candidate_types:
+			try:
+				_plugin_types[candidate_type].validate_metadata(candidate.metadata)
+			except Exception as e:
+				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
+				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't have valid metadata.
+		else: #All types got validated properly.
+			yield candidate
 
 def _validate_metadata_global(metadata):
 	"""
