@@ -137,7 +137,7 @@ def discover():
 				api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=succeeded_candidate.identity, type=candidate_type, error_message=str(e))
 				deactivate(succeeded_candidate.identity)
 				break #Don't try to register with any types. We're going to unregister it anyway.
-		else: #No registration failed.
+		else: #All registration succeeded.
 			api("logger").info("Loaded plug-in {plugin}.", plugin=succeeded_candidate.identity)
 
 def deactivate(identity):
