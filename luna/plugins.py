@@ -118,14 +118,14 @@ def discover():
 	"""
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	candidate_modules = _load_candidates(candidate_directories)
-	unvalidated_candidates = _parse_metadata(candidate_modules)
-	unvalidated_candidates = list(unvalidated_candidates) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
+	candidates = _parse_metadata(candidate_modules)
+	candidates = list(candidates) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
 
-	unresolved_candidates = _validate_metadata(unvalidated_candidates)
-	unresolved_candidates = list(unresolved_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
+	validated_candidates = _validate_metadata(candidates)
+	validated_candidates = list(validated_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
 
-	resolved_candidates = list(_resolve_dependencies(unresolved_candidates))
-	for failed_candidate in [candidate for candidate in unresolved_candidates if candidate not in resolved_candidates]:
+	resolved_candidates = list(_resolve_dependencies(validated_candidates))
+	for failed_candidate in [candidate for candidate in validated_candidates if candidate not in resolved_candidates]:
 		deactivate(failed_candidate.identity)
 	for succeeded_candidate in resolved_candidates:
 		_plugins[succeeded_candidate.identity] = succeeded_candidate.metadata
