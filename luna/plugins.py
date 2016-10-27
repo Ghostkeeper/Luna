@@ -124,33 +124,21 @@ def discover():
 	unresolved_candidates = _validate_metadata(unvalidated_candidates)
 	unresolved_candidates = list(unresolved_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
 
-	#Now go through the candidates to find plug-ins for which we can resolve the dependencies.
-	failed_to_register = set()
-	for candidate in unresolved_candidates:
-		for dependency, requirements in candidate.dependencies.items():
-			for dependency_candidate in unresolved_candidates:
-				if dependency == dependency_candidate.identity:
-					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate):
-						continue #Search on.
-					else:
-						break #Found this dependency.
-			else: #Dependency was not found.
-				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
-				break
-		else: #All dependencies are resolved!
-			_plugins[candidate.identity] = candidate.metadata
-			candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
-			for candidate_type in candidate_types:
-				try:
-					_plugin_types[candidate_type].register(candidate.identity, candidate.metadata)
-				except Exception as e:
-					api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
-					failed_to_register.add(candidate.identity)
-					break #Don't try to register with any types. We're going to unregister it anyway.
-			else: #No registration failed.
-				api("logger").info("Loaded plug-in {plugin}.", plugin=candidate.identity)
-	for candidate_identity in failed_to_register: #These plug-ins couldn't be registered. Unregister them and their dependees.
-		deactivate(candidate_identity)
+	resolved_candidates = list(_resolve_dependencies(unresolved_candidates))
+	for failed_candidate in [candidate for candidate in unresolved_candidates if candidate not in resolved_candidates]:
+		deactivate(failed_candidate.identity)
+	for succeeded_candidate in resolved_candidates:
+		_plugins[succeeded_candidate.identity] = succeeded_candidate.metadata
+		candidate_types = succeeded_candidate.metadata.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
+		for candidate_type in candidate_types:
+			try:
+				_plugin_types[candidate_type].register(succeeded_candidate.identity, succeeded_candidate.metadata)
+			except Exception as e:
+				api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=succeeded_candidate.identity, type=candidate_type, error_message=str(e))
+				deactivate(succeeded_candidate.identity)
+				break #Don't try to register with any types. We're going to unregister it anyway.
+		else: #No registration failed.
+			api("logger").info("Loaded plug-in {plugin}.", plugin=succeeded_candidate.identity)
 
 def deactivate(identity):
 	"""
@@ -331,6 +319,30 @@ def _parse_metadata(modules):
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
 
 		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
+
+def _resolve_dependencies(candidates):
+	"""
+	Makes sure that all dependencies of the candidates are met.
+
+	This returns the candidates for which dependencies are met. Candidates for
+	which the dependencies are not met are left out.
+
+	:param candidates: The candidates to resolve the dependencies of.
+	:return: A sequence of candidates which have their dependencies met.
+	"""
+	for candidate in candidates:
+		for dependency, requirements in candidate.dependencies.items():
+			for dependency_candidate in candidates:
+				if dependency == dependency_candidate.identity:
+					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate):
+						continue #Search on.
+					else:
+						break #Found this dependency.
+			else: #Dependency was not found.
+				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
+				break
+		else: #All dependencies are resolved!
+			yield candidate
 
 def _validate_metadata(candidates):
 	"""
