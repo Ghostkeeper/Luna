@@ -352,7 +352,7 @@ def _resolve_dependencies(candidates):
 		for dependency, requirements in candidate.dependencies.items():
 			for dependency_candidate in candidates:
 				if dependency == dependency_candidate.identity:
-					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate):
+					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate.identity):
 						continue #Search on.
 					else:
 						break #Found this dependency.
