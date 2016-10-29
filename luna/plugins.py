@@ -123,12 +123,13 @@ def discover():
 
 	validated_candidates = _validate_metadata(candidates)
 	validated_candidates = list(validated_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
+	for validated_candidate in validated_candidates:
+		_plugins[validated_candidate.identity] = validated_candidate.metadata
 
 	resolved_candidates = list(_resolve_dependencies(validated_candidates))
 	for failed_candidate in [candidate for candidate in validated_candidates if candidate not in resolved_candidates]:
 		deactivate(failed_candidate.identity)
 	for succeeded_candidate in resolved_candidates:
-		_plugins[succeeded_candidate.identity] = succeeded_candidate.metadata
 		candidate_types = succeeded_candidate.metadata.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 		for candidate_type in candidate_types:
 			try:
