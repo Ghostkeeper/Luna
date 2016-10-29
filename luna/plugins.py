@@ -141,8 +141,9 @@ def deactivate(identity):
 	:param identity: The identity of the plug-in to deactivate.
 	"""
 	if identity not in _plugins:
-		api("logger").warning("Can't unregister plug-in {plugin}: It was never loaded.", plugin=identity)
+		api("logger").warning("Can't deactivate plug-in {plugin}: No such plug-in is loaded.", plugin=identity)
 		return
+
 	for plugin_type in _plugins[identity]:
 		if plugin_type in _required_metadata_fields: #It's a global metadata field, not a type definition.
 			continue
@@ -172,6 +173,10 @@ def activate(identity):
 
 	:param identity: The identity of the plug-in to activate.
 	"""
+	if identity not in _plugins:
+		api("logger").warning("Can't activate plug-in {plugin}: No such plug-in is loaded.", plugin=identity)
+		return
+
 	candidate = _plugins[identity]
 	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 	for candidate_type in candidate_types:
