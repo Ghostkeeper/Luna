@@ -36,6 +36,14 @@ All plug-ins, by their identities.
 This also includes all plug-ins that are not registered.
 """
 
+_plugins_by_type = {}
+"""
+All plug-ins, indexed by their types.
+
+This is the main index of registered plug-ins. Each entry contains a set of
+plug-in identities. Note that a plug-in may have multiple types.
+"""
+
 _required_metadata_fields = {"dependencies", "description", "name", "version"}
 """
 Fields that must be present in every plug-in's metadata.
@@ -151,12 +159,9 @@ def deactivate(identity):
 			continue
 		if plugin_type not in _plugin_types: #The type was deleted prior, because it was a dependency.
 			continue
-		try:
-			_plugin_types[plugin_type].unregister(identity)
-		except Exception:
-			api("logger").error("Couldn't unregister plug-in {plugin} as type {plugin_type}.", plugin=identity, plugin_type=plugin_type)
-			continue
-		api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
+		if identity in _plugins_by_type[plugin_type]:
+			_unregister(identity, plugin_type)
+			api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
 	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
 		del _plugin_types[_plugins[identity]["type"]["type_name"]]
 		api("logger").info("Unregistered plug-in {plugin} as plug-in type.", plugin=identity)
@@ -180,12 +185,7 @@ def activate(identity):
 	candidate = _plugins[identity]
 	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 	for candidate_type in candidate_types:
-		try:
-			_plugin_types[candidate_type].register(identity, candidate)
-		except Exception as e:
-			api("logger").critical("Couldn't register plug-in {candidate} as type {type}: {error_message}", candidate=identity, type=candidate_type, error_message=str(e))
-			deactivate(identity)
-			break #Don't try to register with any types. We're going to unregister it anyway.
+		_register(identity, candidate_type)
 	else: #All registration succeeded.
 		api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
 
@@ -335,8 +335,27 @@ def _parse_metadata(modules):
 				continue
 			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
+			_plugins_by_type[metadata["type"]["type_name"]] = set()
 
 		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
+
+def _register(plugin_identity, type_identity):
+	"""
+	Registers a plug-in as a specific plug-in type.
+
+	This registers the plug-in here in the plug-ins module, and then calls the
+	register function of the plug-in type plug-in in case that plug-in wants to
+	do additional work when registering a new plug-in.
+
+	:param plugin_identity: The identity of the plug-in to register.
+	:param type_identity: The plug-in type with which to register the plug-in.
+	"""
+	_plugins_by_type[type_identity].add(plugin_identity)
+	try:
+		_plugin_types[type_identity].register(plugin_identity, _plugins[plugin_identity])
+	except Exception as e:
+		api("logger").error("Couldn't register plug-in {plugin} as type {plugin_type}: {error_message}", plugin=plugin_identity, plugin_type=type_identity, error_message=str(e))
+		_plugins_by_type[type_identity].remove(plugin_identity)
 
 def _resolve_dependencies(candidates):
 	"""
@@ -366,6 +385,24 @@ def _resolve_dependencies(candidates):
 				break
 		else: #All dependencies are resolved!
 			yield candidate
+
+def _unregister(plugin_identity, type_identity):
+	"""
+	Unregisters a plug-in as a specific plug-in type.
+
+	This unregisters the plug-in here in the plug-ins module, and then calls the
+	unregister function of the plug-in type plug-in in case that plug-in wants
+	to do additional work when unregistering a new plug-in.
+
+	:param plugin_identity: The identity of the plug-in to unregister.
+	:param type_identity: The plug-in type from which to unregister the plug-in.
+	"""
+	_plugins_by_type[type_identity].remove(plugin_identity)
+	try:
+		_plugin_types[type_identity].unregister(plugin_identity)
+	except Exception as e:
+		api("logger").error("Couldn't unregister plug-in {plugin} as type {plugin_type}: {error_message}", plugin=plugin_identity, plugin_type=type_identity, error_message=str(e))
+		_plugins_by_type[type_identity].add(plugin_identity)
 
 def _validate_metadata(candidates):
 	"""
