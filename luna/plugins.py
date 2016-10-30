@@ -79,6 +79,26 @@ class MetadataValidationError(Exception):
 	Marker exception to indicate that the metadata of a plug-in is invalid.
 	"""
 
+def activate(identity):
+	"""
+	Activates a plug-in, so that it can be used.
+
+	The plug-in must already be discovered. The plug-in will be registered at
+	all plug-in types it implements.
+
+	:param identity: The identity of the plug-in to activate.
+	"""
+	if identity not in _plugins:
+		api("logger").warning("Can't activate plug-in {plugin}: No such plug-in is loaded.", plugin=identity)
+		return
+
+	candidate = _plugins[identity]
+	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
+	for candidate_type in candidate_types:
+		_register(identity, candidate_type)
+	else: #All registration succeeded.
+		api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
+
 def add_plugin_location(location):
 	"""
 	Adds a location to the list of locations where the application looks for
@@ -168,26 +188,6 @@ def deactivate(identity):
 	dependees = [dependee_identity for dependee_identity, dependee in _plugins.items() if identity in dependee["dependencies"]]
 	for dependee_identity in dependees:
 		deactivate(dependee_identity)
-
-def activate(identity):
-	"""
-	Activates a plug-in, so that it can be used.
-
-	The plug-in must already be discovered. The plug-in will be registered at
-	all plug-in types it implements.
-
-	:param identity: The identity of the plug-in to activate.
-	"""
-	if identity not in _plugins:
-		api("logger").warning("Can't activate plug-in {plugin}: No such plug-in is loaded.", plugin=identity)
-		return
-
-	candidate = _plugins[identity]
-	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
-	for candidate_type in candidate_types:
-		_register(identity, candidate_type)
-	else: #All registration succeeded.
-		api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
 
 def _find_candidate_directories():
 	"""
