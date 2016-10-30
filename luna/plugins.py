@@ -353,11 +353,16 @@ def _resolve_dependencies(candidates):
 			for dependency_candidate in candidates:
 				if dependency == dependency_candidate.identity:
 					if not _meets_requirements(dependency_candidate.metadata, requirements, dependency, candidate.identity):
-						continue #Search on.
+						dependency_met = False #Found the dependency, but it is insufficient.
+						break
 					else:
-						break #Found this dependency.
+						dependency_met = True #Found this dependency.
+						break
 			else: #Dependency was not found.
 				api("logger").warning("Plug-in {plugin} is missing dependency {dependency}.", plugin=candidate.identity, dependency=dependency)
+				break
+			if not dependency_met:
+				#The _meets_requirements function does the logging then.
 				break
 		else: #All dependencies are resolved!
 			yield candidate
