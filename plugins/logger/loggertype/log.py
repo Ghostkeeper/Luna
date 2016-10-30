@@ -81,7 +81,7 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	if not loggers: #There are no loggers.
 		if title != "Critical": #The word "Critical" is already put there by the logger.
 			substituted = title + ": " + substituted
-		if include_stack_trace:
+		if include_stack_trace and sys.exc_info()[2]:
 			logging.exception(substituted)
 		else:
 			logging.critical(substituted)
@@ -142,7 +142,7 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 	if not loggers: #There are no loggers.
 		if title != "Error": #The word "Error" is already put there by the logger.
 			substituted = title + ": " + substituted
-		if include_stack_trace:
+		if include_stack_trace and sys.exc_info()[2]:
 			logging.exception(substituted)
 		else:
 			logging.error(substituted)
@@ -228,7 +228,7 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	if not loggers: #There are no loggers.
 		if title != "Warning": #The word "Warning" is already put there by the logger.
 			substituted = title + ": " + substituted
-		if include_stack_trace:
+		if include_stack_trace and sys.exc_info()[2]:
 			logging.exception(substituted)
 		else:
 			logging.warning(substituted)
