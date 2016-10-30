@@ -333,7 +333,9 @@ def _parse_metadata(modules):
 				except ImportError: #Logger type hasn't loaded yet.
 					logging.exception("Metadata of type plug-in {plugin} is invalid: {error_message}".format(plugin=identity, error_message=str(e))) #pylint: disable=logging-format-interpolation
 				continue
-			plugin_type = _PluginType(api=metadata["type"]["api"], register=metadata["type"]["register"], unregister=metadata["type"]["unregister"], validate_metadata=metadata["type"]["validate_metadata"])
+			register = metadata["type"]["register"] if ("register" in metadata["type"]) else lambda *args, **kwargs: None #If not present, use a no-op lambda function.
+			unregister = metadata["type"]["unregister"] if ("unregister" in metadata["type"]) else lambda *args, **kwargs: None
+			plugin_type = _PluginType(api=metadata["type"]["api"], register=register, unregister=unregister, validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
 			plugins_by_type[metadata["type"]["type_name"]] = set()
 
@@ -461,20 +463,24 @@ def _validate_metadata_type(metadata):
 	if "type" not in metadata:
 		raise MetadataValidationError("This is not a plug-in type plug-in.")
 	try:
-		required_fields = {"type_name", "api", "register", "unregister", "validate_metadata"}
+		required_fields = {"type_name", "api", "validate_metadata"}
 		if not required_fields <= metadata["type"].keys(): #Set boolean comparison: Not all required_fields in metadata["type"].
 			raise MetadataValidationError("Required fields in type missing: " + str(required_fields - metadata["type"].keys()))
-		if not callable(metadata["type"]["register"]):
-			raise MetadataValidationError("The register must be callable.")
-		if metadata["type"]["register"].__code__.co_argcount != 2:
-			raise MetadataValidationError("The register function must take exactly two arguments: The plug-in's identity and its metadata.")
-		if not callable(metadata["type"]["unregister"]):
-			raise MetadataValidationError("The unregister must be callable.")
-		if metadata["type"]["unregister"].__code__.co_argcount != 1:
-			raise MetadataValidationError("The unregister function must take exactly one argument: The plug-in's identity.")
 		if not callable(metadata["type"]["validate_metadata"]):
 			raise MetadataValidationError("The metadata validator must be callable.")
 		if metadata["type"]["validate_metadata"].__code__.co_argcount != 1:
 			raise MetadataValidationError("The metadata validation function must take exactly one argument: The plug-in's metadata.")
+
+		#Optional fields.
+		if "register" in metadata["type"]: #If it is in the metadata, it must be correct.
+			if not callable(metadata["type"]["register"]):
+				raise MetadataValidationError("The register entry must be callable.")
+			if metadata["type"]["register"].__code__.co_argcount != 2:
+				raise MetadataValidationError("The register function must take exactly two arguments: The plug-in's identity and its metadata.")
+		if "unregister" in metadata["type"]: #If it's in the metadata, it must be correct.
+			if not callable(metadata["type"]["unregister"]):
+				raise MetadataValidationError("The unregister entry must be callable.")
+			if metadata["type"]["unregister"].__code__.co_argcount != 1:
+				raise MetadataValidationError("The unregister function must take exactly one argument: The plug-in's identity.")
 	except (AttributeError, TypeError):
 		raise MetadataValidationError("The type section is not a dictionary.")
