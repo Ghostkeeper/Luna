@@ -16,7 +16,6 @@ import os.path #To get absolute paths.
 import pathlib #To get URIs from relative paths.
 
 import luna.plugins #To use the logger API.
-import storagetype.storage_registrar #To get the logger plug-ins to log with.
 
 def delete(uri):
 	"""
