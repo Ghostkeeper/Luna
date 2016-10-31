@@ -5,10 +5,7 @@
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
 """
-Keeps track of all logger plug-ins.
-
-Logger plug-ins need to register here. Their implementations are stored and may
-be called upon to log something.
+Validates plug-ins that register as loggers and sets default levels for loggers.
 """
 
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
