@@ -15,8 +15,8 @@ communicate to the application.
 The plug-in registers an API to launch the user interface with, and to allow
 """
 
+import luna.plugins
 import userinterfacetype.user_interface #The API for other plug-ins to use the user interface with.
-import userinterfacetype.user_interface_registrar #Where user interface plug-ins must register.
 
 def metadata():
 	"""
@@ -36,6 +36,30 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "userinterface",
 			"api": userinterfacetype.user_interface,
-			"validate_metadata": userinterfacetype.user_interface_registrar.validate_metadata
+			"validate_metadata": validate_metadata
 		}
 	}
+
+def validate_metadata(metadata):
+	"""
+	Validates whether the specified metadata is valid for user interface
+	plug-ins.
+
+	User interface metadata must have a ``userinterface`` entry, which must
+	contain three entries: ``join``, ``start`` and ``stop``. These entries must
+	contain callable objects (such as functions).
+
+	:param metadata: The metadata to validate.
+	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
+	"""
+	if "userinterface" not in metadata:
+		raise luna.plugins.MetadataValidationError("This is not a user interface plug-in.")
+	required_functions = {"join", "start", "stop"}
+	try:
+		if not required_functions <= metadata["userinterface"].keys():
+			raise luna.plugins.MetadataValidationError("The user interface specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["userinterface"].keys())))
+		for function_name in required_functions:
+			if not callable(metadata["userinterface"][function_name]): #Each must be a callable object (such as a function).
+				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
+	except (AttributeError, TypeError): #Not a dictionary.
+		raise luna.plugins.MetadataValidationError("The user interface metadata is not a dictionary.")
