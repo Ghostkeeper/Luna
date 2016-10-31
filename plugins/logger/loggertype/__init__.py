@@ -37,17 +37,17 @@ def metadata():
 		}
 	}
 
-def register(identity, metadata):
+def register(identity, logger_metadata):
 	"""
 	Sets the log levels of a new plug-in to the defaults.
 
 	:param identity: The identity of the plug-in to register.
-	:param metadata: The metadata of a logger plug-in.
+	:param logger_metadata: The metadata of a logger plug-in.
 	"""
 	api = luna.plugins.api("logger") #Cache.
 	api.set_levels(levels={api.Level.ERROR, api.Level.CRITICAL, api.Level.WARNING, api.Level.INFO}, identity=identity) #Set the default log levels.
 
-def validate_metadata(metadata):
+def validate_metadata(logger_metadata):
 	"""
 	Validates whether the specified metadata is valid for logger plug-ins.
 
@@ -55,17 +55,17 @@ def validate_metadata(metadata):
 	entries: ``critical``, ``debug``, ``error``, ``info`` and ``warning``. These
 	entries must contain callable objects (such as functions).
 
-	:param metadata: The metadata to validate.
+	:param logger_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
-	if "logger" not in metadata:
+	if "logger" not in logger_metadata:
 		raise luna.plugins.MetadataValidationError("This is not a logger plug-in.")
 	required_functions = {"critical", "debug", "error", "info", "warning"}
 	try:
-		if not required_functions <= metadata["logger"].keys(): #All functions must be present.
-			raise luna.plugins.MetadataValidationError("The logger specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["logger"].keys())))
+		if not required_functions <= logger_metadata["logger"].keys(): #All functions must be present.
+			raise luna.plugins.MetadataValidationError("The logger specifies no functions {function_names}.".format(function_names=", ".join(required_functions - logger_metadata["logger"].keys())))
 		for function_name in required_functions:
-			if not callable(metadata["logger"][function_name]): #Each must be a callable object (such as a function).
+			if not callable(logger_metadata["logger"][function_name]): #Each must be a callable object (such as a function).
 				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The logger metadata is not a dictionary.")

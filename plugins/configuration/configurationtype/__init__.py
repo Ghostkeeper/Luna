@@ -37,7 +37,7 @@ def metadata():
 		}
 	}
 
-def validate_metadata(metadata):
+def validate_metadata(configuration_metadata):
 	"""
 	Validates whether the specified metadata is valid for configuration
 	plug-ins.
@@ -46,21 +46,21 @@ def validate_metadata(metadata):
 	have a ``name`` entry and an ``instance`` entry. The ``instance`` entry must
 	implement ``__getattr__``, ``serialise`` and ``deserialise``.
 
-	:param metadata: The metadata to validate.
+	:param configuration_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
-	if "configuration" not in metadata:
+	if "configuration" not in configuration_metadata:
 		raise luna.plugins.MetadataValidationError("This is not a configuration plug-in.")
 
 	try:
-		if "name" not in metadata["configuration"]:
+		if "name" not in configuration_metadata["configuration"]:
 			raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify a name.")
 
-		if "instance" not in metadata["configuration"]:
+		if "instance" not in configuration_metadata["configuration"]:
 			raise luna.plugins.MetadataValidationError("The configuration plug-in doesn't specify an instance to keep track of the configuration.")
 	except TypeError:
 		raise luna.plugins.MetadataValidationError("The configuration metadata entry is not a dictionary.")
-	instance_attributes = set(dir(metadata["configuration"]["instance"]))
+	instance_attributes = set(dir(configuration_metadata["configuration"]["instance"]))
 	required_functions = {"__getattr__", "serialise", "deserialise"}
 	if required_functions > instance_attributes: #Instance is not implementing all required functions.
 		raise luna.plugins.MetadataValidationError("The configuration instance doesn't implement the required functions {functions}.".format(functions=", ".join(required_functions - instance_attributes)))
