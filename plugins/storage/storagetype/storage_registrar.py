@@ -5,78 +5,10 @@
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
 """
-Keeps track of all storage plug-ins.
-
-Storage plug-ins need to register here. Their implementations are stored and may
-be called upon to store or retrieve data from persistent storage.
+Validates plug-ins that register as storage.
 """
 
-import collections #For namedtuple.
-
-import luna.plugins #To raise a MetadataValidationError if the metadata is invalid, and logging.
-
-_Storage = collections.namedtuple("_Storage", "can_read can_write delete exists move read write")
-"""
-Represents a storage plug-in.
-
-This named tuple has one field for every function in the storage plug-in:
-* can_read: Determines if the plug-in can read from a URI.
-* can_write: Determines if the plug-in can write to a URI.
-* delete: Removes an entry from a URI.
-* exists: Checks if a URI exists.
-* move: Moves data from one URI to another.
-* read: Reads from a URI.
-* write: Writes to a URI.
-"""
-
-_storages = {}
-"""
-The storage plug-ins that have been registered here so far, keyed by their
-identities.
-"""
-
-def get_all_storages():
-	"""
-	Gets all storage plug-ins that have been registered here so far.
-
-	:return: A dictionary of storage plug-ins, keyed by their identities.
-	"""
-	return _storages
-
-def register(identity, metadata):
-	"""
-	Registers a new storage plug-in to store persistent data with.
-
-	This expects the metadata to already be verified as a storage's metadata.
-
-	:param identity: The identity of the plug-in to register.
-	:param metadata: The metadata of the storage plug-in.
-	"""
-	if identity in _storages:
-		luna.plugins.api("logger").warning("Storage {storage} is already registered.", storage=identity)
-		return
-	_storages[identity] = _Storage( #Put all storage functions in a named tuple for easier access.
-		can_read=metadata["storage"]["can_read"],
-		can_write=metadata["storage"]["can_write"],
-		delete=metadata["storage"]["delete"],
-		exists=metadata["storage"]["exists"],
-		move=metadata["storage"]["move"],
-		read=metadata["storage"]["read"],
-		write=metadata["storage"]["write"],
-	)
-
-def unregister(identity):
-	"""
-	Undoes the registration of a storage plug-in.
-
-	You can then no longer store persistent data with that plug-in.
-
-	:param identity: The identity of the plug-in to unregister.
-	"""
-	if identity not in _storages:
-		luna.plugins.api("logger").warning("Storage {storage} is not registered, so I can't unregister it.", storage=identity)
-		return
-	del _storages[identity] #The actual unregistration.
+import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
 
 def validate_metadata(metadata):
 	"""

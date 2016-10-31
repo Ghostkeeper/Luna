@@ -34,10 +34,10 @@ def delete(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storage_registrar.get_all_storages().values():
-		if storage.can_write(uri):
+	for storage in luna.plugins.plugins_by_type["storage"].values():
+		if storage["storage"]["can_write"](uri):
 			try:
-				return storage.delete(uri)
+				return storage["storage"]["delete"](uri)
 			except Exception as e:
 				luna.plugins.api("logger").warning("Deleting {uri} failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with the next plug-in.
@@ -61,10 +61,10 @@ def exists(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storage_registrar.get_all_storages().values():
-		if storage.can_read(uri):
+	for storage in luna.plugins.plugins_by_type["storage"].values():
+		if storage["storage"]["can_read"](uri):
 			try:
-				return storage.exists(uri)
+				return storage["storage"]["exists"](uri)
 			except Exception as e:
 				luna.plugins.api("logger").warning("Checking existence of {uri} failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with the next plug-in.
@@ -93,23 +93,23 @@ def move(source, destination):
 	source = _to_absolute_uri(source)
 	destination = _to_absolute_uri(destination)
 	readers = set()
-	storages = storagetype.storage_registrar.get_all_storages()
+	storages = luna.plugins.plugins_by_type["storage"]
 	for storage in storages:
-		if storages[storage].can_read(source):
+		if storages[storage]["storage"]["can_read"](source):
 			readers.add(storage)
-			if storages[storage].can_write(destination):
+			if storages[storage]["storage"]["can_write"](destination):
 				try:
-					storages[storage].move(source, destination) #First try a direct move with a single plug-in, it may be way more efficient.
+					storages[storage]["storage"]["move"](source, destination) #First try a direct move with a single plug-in, it may be way more efficient.
 					return #Success.
 				except Exception as e:
 					luna.plugins.api("logger").warning("Moving URI from {source} to {destination} failed: {error_message}", source=source, destination=destination, error_message=str(e))
 					#Try with next plug-in.
 	#Directly moving failed. Try reading with one plug-in, writing with another.
 	for storage in storages.values():
-		if storage.can_write(destination):
+		if storage["storage"]["can_write"](destination):
 			for reader in readers:
 				try:
-					data = storages[reader].read(source)
+					data = storages[reader]["storage"]["read"](source)
 					break #Success.
 				except Exception as e:
 					luna.plugins.api("logger").warning("Reading from {source} failed: {error_message}", source=source, error_message=str(e))
@@ -118,7 +118,7 @@ def move(source, destination):
 			else: #Got an exception each time.
 				raise IOError("No storage plug-in can read from URI: {uri}".format(uri=source))
 			try:
-				storage.write(destination, data)
+				storage["storage"]["write"](destination, data)
 				return #Success.
 			except Exception as e:
 				luna.plugins.api("logger").warning("Writing data to {destination} failed: {error_message}", destination=destination, error_message=str(e))
@@ -142,10 +142,10 @@ def read(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storage_registrar.get_all_storages().values():
-		if storage.can_read(uri):
+	for storage in luna.plugins.plugins_by_type.values():
+		if storage["storage"]["can_read"](uri):
 			try:
-				return storage.read(uri)
+				return storage["storage"]["read"](uri)
 			except Exception as e:
 				luna.plugins.api("logger").critical("Reading from {uri} failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with next plug-in.
@@ -170,10 +170,10 @@ def write(uri, data):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in storagetype.storage_registrar.get_all_storages().values():
-		if storage.can_write(uri):
+	for storage in luna.plugins.plugins_by_type.values():
+		if storage["storage"]["can_write"](uri):
 			try:
-				storage.write(uri, data)
+				storage["storage"]["write"](uri, data)
 				return #Success.
 			except Exception as e:
 				luna.plugins.api("logger").critical("Writing to {uri} failed: {error_message}", uri=uri, error_message=str(e))

@@ -38,8 +38,6 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "storage",
 			"api": storagetype.storage,
-			"register": storagetype.storage_registrar.register,
-			"unregister": storagetype.storage_registrar.unregister,
 			"validate_metadata": storagetype.storage_registrar.validate_metadata
 		}
 	}
