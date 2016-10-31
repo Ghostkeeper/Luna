@@ -12,9 +12,8 @@ The plug-in registers an API that allows storing of user configuration and later
 reading that configuration back.
 """
 
-import luna.plugins
-
 import configurationtype.configuration #The API for other plug-ins to use configuration with.
+import luna.plugins
 
 def metadata():
 	"""
