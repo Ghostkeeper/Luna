@@ -10,7 +10,6 @@ An API for managing the user interfaces.
 This allows for launching and stopping user interfaces.
 """
 
-import userinterfacetype.user_interface_registrar #To get the user interface plug-ins.
 import luna.plugins #To log messages.
 
 _running = set()
