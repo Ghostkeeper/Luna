@@ -14,17 +14,17 @@ import loggertype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.test_case #For parametrised tests.
 
-def _arbitrary_function(x, y):
+def _arbitrary_function(*args, **kwargs):
 	"""
 	A function to provide in test metadata.
 
 	Since the validation should never actually call functions, this function
 	just raises a validation error.
 
-	:param x: The first argument.
-	:param y: The second argument.
+	:param args: Positional arguments.
+	:param kwargs: Key-word arguments.
 	"""
-	raise luna.plugins.MetadataValidationError("The metadata validation called a function of the API.")
+	raise luna.plugins.MetadataValidationError("The metadata validation called a function of the API (with parameters {args} and key-word arguments {kwargs}).".format(args=args, kwargs=kwargs))
 
 class _CallableObject:
 	"""
