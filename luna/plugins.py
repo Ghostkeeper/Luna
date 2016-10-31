@@ -152,11 +152,8 @@ def discover():
 	"""
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	candidate_modules = _load_candidates(candidate_directories)
-	candidates = _parse_metadata(candidate_modules)
-	candidates = list(candidates) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
-
-	validated_candidates = _validate_metadata(candidates)
-	validated_candidates = list(validated_candidates) #Sync again here because we need to know all plug-ins with their types in the next stage.
+	candidates = list(_parse_metadata(candidate_modules)) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
+	validated_candidates = list(_validate_metadata(candidates)) #Sync again here because we need to know all plug-ins with their types in the next stage.
 	for validated_candidate in validated_candidates:
 		_plugins[validated_candidate.identity] = validated_candidate.metadata
 
