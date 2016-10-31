@@ -36,8 +36,6 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "userinterface",
 			"api": userinterfacetype.user_interface,
-			"register": userinterfacetype.user_interface_registrar.register,
-			"unregister": userinterfacetype.user_interface_registrar.unregister,
 			"validate_metadata": userinterfacetype.user_interface_registrar.validate_metadata
 		}
 	}
