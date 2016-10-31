@@ -358,6 +358,9 @@ def _register(plugin_identity, type_identity):
 	:param plugin_identity: The identity of the plug-in to register.
 	:param type_identity: The plug-in type with which to register the plug-in.
 	"""
+	if plugin_identity in plugins_by_type[type_identity]:
+		api("logger").warning("Couldn't register plug-in {plugin} as type {plugin_type} because it was already registered.", plugin=plugin_identity, plugin_type=type_identity)
+		return
 	plugins_by_type[type_identity].add(plugin_identity)
 	try:
 		_plugin_types[type_identity].register(plugin_identity, _plugins[plugin_identity])
@@ -405,6 +408,9 @@ def _unregister(plugin_identity, type_identity):
 	:param plugin_identity: The identity of the plug-in to unregister.
 	:param type_identity: The plug-in type from which to unregister the plug-in.
 	"""
+	if plugin_identity not in plugins_by_type[type_identity]:
+		api("logger").warning("Couldn't unregister plug-in {plugin} as type {plugin_type} because it is not registered.", plugin=plugin_identity, plugin_type=type_identity)
+		return
 	plugins_by_type[type_identity].remove(plugin_identity)
 	try:
 		_plugin_types[type_identity].unregister(plugin_identity)
