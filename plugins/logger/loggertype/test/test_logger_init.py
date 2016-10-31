@@ -24,7 +24,7 @@ def _arbitrary_function(x, y):
 	:param x: The first argument.
 	:param y: The second argument.
 	"""
-	raise MetadataValidationError("The metadata validation called a function of the API.")
+	raise luna.plugins.MetadataValidationError("The metadata validation called a function of the API.")
 
 class _CallableObject:
 	"""
