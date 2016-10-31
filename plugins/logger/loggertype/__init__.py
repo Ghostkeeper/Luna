@@ -8,8 +8,7 @@
 Provides logging functionality, to allow creating plug-ins that log messages.
 How those messages are stored or displayed may vary between loggers.
 
-The plug-in registers an API to call upon the loggers to log messages as well as
-an interface for logger plug-ins to implement.
+The plug-in registers an API to call upon the loggers to log messages.
 """
 
 import loggertype.log #The API for other plug-ins to use loggers with.
