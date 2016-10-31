@@ -11,71 +11,17 @@ Logger plug-ins need to register here. Their implementations are stored and may
 be called upon to log something.
 """
 
-import collections #For namedtuple.
-
 import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
-
-_Logger = collections.namedtuple("_Logger", "critical debug error info warning")
-"""
-Represents a logger plug-in.
-
-This named tuple has one field for every function in the logger:
-* critical: The function to log critical messages with.
-* debug: The function to log debug messages with.
-* error: The function to log error messages with.
-* info: The function to log information messages with.
-* warning: The function to log warning messages with.
-"""
-
-_loggers = {}
-"""
-The loggers that have been registered here so far, keyed by their identities.
-"""
-
-def get_all_loggers():
-	"""
-	Gets a dictionary of all loggers that have been registered here so far.
-
-	The keys of the dictionary are the identities of the loggers.
-
-	:return: A dictionary of loggers, keyed by identity.
-	"""
-	return _loggers
 
 def register(identity, metadata):
 	"""
-	Registers a new logger plug-in to log with.
-
-	This expects the metadata to already be verified as a logger's metadata.
+	Sets the log levels of a new plug-in to the defaults.
 
 	:param identity: The identity of the plug-in to register.
 	:param metadata: The metadata of a logger plug-in.
 	"""
 	api = luna.plugins.api("logger") #Cache.
-	if identity in _loggers:
-		api.warning("Logger {logger} is already registered.", logger=identity)
-		return
 	api.set_levels(levels={api.Level.ERROR, api.Level.CRITICAL, api.Level.WARNING, api.Level.INFO}, identity=identity) #Set the default log levels.
-	_loggers[identity] = _Logger( #Put all logger functions in a named tuple for easier access.
-		critical=metadata["logger"]["critical"],
-		debug=metadata["logger"]["debug"],
-		error=metadata["logger"]["error"],
-		info=metadata["logger"]["info"],
-		warning=metadata["logger"]["warning"]
-	)
-
-def unregister(identity):
-	"""
-	Undoes the registration of a logger plug-in.
-
-	You can then no longer log with that plug-in.
-
-	:param identity: The identity of the plug-in to unregister.
-	"""
-	if identity not in _loggers:
-		luna.plugins.api("logger").warning("Logger {logger} is not registered, so I can't unregister it.", logger=identity)
-		return
-	del _loggers[identity] #The actual unregistration.
 
 def validate_metadata(metadata):
 	"""

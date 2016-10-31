@@ -16,7 +16,7 @@ import inspect #To dissect the stack trace.
 import logging #As fallback if there are no logger plug-ins.
 import sys #To get the stack trace.
 
-import loggertype.logger_registrar #To get the logger plug-ins to log with.
+import luna.plugins #To get the logger plug-ins to log with.
 
 class Level(enum.Enum):
 	"""
@@ -60,14 +60,14 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
-		exception, should a stack trace be printed?
-	:param kwargs: Key-word arguments. These are inserted in the message
-		body. The value of a key-word argument will be put in place of the
-		key surrounded by brackets. See the Python documentation for
-		``str.format`` for more details.
+	exception, should a stack trace be printed?
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+	The value of a key-word argument will be put in place of the key surrounded
+	by brackets. See the Python documentation for ``str.format`` for more
+	details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.logger_registrar.get_all_loggers()
+	loggers = luna.plugins.plugins_by_type["logger"]
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -77,7 +77,7 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.CRITICAL in _logger_levels[logger]:
-			loggers[logger].critical(substituted, title, stack_trace, exception)
+			loggers[logger]["logger"]["critical"](substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Critical": #The word "Critical" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -93,14 +93,14 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
-		exception, should a stack trace be printed?
-	:param kwargs: Key-word arguments. These are inserted in the message
-		body. The value of a key-word argument will be put in place of the
-		key surrounded by brackets. See the Python documentation for
-		``str.format`` for more details.
+	exception, should a stack trace be printed?
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+	The value of a key-word argument will be put in place of the key surrounded
+	by brackets. See the Python documentation for ``str.format`` for more
+	details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.logger_registrar.get_all_loggers()
+	loggers = luna.plugins.plugins_by_type["logger"]
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -110,7 +110,7 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.DEBUG in _logger_levels[logger]:
-			loggers[logger].debug(substituted, title, stack_trace, exception)
+			loggers[logger]["logger"]["debug"](substituted, title, stack_trace, exception)
 	#Since debug log messages aren't activated by default, there is no fallback for this level.
 	#The fallback doesn't have this level set by default and there is no way to set it.
 
@@ -121,14 +121,14 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
-		exception, should a stack trace be printed?
-	:param kwargs: Key-word arguments. These are inserted in the message
-		body. The value of a key-word argument will be put in place of the
-		key surrounded by brackets. See the Python documentation for
-		``str.format`` for more details.
+	exception, should a stack trace be printed?
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+	The value of a key-word argument will be put in place of the key surrounded
+	by brackets. See the Python documentation for ``str.format`` for more
+	details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.logger_registrar.get_all_loggers()
+	loggers = luna.plugins.plugins_by_type["logger"]
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -138,7 +138,7 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.ERROR in _logger_levels[logger]:
-			loggers[logger].error(substituted, title, stack_trace, exception)
+			loggers[logger]["logger"]["error"](substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Error": #The word "Error" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -154,14 +154,14 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
-		exception, should a stack trace be printed?
-	:param kwargs: Key-word arguments. These are inserted in the message
-		body. The value of a key-word argument will be put in place of the
-		key surrounded by brackets. See the Python documentation for
-		``str.format`` for more details.
+	exception, should a stack trace be printed?
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+	The value of a key-word argument will be put in place of the key surrounded
+	by brackets. See the Python documentation for ``str.format`` for more
+	details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.logger_registrar.get_all_loggers()
+	loggers = luna.plugins.plugins_by_type["logger"]
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -171,7 +171,7 @@ def info(message, title="Information", include_stack_trace=True, **kwargs):
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.INFO in _logger_levels[logger]:
-			loggers[logger].info(substituted, title, stack_trace, exception)
+			loggers[logger]["logger"]["info"](substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Information": #The word "Information" is already put there by the logger.
 			substituted = title + ": " + substituted
@@ -192,7 +192,7 @@ def set_levels(levels, identity=None):
 
 	:param levels: A list of log levels that the logger(s) will log.
 	:param identity: The identity of a logger plug-in if setting the levels for
-		a specific logger, or None if setting the levels for all loggers.
+	a specific logger, or None if setting the levels for all loggers.
 	"""
 	if identity: #If given a specific logger identity, set the log levels only for that logger.
 		_logger_levels[identity] = levels
@@ -207,14 +207,14 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
-		exception, should a stack trace be printed?
-	:param kwargs: Key-word arguments. These are inserted in the message
-		body. The value of a key-word argument will be put in place of the
-		key surrounded by brackets. See the Python documentation for
-		``str.format`` for more details.
+	exception, should a stack trace be printed?
+	:param kwargs: Key-word arguments. These are inserted in the message body.
+	The value of a key-word argument will be put in place of the key surrounded
+	by brackets. See the Python documentation for ``str.format`` for more
+	details.
 	"""
 	substituted = message.format(**kwargs) #Substitute all arguments into the message.
-	loggers = loggertype.logger_registrar.get_all_loggers()
+	loggers = luna.plugins.plugins_by_type["logger"]
 	stack_trace = []
 	exception = None
 	if include_stack_trace:
@@ -224,7 +224,7 @@ def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 			exception = sys.exc_info()[1]
 	for logger in loggers:
 		if Level.WARNING in _logger_levels[logger]:
-			loggers[logger].warning(substituted, title, stack_trace, exception)
+			loggers[logger]["logger"]["warning"](substituted, title, stack_trace, exception)
 	if not loggers: #There are no loggers.
 		if title != "Warning": #The word "Warning" is already put there by the logger.
 			substituted = title + ": " + substituted

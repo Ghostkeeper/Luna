@@ -33,7 +33,6 @@ def metadata():
 			"type_name": "logger",
 			"api": loggertype.log,
 			"register": loggertype.logger_registrar.register,
-			"unregister": loggertype.logger_registrar.unregister,
 			"validate_metadata": loggertype.logger_registrar.validate_metadata
 		}
 	}
