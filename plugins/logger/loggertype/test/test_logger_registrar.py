@@ -18,11 +18,13 @@ def _arbitrary_function(x, y):
 	"""
 	A function to provide in test metadata.
 
+	Since the validation should never actually call functions, this function
+	just raises a validation error.
+
 	:param x: The first argument.
 	:param y: The second argument.
-	:return The product of the two arguments.
 	"""
-	return x * y
+	raise MetadataValidationError("The metadata validation called a function of the API.")
 
 class _CallableObject:
 	"""
