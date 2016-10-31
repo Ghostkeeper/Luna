@@ -37,7 +37,7 @@ def metadata():
 		}
 	}
 
-def register(identity, logger_metadata):
+def register(identity, logger_metadata): #pylint: disable=unused-argument
 	"""
 	Sets the log levels of a new plug-in to the defaults.
 
