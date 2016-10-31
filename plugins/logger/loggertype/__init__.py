@@ -12,7 +12,7 @@ The plug-in registers an API to call upon the loggers to log messages.
 """
 
 import loggertype.log #The API for other plug-ins to use loggers with.
-import loggertype.logger_registrar #Where logger plug-ins must register.
+import luna.plugins #To raise a MetadataValidationError if the metadata is invalid.
 
 def metadata():
 	"""
@@ -32,7 +32,40 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "logger",
 			"api": loggertype.log,
-			"register": loggertype.logger_registrar.register,
-			"validate_metadata": loggertype.logger_registrar.validate_metadata
+			"register": register,
+			"validate_metadata": validate_metadata
 		}
 	}
+
+def register(identity, metadata):
+	"""
+	Sets the log levels of a new plug-in to the defaults.
+
+	:param identity: The identity of the plug-in to register.
+	:param metadata: The metadata of a logger plug-in.
+	"""
+	api = luna.plugins.api("logger") #Cache.
+	api.set_levels(levels={api.Level.ERROR, api.Level.CRITICAL, api.Level.WARNING, api.Level.INFO}, identity=identity) #Set the default log levels.
+
+def validate_metadata(metadata):
+	"""
+	Validates whether the specified metadata is valid for logger plug-ins.
+
+	Logger's metadata must have a ``logger`` field, which must contain five
+	entries: ``critical``, ``debug``, ``error``, ``info`` and ``warning``. These
+	entries must contain callable objects (such as functions).
+
+	:param metadata: The metadata to validate.
+	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
+	"""
+	if "logger" not in metadata:
+		raise luna.plugins.MetadataValidationError("This is not a logger plug-in.")
+	required_functions = {"critical", "debug", "error", "info", "warning"}
+	try:
+		if not required_functions <= metadata["logger"].keys(): #All functions must be present.
+			raise luna.plugins.MetadataValidationError("The logger specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["logger"].keys())))
+		for function_name in required_functions:
+			if not callable(metadata["logger"][function_name]): #Each must be a callable object (such as a function).
+				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
+	except (AttributeError, TypeError): #Not a dictionary.
+		raise luna.plugins.MetadataValidationError("The logger metadata is not a dictionary.")

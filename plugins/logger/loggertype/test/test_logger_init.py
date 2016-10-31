@@ -5,12 +5,12 @@
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
 """
-Tests the behaviour of the registrar that registers logger plug-ins.
+Tests the behaviour of the registration and validation functions for loggers.
 """
 
 import functools #To test filling in partials via metadata.
 
-import loggertype.logger_registrar #The module we're testing.
+import loggertype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.test_case #For parametrised tests.
 
@@ -56,9 +56,10 @@ class _AlmostDictionary:
 		"""
 		return dir(self).keys()
 
-class TestLoggerRegistrar(luna.test_case.TestCase):
+class TestLoggerType(luna.test_case.TestCase):
 	"""
-	Tests the behaviour of the registrar that registers logger plug-ins.
+	Tests the behaviour of the registration and validation functions for
+	loggers.
 	"""
 
 	def _arbitrary_method(self):
@@ -103,7 +104,7 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 
 		:param metadata: Correct metadata.
 		"""
-		loggertype.logger_registrar.validate_metadata(metadata) #Should not give an exception.
+		loggertype.validate_metadata(metadata) #Should not give an exception.
 
 	@luna.test_case.parametrise({
 		"no_logger": {
@@ -170,4 +171,4 @@ class TestLoggerRegistrar(luna.test_case.TestCase):
 		:param metadata: Incorrect metadata.
 		"""
 		with self.assertRaises(luna.plugins.MetadataValidationError): #Should give this exception.
-			loggertype.logger_registrar.validate_metadata(metadata)
+			loggertype.validate_metadata(metadata)
