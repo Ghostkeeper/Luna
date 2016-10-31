@@ -74,7 +74,13 @@ This is a named tuple consisting of the following fields:
 	this type.
 """
 
-class MetadataValidationError(Exception):
+class PluginError(Exception):
+	"""
+	Marker exception to indicate that something went wrong in the plug-in
+	system.
+	"""
+
+class MetadataValidationError(PluginError):
 	"""
 	Marker exception to indicate that the metadata of a plug-in is invalid.
 	"""
