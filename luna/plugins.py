@@ -36,7 +36,7 @@ All plug-ins, by their identities.
 This also includes all plug-ins that are not registered.
 """
 
-plugins_by_type = {}
+plugins_by_type = {} #pylint: disable=C0103
 """
 All plug-ins, indexed by their types.
 
