@@ -103,8 +103,7 @@ def activate(identity):
 	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
 	for candidate_type in candidate_types:
 		_register(identity, candidate_type)
-	else: #All registration succeeded.
-		api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
+	api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
 
 def add_plugin_location(location):
 	"""
