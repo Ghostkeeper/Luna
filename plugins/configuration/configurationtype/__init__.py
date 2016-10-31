@@ -33,8 +33,6 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "configuration",
 			"api": configurationtype.configuration,
-			"register": configurationtype.configuration_registrar.register,
-			"unregister": configurationtype.configuration_registrar.unregister,
 			"validate_metadata": configurationtype.configuration_registrar.validate_metadata
 		}
 	}
