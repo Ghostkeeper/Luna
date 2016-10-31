@@ -17,8 +17,8 @@ storage intended is not based on URI, a plug-in may have to emulate it and
 devise a custom scheme for the URI.
 """
 
+import luna.plugins
 import storagetype.storage #The API for other plug-ins to use storage with.
-import storagetype.storage_registrar #Where storage plug-ins must register.
 
 def metadata():
 	"""
@@ -38,6 +38,30 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "storage",
 			"api": storagetype.storage,
-			"validate_metadata": storagetype.storage_registrar.validate_metadata
+			"validate_metadata": validate_metadata
 		}
 	}
+
+def validate_metadata(metadata):
+	"""
+	Validates whether the specified metadata is valid for storage plug-ins.
+
+	Storage metadata must have a ``storage`` entry, which must contain six
+	entries: ``can_read``, ``can_write``, ``delete``, ``exists``, ``move``,
+	``read`` and ``write``. These entries must contain callable objects (such as
+	functions).
+
+	:param metadata: The metadata to validate.
+	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
+	"""
+	if "storage" not in metadata:
+		raise luna.plugins.MetadataValidationError("This is not a storage plug-in.")
+	required_functions = {"can_read", "can_write", "delete", "exists", "move", "read", "write"}
+	try:
+		if not required_functions <= metadata["storage"].keys():
+			raise luna.plugins.MetadataValidationError("The storage specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["storage"].keys())))
+		for function_name in required_functions:
+			if not callable(metadata["storage"][function_name]): #Each must be a callable object (such as a function).
+				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
+	except (AttributeError, TypeError): #Not a dictionary.
+		raise luna.plugins.MetadataValidationError("The storage metadata is not a dictionary.")
