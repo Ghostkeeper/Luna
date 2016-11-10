@@ -29,8 +29,10 @@ def can_read(uri):
 
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can read from the specified URI, or
-		``False`` if it can't.
+	``False`` if it can't.
 	"""
+	if uri is None:
+		raise ValueError("Provided URI is None.")
 	try:
 		return urllib.parse.urlparse(uri).scheme == "file" #Can only read from file schemes.
 	except ValueError: #Badly-formed IPv6 address.
@@ -45,8 +47,10 @@ def can_write(uri):
 
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can write to the specified URI, or
-		``False`` if it can't.
+	``False`` if it can't.
 	"""
+	if uri is None:
+		raise ValueError("Provided URI is None.")
 	try:
 		return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
 	except ValueError: #Badly-formed IPv6 address.
