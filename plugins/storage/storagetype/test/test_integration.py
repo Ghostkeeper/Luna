@@ -9,12 +9,12 @@ Tests for each storage plug-in whether it properly implements the storage
 interface.
 """
 
-import os.path #To get the plug-in directory.
+import plugins #The main plug-ins directory.
 import luna.plugins #To get the plug-ins to test with.
 import luna.test_case
 
-plugin_base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..") #The main directory containing this plug-in (as well as all others we're hoping to find).
-luna.plugins.add_plugin_location(plugin_base)
+for plugin_path in plugins.__path__:
+	luna.plugins.add_plugin_location(plugin_path)
 luna.plugins.discover()
 
 #Dynamically prepare the parameters for the parametrised tests.
