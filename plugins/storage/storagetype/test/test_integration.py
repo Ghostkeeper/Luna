@@ -24,34 +24,34 @@ luna.plugins.discover()
 _can_read_parameters = {}
 for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
 	can_read_function = metadata["storage"]["can_read"]
-	_can_read_parameters["abs_path_" + identity] =     { "can_read": can_read_function, "uri": "file:/path/to/file.ext" }
-	_can_read_parameters["full_path_" + identity] =    { "can_read": can_read_function, "uri": "frag://auth/path/path/file.ext?query=value#fragment" }
-	_can_read_parameters["relative_" + identity] =     { "can_read": can_read_function, "uri": "relative/path/file.ext" }
-	_can_read_parameters["backslash_" + identity] =    { "can_read": can_read_function, "uri": "\\\\path\\with\\backslashes" }
-	_can_read_parameters["invalid_auth_" + identity] = { "can_read": can_read_function, "uri": "https://[invalid_auth/file.ext" } #urllib.parse.parseurl gives a ValueError here.
-	_can_read_parameters["empty_" + identity] =        { "can_read": can_read_function, "uri": "" }
+	_can_read_parameters["abs_path_" + identity] =     {"can_read": can_read_function, "uri": "file:/path/to/file.ext"}
+	_can_read_parameters["full_path_" + identity] =    {"can_read": can_read_function, "uri": "frag://auth/path/path/file.ext?query=value#fragment"}
+	_can_read_parameters["relative_" + identity] =     {"can_read": can_read_function, "uri": "relative/path/file.ext"}
+	_can_read_parameters["backslash_" + identity] =    {"can_read": can_read_function, "uri": "\\\\path\\with\\backslashes"}
+	_can_read_parameters["invalid_auth_" + identity] = {"can_read": can_read_function, "uri": "https://[invalid_auth/file.ext"} #urllib.parse.parseurl gives a ValueError here.
+	_can_read_parameters["empty_" + identity] =        {"can_read": can_read_function, "uri": ""}
 
 _can_read_exception_parameters = {}
 for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
 	can_read_function = metadata["storage"]["can_read"]
-	_can_read_exception_parameters["number_" + identity] = { "can_read": can_read_function, "uri": 42, "exception": Exception }
-	_can_read_exception_parameters["none_" + identity] =   { "can_read": can_read_function, "uri": None, "exception": Exception }
+	_can_read_exception_parameters["number_" + identity] = {"can_read": can_read_function, "uri": 42, "exception": Exception}
+	_can_read_exception_parameters["none_" + identity] =   {"can_read": can_read_function, "uri": None, "exception": Exception}
 
 _can_write_parameters = {}
 for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
 	can_write_function = metadata["storage"]["can_write"]
-	_can_write_parameters["abs_path_" + identity] =     { "can_write": can_write_function, "uri": "file:/path/to/file.ext" }
-	_can_write_parameters["full_path_" + identity] =    { "can_write": can_write_function, "uri": "frag://auth/path/path/file.ext?query=value#fragment" }
-	_can_write_parameters["relative_" + identity] =     { "can_write": can_write_function, "uri": "relative/path/file.ext" }
-	_can_write_parameters["backslash_" + identity] =    { "can_write": can_write_function, "uri": "\\\\path\\with\\backslashes" }
-	_can_write_parameters["invalid_auth_" + identity] = { "can_write": can_write_function, "uri": "https://[invalid_auth/file.ext" } #urllib.parse.parseurl gives a ValueError here.
-	_can_write_parameters["empty_" + identity] =        { "can_write": can_write_function, "uri": "" }
+	_can_write_parameters["abs_path_" + identity] =     {"can_write": can_write_function, "uri": "file:/path/to/file.ext"}
+	_can_write_parameters["full_path_" + identity] =    {"can_write": can_write_function, "uri": "frag://auth/path/path/file.ext?query=value#fragment"}
+	_can_write_parameters["relative_" + identity] =     {"can_write": can_write_function, "uri": "relative/path/file.ext"}
+	_can_write_parameters["backslash_" + identity] =    {"can_write": can_write_function, "uri": "\\\\path\\with\\backslashes"}
+	_can_write_parameters["invalid_auth_" + identity] = {"can_write": can_write_function, "uri": "https://[invalid_auth/file.ext"} #urllib.parse.parseurl gives a ValueError here.
+	_can_write_parameters["empty_" + identity] =        {"can_write": can_write_function, "uri": ""}
 
 _can_write_exception_parameters = {}
 for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
 	can_write_function = metadata["storage"]["can_write"]
-	_can_write_exception_parameters["number_" + identity] = { "can_write": can_write_function, "uri": 42, "exception": Exception }
-	_can_write_exception_parameters["none_" + identity]   = { "can_write": can_write_function, "uri": None, "exception": Exception }
+	_can_write_exception_parameters["number_" + identity] = {"can_write": can_write_function, "uri": 42, "exception": Exception}
+	_can_write_exception_parameters["none_" + identity]   = {"can_write": can_write_function, "uri": None, "exception": Exception}
 
 class TestIntegration(luna.test_case.TestCase):
 	"""
