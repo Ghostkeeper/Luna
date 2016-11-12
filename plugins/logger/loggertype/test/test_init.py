@@ -14,70 +14,22 @@ import loggertype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.test_case #For parametrised tests.
 
-def _arbitrary_function(*args, **kwargs):
-	"""
-	A function to provide in test metadata.
-
-	Since the validation should never actually call functions, this function
-	just raises a validation error.
-
-	:param args: Positional arguments.
-	:param kwargs: Key-word arguments.
-	"""
-	raise luna.plugins.MetadataValidationError("The metadata validation called a function of the API (with parameters {args} and key-word arguments {kwargs}).".format(args=args, kwargs=kwargs))
-
-class _CallableObject:
-	"""
-	An object to provide in test metadata which has a __call__ function.
-	"""
-	def __call__(self, *args, **kwargs):
-		"""
-		Calls the callable object, which does nothing.
-
-		:param args: Arguments to call the object with.
-		:param kwargs: Key-word arguments to call the object with.
-		"""
-		pass
-
-class _AlmostDictionary:
-	"""
-	This class looks a lot like a dictionary, but isn't.
-
-	It has no element look-up. It is used to check how well the validator
-	handles errors in case the argument just happens to have a ``keys`` method.
-	In this case it quacks like a duck, and walks sorta like a duck, but has no
-	duck-waggle, so to say.
-	"""
-	def keys(self):
-		"""
-		Pretends to return the keys of a dictionary.
-
-		:return: A list of keys.
-		"""
-		return dir(self).keys()
-
 class TestLoggerType(luna.test_case.TestCase):
 	"""
 	Tests the behaviour of the registration and validation functions for
 	loggers.
 	"""
 
-	def _arbitrary_method(self):
-		"""
-		A method to provide in test metadata.
-		"""
-		pass
-
 	#pylint: disable=no-self-use
 	@luna.test_case.parametrise({
 		"functions": {
 			"metadata": {
 				"logger": {
-					"critical": _arbitrary_function,
-					"debug": _arbitrary_function,
-					"error": _arbitrary_function,
-					"info": _arbitrary_function,
-					"warning": _arbitrary_function
+					"critical": luna.test_case.arbitrary_function,
+					"debug": luna.test_case.arbitrary_function,
+					"error": luna.test_case.arbitrary_function,
+					"info": luna.test_case.arbitrary_function,
+					"warning": luna.test_case.arbitrary_function
 				}
 			}
 		},
@@ -85,10 +37,10 @@ class TestLoggerType(luna.test_case.TestCase):
 			"metadata": {
 				"logger": {
 					"critical": print, #A built-in.
-					"debug": _arbitrary_method, #A normal function.
-					"error": _CallableObject, #A callable object.
+					"debug": luna.test_case.TestCase.arbitrary_method, #A normal function.
+					"error": luna.test_case.CallableObject, #A callable object.
 					"info": lambda x: x, #A lambda function.
-					"warning": functools.partial(_arbitrary_function, 3) #A partial function.
+					"warning": functools.partial(luna.test_case.arbitrary_function, 3) #A partial function.
 				}
 			}
 		}
@@ -129,7 +81,7 @@ class TestLoggerType(luna.test_case.TestCase):
 		},
 		"almost_dictionary": {
 			"metadata": {
-				"logger": _AlmostDictionary()
+				"logger": luna.test_case.AlmostDictionary()
 			}
 		},
 		"empty": {
@@ -140,21 +92,21 @@ class TestLoggerType(luna.test_case.TestCase):
 		"missing_warning": { #Doesn't have the "warning" function.
 			"metadata": {
 				"logger": {
-					"critical": _arbitrary_function,
-					"debug": _arbitrary_function,
-					"error": _arbitrary_function,
-					"info": _arbitrary_function
+					"critical": luna.test_case.arbitrary_function,
+					"debug": luna.test_case.arbitrary_function,
+					"error": luna.test_case.arbitrary_function,
+					"info": luna.test_case.arbitrary_function
 				}
 			}
 		},
 		"not_callable": {
 			"metadata": {
 				"logger": {
-					"critical": _arbitrary_function,
+					"critical": luna.test_case.arbitrary_function,
 					"debug": "This is not a callable object.",
-					"error": _arbitrary_function,
-					"info": _arbitrary_function,
-					"warning": _arbitrary_function
+					"error": luna.test_case.arbitrary_function,
+					"info": luna.test_case.arbitrary_function,
+					"warning": luna.test_case.arbitrary_function
 				}
 			}
 		}

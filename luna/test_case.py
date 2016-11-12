@@ -47,7 +47,18 @@ class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 	Extension of ``unittest.TestCase`` that adds all features that Luna's test
 	cases need.
 	"""
-	pass #All special logic is currently done by the metaclass.
+
+	def arbitrary_method(self, *args, **kwargs):
+		"""
+		A bound method to test functional input with.
+
+		The method should not be called by the test. Calling the method raises
+		an ``AssertionError`` to indicate that the test failed.
+
+		:param args: Positional arguments.
+		:param kwargs: Key-word arguments.
+		"""
+		raise AssertionError("The arbitrary method was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
 
 def parametrise(parameters):
 	"""
@@ -71,3 +82,48 @@ def parametrise(parameters):
 		original_function.parameters = parameters
 		return original_function
 	return parametrise_decorator
+
+def arbitrary_function(*args, **kwargs):
+	"""
+	A function to test functional input with.
+
+	The function should not be called by the test. Calling the function raises
+	an ``AssertionError`` to indicate that the test failed.
+
+	:param args: Positional arguments.
+	:param kwargs: Key-word arguments.
+	"""
+	raise AssertionError("The arbitrary function was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+
+class CallableObject:
+	"""
+	An object to test functional input with. It has a __call__ function.
+	"""
+	def __call__(self, *args, **kwargs):
+		"""
+		Calls the callable object. This raises an ``AssertionError``.
+
+		The object should not be called by the test. Calling the object raises
+		an ``AssertionError`` to indicate that the test failed.
+
+		:param args: Arguments to call the object with.
+		:param kwargs: Key-word arguments to call the object with.
+		"""
+		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+
+class AlmostDictionary:
+	"""
+	This class looks a lot like a dictionary, but isn't.
+
+	It has no element look-up. It can be used to check how well the a tested
+	subject handles errors in case the argument just happens to have a ``keys``
+	method. In this case it quacks like a duck, and walks sorta like a duck, but
+	has no duck-waggle, so to say.
+	"""
+	def keys(self):
+		"""
+		Pretends to return the keys of a dictionary.
+
+		:return: A list of strings that look like the keys of the dictionary.
+		"""
+		return dir(self).keys()
