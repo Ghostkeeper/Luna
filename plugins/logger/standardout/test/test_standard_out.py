@@ -11,10 +11,10 @@ Tests the behaviour of the standard_out logger implementation.
 import io #Provides a replacement I/O channel to mock stdout.
 import sys #To capture stdout.
 
-import luna.test_case #To get parametrised tests.
+import luna.tests #To get parametrised tests.
 import standardout.standard_out #The module to test.
 
-class TestStandardOut(luna.test_case.TestCase):
+class TestStandardOut(luna.tests.TestCase):
 	"""
 	Tests the behaviour of the standard_out logger implementation.
 	"""
@@ -44,7 +44,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		sys.stdout = self._actual_stdout
 		self._mock_stdout.close()
 
-	@luna.test_case.parametrise(_test_messages)
+	@luna.tests.parametrise(_test_messages)
 	def test_critical(self, message, title):
 		"""
 		Tests printing a critical message.
@@ -56,7 +56,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
 
-	@luna.test_case.parametrise(_test_messages)
+	@luna.tests.parametrise(_test_messages)
 	def test_debug(self, message, title):
 		"""
 		Tests printing a debug message.
@@ -68,7 +68,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
 
-	@luna.test_case.parametrise(_test_messages)
+	@luna.tests.parametrise(_test_messages)
 	def test_error(self, message, title):
 		"""
 		Tests printing an error message.
@@ -80,7 +80,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertIn(title, self._mock_stdout.getvalue())
 		self.assertIn(message, self._mock_stdout.getvalue())
 
-	@luna.test_case.parametrise(_test_messages)
+	@luna.tests.parametrise(_test_messages)
 	def test_info(self, message, title):
 		"""
 		Tests printing an information message.
@@ -111,7 +111,7 @@ class TestStandardOut(luna.test_case.TestCase):
 		self.assertGreater(second_position, first_position, msg="The second message comes before the first message.")
 		self.assertGreater(third_position, second_position, msg="The third message comes before the second message.")
 
-	@luna.test_case.parametrise(_test_messages)
+	@luna.tests.parametrise(_test_messages)
 	def test_warning(self, message, title):
 		"""
 		Tests printing a warning message.

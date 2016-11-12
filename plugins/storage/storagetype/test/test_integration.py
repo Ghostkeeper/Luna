@@ -11,7 +11,7 @@ interface.
 
 import plugins #The main plug-ins directory.
 import luna.plugins #To get the plug-ins to test with.
-import luna.test_case
+import luna.tests
 
 for plugin_path in plugins.__path__:
 	luna.plugins.add_plugin_location(plugin_path)
@@ -53,13 +53,13 @@ for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
 	_can_write_exception_parameters["number_" + identity] = {"can_write": can_write_function, "uri": 42, "exception": Exception}
 	_can_write_exception_parameters["none_" + identity]   = {"can_write": can_write_function, "uri": None, "exception": Exception}
 
-class TestIntegration(luna.test_case.TestCase):
+class TestIntegration(luna.tests.TestCase):
 	"""
 	Tests for each storage plug-in whether it properly implements the storage
 	interface.
 	"""
 
-	@luna.test_case.parametrise(_can_read_parameters)
+	@luna.tests.parametrise(_can_read_parameters)
 	def test_can_read(self, can_read, uri):
 		"""
 		Tests the can_read function with normal parameters.
@@ -71,7 +71,7 @@ class TestIntegration(luna.test_case.TestCase):
 		"""
 		self.assertIsInstance(can_read(uri), bool) #These must always give True or False as answer.
 
-	@luna.test_case.parametrise(_can_read_exception_parameters)
+	@luna.tests.parametrise(_can_read_exception_parameters)
 	def test_can_read_exception(self, can_read, uri, exception):
 		"""
 		Tests the can_read function with faulty parameters.
@@ -85,7 +85,7 @@ class TestIntegration(luna.test_case.TestCase):
 		with self.assertRaises(exception):
 			can_read(uri)
 
-	@luna.test_case.parametrise(_can_write_parameters)
+	@luna.tests.parametrise(_can_write_parameters)
 	def test_can_write(self, can_write, uri):
 		"""
 		Tests the can_write function with normal parameters.
@@ -97,7 +97,7 @@ class TestIntegration(luna.test_case.TestCase):
 		"""
 		self.assertIsInstance(can_write(uri), bool) #These must always give True or False as answer.
 
-	@luna.test_case.parametrise(_can_write_exception_parameters)
+	@luna.tests.parametrise(_can_write_exception_parameters)
 	def test_can_write_exception(self, can_write, uri, exception):
 		"""
 		Tests the can_write function with faulty parameters.

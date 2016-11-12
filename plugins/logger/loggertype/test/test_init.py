@@ -12,24 +12,24 @@ import functools #To test filling in partials via metadata.
 
 import loggertype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
-import luna.test_case #For parametrised tests.
+import luna.tests #For parametrised tests.
 
-class TestLoggerType(luna.test_case.TestCase):
+class TestLoggerType(luna.tests.TestCase):
 	"""
 	Tests the behaviour of the registration and validation functions for
 	loggers.
 	"""
 
 	#pylint: disable=no-self-use
-	@luna.test_case.parametrise({
+	@luna.tests.parametrise({
 		"functions": {
 			"metadata": {
 				"logger": {
-					"critical": luna.test_case.arbitrary_function,
-					"debug": luna.test_case.arbitrary_function,
-					"error": luna.test_case.arbitrary_function,
-					"info": luna.test_case.arbitrary_function,
-					"warning": luna.test_case.arbitrary_function
+					"critical": luna.tests.arbitrary_function,
+					"debug": luna.tests.arbitrary_function,
+					"error": luna.tests.arbitrary_function,
+					"info": luna.tests.arbitrary_function,
+					"warning": luna.tests.arbitrary_function
 				}
 			}
 		},
@@ -37,10 +37,10 @@ class TestLoggerType(luna.test_case.TestCase):
 			"metadata": {
 				"logger": {
 					"critical": print, #A built-in.
-					"debug": luna.test_case.TestCase.arbitrary_method, #A normal function.
-					"error": luna.test_case.CallableObject, #A callable object.
+					"debug": luna.tests.TestCase.arbitrary_method, #A normal function.
+					"error": luna.tests.CallableObject, #A callable object.
 					"info": lambda x: x, #A lambda function.
-					"warning": functools.partial(luna.test_case.arbitrary_function, 3) #A partial function.
+					"warning": functools.partial(luna.tests.arbitrary_function, 3) #A partial function.
 				}
 			}
 		}
@@ -58,7 +58,7 @@ class TestLoggerType(luna.test_case.TestCase):
 		"""
 		loggertype.validate_metadata(metadata) #Should not give an exception.
 
-	@luna.test_case.parametrise({
+	@luna.tests.parametrise({
 		"no_logger": {
 			"metadata": {
 				"not_a_logger": {}
@@ -81,7 +81,7 @@ class TestLoggerType(luna.test_case.TestCase):
 		},
 		"almost_dictionary": {
 			"metadata": {
-				"logger": luna.test_case.AlmostDictionary()
+				"logger": luna.tests.AlmostDictionary()
 			}
 		},
 		"empty": {
@@ -92,21 +92,21 @@ class TestLoggerType(luna.test_case.TestCase):
 		"missing_warning": { #Doesn't have the "warning" function.
 			"metadata": {
 				"logger": {
-					"critical": luna.test_case.arbitrary_function,
-					"debug": luna.test_case.arbitrary_function,
-					"error": luna.test_case.arbitrary_function,
-					"info": luna.test_case.arbitrary_function
+					"critical": luna.tests.arbitrary_function,
+					"debug": luna.tests.arbitrary_function,
+					"error": luna.tests.arbitrary_function,
+					"info": luna.tests.arbitrary_function
 				}
 			}
 		},
 		"not_callable": {
 			"metadata": {
 				"logger": {
-					"critical": luna.test_case.arbitrary_function,
+					"critical": luna.tests.arbitrary_function,
 					"debug": "This is not a callable object.",
-					"error": luna.test_case.arbitrary_function,
-					"info": luna.test_case.arbitrary_function,
-					"warning": luna.test_case.arbitrary_function
+					"error": luna.tests.arbitrary_function,
+					"info": luna.tests.arbitrary_function,
+					"warning": luna.tests.arbitrary_function
 				}
 			}
 		}

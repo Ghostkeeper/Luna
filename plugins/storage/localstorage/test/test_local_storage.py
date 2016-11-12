@@ -19,7 +19,7 @@ import io #To get the default buffer size.
 import os #Cleaning up test files afterwards, and getting file size to design a good test.
 import unittest.mock #To replace file reading/writing with something that simulates external influence.
 
-import luna.test_case #To get parametrised tests.
+import luna.tests #To get parametrised tests.
 import localstorage.local_storage #The module we're testing.
 
 _unsafe_target_file = "test.txt"
@@ -206,7 +206,7 @@ def _open_simulate_concurrency(file, *args, **kwargs):
 		original_io_stream = _original_open(file, buffering=0, *args, **kwargs)
 	return ConcurrentIOWrapper(original_io_stream, b"1234567890")
 
-class TestLocalStorage(luna.test_case.TestCase):
+class TestLocalStorage(luna.tests.TestCase):
 	"""
 	Tests the behaviour of the local_storage storage implementation.
 	"""
@@ -272,7 +272,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		if os.path.isfile(_unsafe_target_file):
 			os.remove(_unsafe_target_file)
 
-	@luna.test_case.parametrise(_good_uris)
+	@luna.tests.parametrise(_good_uris)
 	def test_can_read(self, uri):
 		"""
 		Tests whether the plug-in says it can read files that it should be able
@@ -283,7 +283,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertTrue(localstorage.local_storage.can_read(uri))
 
-	@luna.test_case.parametrise(_good_uris)
+	@luna.tests.parametrise(_good_uris)
 	def test_can_write(self, uri):
 		"""
 		Tests whether the plug-in says it can write files that it should be able
@@ -294,7 +294,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertTrue(localstorage.local_storage.can_write(uri))
 
-	@luna.test_case.parametrise(_bad_uris)
+	@luna.tests.parametrise(_bad_uris)
 	def test_cannot_read(self, uri):
 		"""
 		Tests whether the plug-in says it cannot read files that it should not
@@ -305,7 +305,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.can_read(uri))
 
-	@luna.test_case.parametrise(_bad_uris)
+	@luna.tests.parametrise(_bad_uris)
 	def test_cannot_write(self, uri):
 		"""
 		Tests whether the plug-in says it cannot write files that it should not
@@ -348,7 +348,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to be existing, though it shouldn't exist.".format(file_name=_unsafe_target_file)) #If stuff was cleaned up properly after each test, this should not exist.
 
-	@luna.test_case.parametrise(_test_bytes)
+	@luna.tests.parametrise(_test_bytes)
 	def test_read(self, content):
 		"""
 		Tests whether reading a simple file is successful.
@@ -406,7 +406,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 				b"1234567890"
 			], result.decode("utf-8") + " is not a snapshot of the file at any point in time, and as such is not atomic.")
 
-	@luna.test_case.parametrise(_test_bytes)
+	@luna.tests.parametrise(_test_bytes)
 	def test_write(self, content):
 		"""
 		Tests whether writing a simple file is successful.
@@ -433,7 +433,7 @@ class TestLocalStorage(luna.test_case.TestCase):
 			result = written_file_handle.read()
 			self.assertEqual(result, test_bytes, "File write is not atomic.")
 
-	@luna.test_case.parametrise(_test_bytes)
+	@luna.tests.parametrise(_test_bytes)
 	def test_write_existing(self, content):
 		"""
 		Tests writing to a file that already exists.

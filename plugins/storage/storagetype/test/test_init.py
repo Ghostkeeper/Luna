@@ -11,27 +11,27 @@ Tests the behaviour of the registration and validation functions for storage.
 import functools #To test filling in partial functions via metadata.
 
 import luna.plugins #To test if something raises MetadataValidationException.
-import luna.test_case #To parametrise the tests.
+import luna.tests #To parametrise the tests.
 import storagetype #The module we're testing.
 
-class TestInit(luna.test_case.TestCase):
+class TestInit(luna.tests.TestCase):
 	"""
 	Tests the behaviour of the registration and validation functions for
 	loggers.
 	"""
 
 	#pylint: disable=no-self-use
-	@luna.test_case.parametrise({
+	@luna.tests.parametrise({
 		"functions": {
 			"metadata": {
 				"storage": {
-					"can_read": luna.test_case.arbitrary_function,
-					"can_write": luna.test_case.arbitrary_function,
-					"delete": luna.test_case.arbitrary_function,
-					"exists": luna.test_case.arbitrary_function,
-					"move": luna.test_case.arbitrary_function,
-					"read": luna.test_case.arbitrary_function,
-					"write": luna.test_case.arbitrary_function
+					"can_read": luna.tests.arbitrary_function,
+					"can_write": luna.tests.arbitrary_function,
+					"delete": luna.tests.arbitrary_function,
+					"exists": luna.tests.arbitrary_function,
+					"move": luna.tests.arbitrary_function,
+					"read": luna.tests.arbitrary_function,
+					"write": luna.tests.arbitrary_function
 				}
 			}
 		},
@@ -39,12 +39,12 @@ class TestInit(luna.test_case.TestCase):
 			"metadata": {
 				"storage": {
 					"can_read": print, #A built-in.
-					"can_write": luna.test_case.TestCase.arbitrary_method, #A normal method.
-					"delete": luna.test_case.CallableObject, #A callable object.
+					"can_write": luna.tests.TestCase.arbitrary_method, #A normal method.
+					"delete": luna.tests.CallableObject, #A callable object.
 					"exists": lambda x: x, #A lambda function.
-					"move": functools.partial(luna.test_case.arbitrary_function, 3), #A partial function.
-					"read": luna.test_case.arbitrary_function,
-					"write": luna.test_case.arbitrary_function
+					"move": functools.partial(luna.tests.arbitrary_function, 3), #A partial function.
+					"read": luna.tests.arbitrary_function,
+					"write": luna.tests.arbitrary_function
 				}
 			}
 		}
@@ -62,7 +62,7 @@ class TestInit(luna.test_case.TestCase):
 		"""
 		storagetype.validate_metadata(metadata) #Should not give an exception.
 
-	@luna.test_case.parametrise({
+	@luna.tests.parametrise({
 		"no_storage": {
 			"metadata": {
 				"not_storage": {}
@@ -85,7 +85,7 @@ class TestInit(luna.test_case.TestCase):
 		},
 		"almost_dictionary": {
 			"metadata": {
-				"storage": luna.test_case.AlmostDictionary()
+				"storage": luna.tests.AlmostDictionary()
 			}
 		},
 		"empty": {
@@ -96,11 +96,11 @@ class TestInit(luna.test_case.TestCase):
 		"missing_write": { #Doesn't have the "write" function.
 			"metadata": {
 				"storage": {
-					"can_read": luna.test_case.arbitrary_function,
-					"can_write": luna.test_case.arbitrary_function,
-					"delete": luna.test_case.arbitrary_function,
-					"exists": luna.test_case.arbitrary_function,
-					"read": luna.test_case.arbitrary_function,
+					"can_read": luna.tests.arbitrary_function,
+					"can_write": luna.tests.arbitrary_function,
+					"delete": luna.tests.arbitrary_function,
+					"exists": luna.tests.arbitrary_function,
+					"read": luna.tests.arbitrary_function,
 					#"write" is missing.
 				}
 			}
@@ -108,12 +108,12 @@ class TestInit(luna.test_case.TestCase):
 		"not_callable": {
 			"metadata": {
 				"storage": {
-					"can_read": luna.test_case.arbitrary_function,
-					"can_write": luna.test_case.arbitrary_function,
+					"can_read": luna.tests.arbitrary_function,
+					"can_write": luna.tests.arbitrary_function,
 					"delete": "This is not a callable object.",
-					"exists": luna.test_case.arbitrary_function,
-					"read": luna.test_case.arbitrary_function,
-					"write": luna.test_case.arbitrary_function
+					"exists": luna.tests.arbitrary_function,
+					"read": luna.tests.arbitrary_function,
+					"write": luna.tests.arbitrary_function
 				}
 			}
 		}
