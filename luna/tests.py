@@ -16,6 +16,74 @@ introduce an external dependency.
 import functools #For partial functions and wrapper functions.
 import unittest #For unittest's test case, which we extend.
 
+def arbitrary_function(*args, **kwargs):
+	"""
+	A function to test functional input with.
+
+	The function should not be called by the test. Calling the function raises
+	an ``AssertionError`` to indicate that the test failed.
+
+	:param args: Positional arguments.
+	:param kwargs: Key-word arguments.
+	"""
+	raise AssertionError("The arbitrary function was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+
+def parametrise(parameters):
+	"""
+	Causes a test to run multiple times with different parameters.
+
+	This only works for functions inside a `TestCase` class.
+
+	:param parameters: A dictionary containing individual tests. The keys in the
+		dictionary act as a name for the test, which is appended to the function
+		name. The values of the dictionary are dictionaries themselves. These
+		act as the parameters that are filled into the function.
+	:return: A parametrised test case.
+	"""
+	def parametrise_decorator(original_function):
+		"""
+		Adds the parameters with which the test must be run to the function.
+
+		:param original_function: The function to parametrise.
+		:return: A function with the parameters attached.
+		"""
+		original_function.parameters = parameters
+		return original_function
+	return parametrise_decorator
+
+class AlmostDictionary:
+	"""
+	This class looks a lot like a dictionary, but isn't.
+
+	It has no element look-up. It can be used to check how well the a tested
+	subject handles errors in case the argument just happens to have a ``keys``
+	method. In this case it quacks like a duck, and walks sorta like a duck, but
+	has no duck-waggle, so to say.
+	"""
+	def keys(self):
+		"""
+		Pretends to return the keys of a dictionary.
+
+		:return: A list of strings that look like the keys of the dictionary.
+		"""
+		return dir(self).keys()
+
+class CallableObject:
+	"""
+	An object to test functional input with. It has a __call__ function.
+	"""
+	def __call__(self, *args, **kwargs):
+		"""
+		Calls the callable object. This raises an ``AssertionError``.
+
+		The object should not be called by the test. Calling the object raises
+		an ``AssertionError`` to indicate that the test failed.
+
+		:param args: Arguments to call the object with.
+		:param kwargs: Key-word arguments to call the object with.
+		"""
+		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+
 class _TestCaseMeta(type):
 	"""
 	Metaclass to capture all parametrised tests and duplicate them for each of
@@ -59,71 +127,3 @@ class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 		:param kwargs: Key-word arguments.
 		"""
 		raise AssertionError("The arbitrary method was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
-
-def parametrise(parameters):
-	"""
-	Causes a test to run multiple times with different parameters.
-
-	This only works for functions inside a `TestCase` class.
-
-	:param parameters: A dictionary containing individual tests. The keys in the
-		dictionary act as a name for the test, which is appended to the function
-		name. The values of the dictionary are dictionaries themselves. These
-		act as the parameters that are filled into the function.
-	:return: A parametrised test case.
-	"""
-	def parametrise_decorator(original_function):
-		"""
-		Adds the parameters with which the test must be run to the function.
-
-		:param original_function: The function to parametrise.
-		:return: A function with the parameters attached.
-		"""
-		original_function.parameters = parameters
-		return original_function
-	return parametrise_decorator
-
-def arbitrary_function(*args, **kwargs):
-	"""
-	A function to test functional input with.
-
-	The function should not be called by the test. Calling the function raises
-	an ``AssertionError`` to indicate that the test failed.
-
-	:param args: Positional arguments.
-	:param kwargs: Key-word arguments.
-	"""
-	raise AssertionError("The arbitrary function was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
-
-class CallableObject:
-	"""
-	An object to test functional input with. It has a __call__ function.
-	"""
-	def __call__(self, *args, **kwargs):
-		"""
-		Calls the callable object. This raises an ``AssertionError``.
-
-		The object should not be called by the test. Calling the object raises
-		an ``AssertionError`` to indicate that the test failed.
-
-		:param args: Arguments to call the object with.
-		:param kwargs: Key-word arguments to call the object with.
-		"""
-		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
-
-class AlmostDictionary:
-	"""
-	This class looks a lot like a dictionary, but isn't.
-
-	It has no element look-up. It can be used to check how well the a tested
-	subject handles errors in case the argument just happens to have a ``keys``
-	method. In this case it quacks like a duck, and walks sorta like a duck, but
-	has no duck-waggle, so to say.
-	"""
-	def keys(self):
-		"""
-		Pretends to return the keys of a dictionary.
-
-		:return: A list of strings that look like the keys of the dictionary.
-		"""
-		return dir(self).keys()
