@@ -5,7 +5,7 @@
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
 """
-Defines a helper class for test cases.
+Defines helpers for writing tests.
 
 Some of this logic is specific to Luna with its plug-in structure. The rest
 could have been imported from a more sophisticated third-party unit testing
