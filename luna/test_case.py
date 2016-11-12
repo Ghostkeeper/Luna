@@ -48,7 +48,7 @@ class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 	cases need.
 	"""
 
-	def arbitrary_method(self, *args, **kwargs):
+	def arbitrary_method(self, *args, **kwargs): #pylint: disable=no-self-use
 		"""
 		A bound method to test functional input with.
 
