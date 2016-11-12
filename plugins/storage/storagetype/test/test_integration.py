@@ -17,6 +17,9 @@ for plugin_path in plugins.__path__:
 	luna.plugins.add_plugin_location(plugin_path)
 luna.plugins.discover()
 
+#Ignore multiple spaces after assignment. It's used for outlining, dumb linter.
+#pylint: disable=C0326
+
 #Dynamically prepare the parameters for the parametrised tests.
 can_read_parameters = {}
 for identity, metadata in luna.plugins.plugins_by_type["storage"].items():
