@@ -17,20 +17,6 @@ set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version n
 #-----------------------------Global Dependencies-------------------------------
 find_package(Python REQUIRED)
 
-#-----------------------------Plug-in Directories-------------------------------
-#We need a list of these directories at multiple places, so get them here for convenience.
-set(PLUGIN_DIRECTORIES "")
-file(GLOB_RECURSE PLUGIN_INIT_FILES __init__.py) #All directories with __init__.py files.
-foreach(INIT_FILE ${PLUGIN_INIT_FILES})
-	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)
-	if(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
-		list(REMOVE_ITEM PLUGIN_INIT_FILES ${INIT_FILE}) #Exclude files in the build directory.
-	else()
-		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
-		list(APPEND PLUGIN_DIRECTORIES ${PACKAGE_DIR})
-	endif()
-endforeach()
-
 #------------------------------------Tests--------------------------------------
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
@@ -42,20 +28,25 @@ if(BUILD_TESTING)
 	file(GLOB_RECURSE PYTHON_FILES *.py)
 	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
 	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
-
-	#Plug-in unit tests.
-	foreach(PLUGIN_DIRECTORY ${PLUGIN_DIRECTORIES})
-		get_filename_component(PLUGIN_NAME ${PLUGIN_DIRECTORY} NAME)
-		get_filename_component(PARENT_DIRECTORY ${PLUGIN_DIRECTORY} DIRECTORY) #Run the test from the parent directory such that all imports are correct.
-		file(GLOB_RECURSE UNIT_TESTS RELATIVE ${PLUGIN_DIRECTORY} ${PLUGIN_DIRECTORY}/test/*.py)
-		foreach(UNIT_TEST ${UNIT_TESTS})
-			string(REGEX REPLACE "\\.py$" "" UNIT_TEST2 ${UNIT_TEST}) #Turn filename into Python module.
-			string(REGEX REPLACE "\\/" "." UNIT_TEST3 ${UNIT_TEST2})
-			add_test(NAME ${PLUGIN_NAME}.${UNIT_TEST3} COMMAND ${PYTHON_EXECUTABLE} -m unittest ${PLUGIN_NAME}.${UNIT_TEST3} WORKING_DIRECTORY ${PARENT_DIRECTORY})
-			set_tests_properties(${PLUGIN_NAME}.${UNIT_TEST3} PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
-		endforeach()
-	endforeach()
 endif()
+
+#-----------------------------Plug-in Directories-------------------------------
+#Execute the CMakeLists of every plug-in that has one.
+#We need a list of these directories at multiple places, so get them here for convenience.
+set(PLUGIN_DIRECTORIES "")
+file(GLOB_RECURSE PLUGIN_INIT_FILES __init__.py) #All directories with __init__.py files.
+foreach(INIT_FILE ${PLUGIN_INIT_FILES})
+	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)
+	if(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
+		list(REMOVE_ITEM PLUGIN_INIT_FILES ${INIT_FILE}) #Exclude files in the build directory.
+	else()
+		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
+		if(EXISTS ${PACKAGE_DIR}/CMakeLists.txt)
+			add_subdirectory(${PACKAGE_DIR})
+		endif()
+		list(APPEND PLUGIN_DIRECTORIES ${PACKAGE_DIR})
+	endif()
+endforeach()
 
 #--------------------------------Documentation----------------------------------
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
