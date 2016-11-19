@@ -4,6 +4,7 @@
 cmake_minimum_required(VERSION 3.2.3)
 project(Luna)
 include(${CMAKE_SOURCE_DIR}/cmake/FindPythonModule.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/GetMIMETypes.cmake)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 #----------------------------Application Metadata-------------------------------
@@ -45,6 +46,7 @@ foreach(INIT_FILE ${PLUGIN_INIT_FILES})
 			add_subdirectory(${PACKAGE_DIR})
 		endif()
 		list(APPEND PLUGIN_DIRECTORIES ${PACKAGE_DIR})
+		get_mime_types(${PACKAGE_DIR})
 	endif()
 endforeach()
 
