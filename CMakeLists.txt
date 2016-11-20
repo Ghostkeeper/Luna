@@ -35,7 +35,9 @@ endif()
 #Execute the CMakeLists of every plug-in that has one.
 #We need a list of these directories at multiple places, so get them here for convenience.
 set(PLUGIN_DIRECTORIES "")
-set(MIME_TYPES "")
+set(MIME_TYPES "") #MIME types.
+set(MIME_EXTENSIONS "") #Extensions for each MIME type.
+set(MIME_NAMES "") #Human-readable names for each MIME type.
 file(GLOB_RECURSE PLUGIN_INIT_FILES __init__.py) #All directories with __init__.py files.
 foreach(INIT_FILE ${PLUGIN_INIT_FILES})
 	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)

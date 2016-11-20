@@ -11,7 +11,11 @@ function(get_mime_types plugin_dir)
 		COMMAND "${PYTHON_EXECUTABLE}" "-c" "import imp
 file, path, description = imp.find_module('${plugin_name}', ['${parent_dir}'])
 module = imp.load_module('${plugin_name}', file, path, description)
-print(';'.join(module.metadata()['mime']['extensions']))"
+metadata = module.metadata()['mime']
+result = []
+for extension in metadata['extensions']:
+	result.append(metadata['mimetype'] + '|' + metadata['name'] + '|' + extension)
+print(';'.join(result))"
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		RESULT_VARIABLE python_status
 		OUTPUT_VARIABLE found_mime_types
@@ -19,7 +23,17 @@ print(';'.join(module.metadata()['mime']['extensions']))"
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 	if(NOT python_status) #Success.
-		list(APPEND MIME_TYPES ${found_mime_types})
+		foreach(mime ${found_mime_types})
+			string(REPLACE "|" ";" mime_data ${mime})
+			list(GET mime_data 0 mime_type)
+			list(GET mime_data 1 mime_name)
+			list(GET mime_data 2 mime_extension)
+			list(APPEND MIME_TYPES ${mime_type})
+			list(APPEND MIME_NAMES ${mime_name})
+			list(APPEND MIME_EXTENSIONS ${mime_extension})
+		endforeach()
 		set(MIME_TYPES ${MIME_TYPES} PARENT_SCOPE)
+		set(MIME_NAMES ${MIME_NAMES} PARENT_SCOPE)
+		set(MIME_EXTENSIONS ${MIME_EXTENSIONS} PARENT_SCOPE)
 	endif()
 endfunction()
