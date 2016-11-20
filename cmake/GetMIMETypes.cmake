@@ -16,6 +16,7 @@ function(get_mime_types plugin_dir)
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 	if(NOT python_status) #Success.
-		message(STATUS "MIME types: ${found_mime_types}")
+		list(APPEND MIME_TYPES ${found_mime_types})
+		set(MIME_TYPES ${MIME_TYPES} PARENT_SCOPE)
 	endif()
 endfunction()
