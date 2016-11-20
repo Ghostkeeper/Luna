@@ -8,7 +8,7 @@ function(get_mime_types plugin_dir)
 	get_filename_component(parent_dir ${plugin_dir} DIRECTORY) #Where to import it from.
 	#Execute the init file and get Python to print the list of MIME types.
 	execute_process( #Imports the project in the same way as in luna.plugins._load_candidates.
-		COMMAND "${PYTHON_EXECUTABLE}" "-c" "import imp; f, p, d = imp.find_module('${plugin_name}', ['${parent_dir}']); m = imp.load_module('${plugin_name}', f, p, d); print(' '.join(m.metadata()['mime']['extensions']))"
+		COMMAND "${PYTHON_EXECUTABLE}" "-c" "import imp; f, p, d = imp.find_module('${plugin_name}', ['${parent_dir}']); m = imp.load_module('${plugin_name}', f, p, d); print(';'.join(m.metadata()['mime']['extensions']))"
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		RESULT_VARIABLE python_status
 		OUTPUT_VARIABLE found_mime_types
