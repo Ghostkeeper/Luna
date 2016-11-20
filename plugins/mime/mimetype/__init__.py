@@ -64,7 +64,9 @@ def validate_metadata(metadata):
 		if "name" not in metadata["mime"]:
 			raise luna.plugins.MetadataValidationError("The human-readable name is missing from the MIME's metadata.")
 		if "extensions" in metadata["mime"]: #If there are extensions, it must be a sequence.
-			if not hasattr(metadata["mime"]["extensions"], "__iter__"): #Note that strings do not have this attribute. They can be iterated over, but we want literal strings to fail, lest a user of the plug-in accidentally iterates over characters.
+			if not hasattr(metadata["mime"]["extensions"], "__iter__"):
 				raise luna.plugins.MetadataValidationError("The extensions for the MIME type are not a sequence.")
+			if isinstance(metadata["mime"]["extensions"], str): #We want to disallow strings, since iterating over them gives single characters instead of proper extensions, without giving errors at runtime.
+				raise luna.plugins.MetadataValidationError("The extensions for the MIME type are a single string, not a sequence.")
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The MIME metadata is not a dictionary.")
