@@ -32,7 +32,7 @@ def metadata():
 	return {
 		"name": "Storage Type",
 		"description": "Defines a type of plug-in that stores and loads data to and from a persistent storage location.",
-		"version": 2,
+		"version": 3,
 		"dependencies": {},
 
 		"type": { #This is a "plug-in type" plug-in.
@@ -48,15 +48,15 @@ def validate_metadata(storage_metadata):
 
 	Storage metadata must have a ``storage`` entry, which must contain six
 	entries: ``can_read``, ``can_write``, ``delete``, ``exists``, ``move``,
-	``read`` and ``write``. These entries must contain callable objects (such as
-	functions).
+	``open_read`` and ``open_write``. These entries must contain callable
+	objects (such as functions).
 
 	:param storage_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
 	if "storage" not in storage_metadata:
 		raise luna.plugins.MetadataValidationError("This is not a storage plug-in.")
-	required_functions = {"can_read", "can_write", "delete", "exists", "move", "read", "write"}
+	required_functions = {"can_read", "can_write", "delete", "exists", "move", "open_read", "open_write"}
 	try:
 		if not required_functions <= storage_metadata["storage"].keys():
 			raise luna.plugins.MetadataValidationError("The storage specifies no functions {function_names}.".format(function_names=", ".join(required_functions - storage_metadata["storage"].keys())))

@@ -108,7 +108,8 @@ def move(source, destination):
 		if storage["storage"]["can_write"](destination):
 			for reader in readers:
 				try:
-					data = storages[reader]["storage"]["read"](source)
+					with storages[reader]["storage"]["open_read"](source) as read_stream:
+						data = read_stream.read()
 					break #Success.
 				except Exception as e:
 					luna.plugins.api("logger").warning("Reading from {source} failed: {error_message}", source=source, error_message=str(e))
@@ -117,16 +118,17 @@ def move(source, destination):
 			else: #Got an exception each time.
 				raise IOError("No storage plug-in can read from URI: {uri}".format(uri=source))
 			try:
-				storage["storage"]["write"](destination, data)
+				with storage["storage"]["open_write"](destination) as write_stream:
+					write_stream.write(data)
 				return #Success.
 			except Exception as e:
 				luna.plugins.api("logger").warning("Writing data to {destination} failed: {error_message}", destination=destination, error_message=str(e))
 				#Try with next writer.
 	raise IOError("No storage plug-in can write to URI: {uri}".format(uri=destination))
 
-def read(uri):
+def open_read(uri):
 	"""
-	Reads all data stored at a specified location.
+	Opens a stream that can read data stored at a specified location.
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will read from file, since the working directory has
@@ -137,22 +139,22 @@ def read(uri):
 	arbitrary one will be chosen.
 
 	:param uri: The URI from which to read the data.
-	:return: The data stored at that URI as a ``bytes`` string.
+	:return: A stream of ``bytes`` that streams the data stored at the URI.
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
 	for storage in luna.plugins.plugins_by_type.values():
 		if storage["storage"]["can_read"](uri):
 			try:
-				return storage["storage"]["read"](uri)
+				return storage["storage"]["open_read"](uri)
 			except Exception as e:
-				luna.plugins.api("logger").critical("Reading from {uri} failed: {error_message}", uri=uri, error_message=str(e))
+				luna.plugins.api("logger").critical("Opening {uri} for reading failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with next plug-in.
 	raise IOError("No storage plug-in can read from URI: {uri}".format(uri=uri))
 
-def write(uri, data):
+def open_write(uri):
 	"""
-	Writes data to persistent storage at a specified location.
+	Opens a stream that can write data stored at a specified location.
 
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will write to file, since the working directory has
@@ -165,17 +167,17 @@ def write(uri, data):
 	Any old data at the specified URI will get overwritten.
 
 	:param uri: The URI to which to write the data.
-	:param data: A ``bytes`` string to write to this URI.
+	:return: A stream for ``bytes`` that will get written to this URI.
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
 	for storage in luna.plugins.plugins_by_type.values():
 		if storage["storage"]["can_write"](uri):
 			try:
-				storage["storage"]["write"](uri, data)
+				storage["storage"]["open_write"](uri)
 				return #Success.
 			except Exception as e:
-				luna.plugins.api("logger").critical("Writing to {uri} failed: {error_message}", uri=uri, error_message=str(e))
+				luna.plugins.api("logger").critical("Opening {uri} for writing failed: {error_message}", uri=uri, error_message=str(e))
 				#Try with next plug-in.
 	raise IOError("No storage plug-in can write to URI: {uri}".format(uri=uri))
 

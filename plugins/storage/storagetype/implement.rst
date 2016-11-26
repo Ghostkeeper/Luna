@@ -71,21 +71,21 @@ If there is already a resource at the destination, that resource will be lost.
 
 ----
 
-	.. function:: read(uri)
+	.. function:: open_read(uri)
 
-Reads the data in a specified location.
+Opens a stream of binary data from the specified location.
 
 - ``uri``: An absolute URI to a resource that must be read.
-- Return: The data at the specified location as a ``bytes`` string.
+- Return: A stream of ``bytes`` that read from the specified location.
 - Raises: ``IOException`` if the resource could not be read.
 
 ----
 
 	.. function:: write(uri, data)
 
-Writes the specified data to a new resource at the specified location.
+Opens a stream that writes binary data to the specified location.
 
 If there is already a resource at the specified URI, that resource will be lost.
 
 - ``uri``: An absolute URI to where the data must be written.
-- ``data``: A ``bytes`` string that must be written to the specified location.
+- Return: A stream for ``bytes`` that writes to the specified location.
