@@ -89,3 +89,4 @@ If there is already a resource at the specified URI, that resource will be lost.
 
 - ``uri``: An absolute URI to where the data must be written.
 - Return: A stream for ``bytes`` that writes to the specified location.
+- Raises: ``IOException`` if the resource could not be written to.
