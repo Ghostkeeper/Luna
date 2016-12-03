@@ -21,11 +21,11 @@ def metadata():
 	return {
 		"name": "Local Storage",
 		"description": "Enables reading and writing files on the local hard disk.",
-		"version": 1,
+		"version": 2,
 		"dependencies": {
 			"storagetype": {
-				"version_min": 1,
-				"version_max": 2
+				"version_min": 3,
+				"version_max": 3
 			},
 		},
 
@@ -35,7 +35,7 @@ def metadata():
 			"delete": localstorage.local_storage.delete,
 			"exists": localstorage.local_storage.exists,
 			"move": localstorage.local_storage.move,
-			"read": localstorage.local_storage.read,
-			"write": localstorage.local_storage.write
+			"open_read": localstorage.local_storage.open_read,
+			"open_write": localstorage.local_storage.open_write
 		}
 	}

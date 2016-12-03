@@ -8,17 +8,21 @@
 An implementation of persistent storage that reads and writes from the hard
 drive.
 
-All of these operations are explicitly atomic. Multiple threads or processes
-should never be working on the same data to prevent race conditions, but the
-user opening multiple instances of the application can't be prevented. This
-atomicity doesn't prevent race conditions in these cases, but at least prevents
-data corruption.
+All of these operations are explicitly atomic. This atomicity depends on the
+operating system in some part, but all of the supported operating systems
+(Windows, Linux) ensure that this is possible. Not all cases of concurrent
+reading and writing can be accounted for, however. In particular, if a foreign
+application writes directly in the file this will not be accounted for. When
+dealing only with other instances of the same application, these functions
+should behave atomically.
 """
 
 import shutil #For the move function.
 import os #To delete files, get modification times and flush data to files.
 import tempfile #To write to temporary files in order to write atomically.
 import urllib.parse #To get the scheme from a URI.
+
+import localstorage.atomic_write_stream #To implement atomic writing.
 
 def can_read(uri):
 	"""
@@ -87,53 +91,30 @@ def move(source, destination):
 	"""
 	shutil.move(_uri_to_path(source), _uri_to_path(destination)) #Use shutil because it overwrites old files on Windows too.
 
-def read(uri):
+def open_read(uri):
 	"""
 	Reads the contents of the specified file.
 
-	This read is done atomically, meaning that it will return the state of the
-	file at a single instance in time. This is achieved fairly naively by
-	tracking the time of last modification in the file system, and re-trying to
-	read when the time of last modification changed while the reading was in
-	progress. As a result, this method is lock-free but not wait-free. It may be
-	retrying indefinitely if the file keeps getting updated during the read.
-	However, this algorithm is simple to implement and introduces very little
-	overhead if there is nobody writing, which is the main use case.
-
-	This algorithm is only atomic in the theoretical case of infinite time
-	resolution on the last modification time stamp of the file system. This is
-	obviously incorrect, but nothing better can be achieved without requiring
-	all writers to the file to keep record of their precise modification count
-	or something like that. On UNIX-based file systems, the time resolution is
-	typically 1ns, which is more than enough. On Windows's file system, NTFS,
-	the resolution is 100ns, which is often enough, except for very small files.
-	On FAT, however, the time resolution is 2s, which basically obliterates the
-	atomicity of this function for all but the largest files.
-	This could be fixed by introducing a sleep just before the file read that is
-	equal to the resolution of the time stamp, but this is deemed too costly for
-	the time cost of a file read operation. It could also be improved by reading
-	the file twice, and re-trying until the last two reads are equal, but that
-	is also too costly, since it requires two reads for the base case where
-	nothing modifies the file.
+	This read is atomic and wait-free, as long as other Luna applications are
+	the only ones that write to the file (or the applications that write are
+	using the same technique to write to it). This works because the write will
+	first write to a separate file and then atomically move the new file over
+	the old one. All supported operating systems will keep the old file alive if
+	an application is still reading it while some other file is moved on top of
+	it. So if that happens, this module will still be reading from a file that
+	is long gone. It reads the data that it got at the point where it opened the
+	stream.
 
 	:param uri: The URI of the resource to read.
-	:return: The contents of the resource, as a bytes string.
-	:raises IOError: The data could not be read.
+	:return: A stream that reads the contents of the resource as a bytes string.
+	:raises IOError: The file could not be opened for reading.
 	"""
 	path = _uri_to_path(uri)
+	return open(path, "rb")
 
-	while True:
-		last_modified = os.path.getmtime(path)
-		#To guarantee atomic file reads, insert a sleep here (see documentation). Disabled for speed.
-		#time.sleep(0.0001) #Must be equal to the minimum resolution of the file system's last modification time stamp.
-		with open(path, "rb") as file_handle: #Read in binary mode.
-			result = file_handle.read()
-		if os.path.getmtime(path) == last_modified: #Still not modified. We've got a good copy.
-			return result
-
-def write(uri, data):
+def open_write(uri):
 	"""
-	Writes data to a resource.
+	Opens a file for writing and returns a stream for writing to it.
 
 	Any old data in the resource will get overwritten. If no resource exists at
 	the specified location, a new resource will be created.
@@ -143,17 +124,15 @@ def write(uri, data):
 	temporary file, then moving the new file on top of the old file. Therefore,
 	the actual atomicity of this write depends on the atomicity of ``move``.
 
+	Since flushing the stream is directly in conflict with atomic writing,
+	flushing the stream returned by this write function is not supported.
+
 	:param uri: The location of the resource to write the data to.
 	:param data: The data to write to the resource, as a bytes string.
 	:raises IOError: The data could not be written.
 	"""
 	path = _uri_to_path(uri)
-	directory, _ = os.path.split(path) #Put the temporary file in the same directory, so it will be on the same file system which guarantees an atomic move.
-	with tempfile.NamedTemporaryFile(dir=directory, delete=False, mode="wb") as temp_handle: #Don't delete it afterwards!
-		temp_handle.write(data)
-		temp_handle.flush() #Make sure that it's really all written.
-		os.fsync(temp_handle.fileno()) #Make sure the file system is up-to-date.
-	move(temp_handle.name, uri) #Move the new file into place, replacing the old file if it existed.
+	return localstorage.atomic_write_stream.AtomicWriteStream(path)
 
 def _uri_to_path(uri):
 	"""
