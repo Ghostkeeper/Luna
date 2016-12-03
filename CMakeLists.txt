@@ -3,7 +3,6 @@
 
 cmake_minimum_required(VERSION 3.2.3)
 project(Luna)
-include(${CMAKE_SOURCE_DIR}/cmake/FindPythonModule.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/GetMIMETypes.cmake)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
