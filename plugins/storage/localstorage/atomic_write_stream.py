@@ -84,9 +84,6 @@ class AtomicWriteStream:
 		"""
 		return self._temp_file.__getattr__(name)
 
-#Probably going to have to use __getattr__ to wrap around the temp stream.
-#See https://github.com/python/cpython/blob/master/Lib/tempfile.py#L459
-
 	def close(self):
 		"""
 		Closes the file for writing, finalising the write.
