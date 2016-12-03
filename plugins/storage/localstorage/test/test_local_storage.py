@@ -348,23 +348,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		"""
 		self.assertFalse(localstorage.local_storage.exists(_unsafe_target_file), msg="The file {file_name} was reported to be existing, though it shouldn't exist.".format(file_name=_unsafe_target_file)) #If stuff was cleaned up properly after each test, this should not exist.
 
-	@luna.tests.parametrise(_test_bytes)
-	def test_open_read(self, content):
-		"""
-		Tests whether reading a simple file is successful.
-
-		This writes some content to a file, reads it back and sees whether it is
-		the same.
-
-		:param content: The content to put in the file before reading.
-		"""
-		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
-			file_handle.write(content)
-
-		with localstorage.local_storage.open_read(_unsafe_target_file) as file_handle:
-			result = file_handle.read()
-		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
-
 	def test_move(self):
 		"""
 		Tests moving a file.
@@ -383,6 +366,23 @@ class TestLocalStorage(luna.tests.TestCase):
 				os.remove("start.txt")
 			if os.path.isfile("end.txt"):
 				os.remove("end.txt")
+
+	@luna.tests.parametrise(_test_bytes)
+	def test_open_read(self, content):
+		"""
+		Tests whether reading a simple file is successful.
+
+		This writes some content to a file, reads it back and sees whether it is
+		the same.
+
+		:param content: The content to put in the file before reading.
+		"""
+		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
+			file_handle.write(content)
+
+		with localstorage.local_storage.open_read(_unsafe_target_file) as file_handle:
+			result = file_handle.read()
+		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
 
 	def test_open_read_atomicity(self):
 		"""
