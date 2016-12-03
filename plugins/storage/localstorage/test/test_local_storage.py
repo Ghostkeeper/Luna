@@ -180,10 +180,11 @@ def _open_simulate_concurrency(file, *args, **kwargs):
 	"""
 	Opens a file, but simulates concurrent reads/writes to some files.
 
-	The call to ``open`` is made transparently, but the resulting I/O stream is
-	wrapped around by a class that is completely transparent, except that it
-	writes data to the unsafe target file each time you call a method. This
-	simulates concurrent writes to the file.
+	The call to ``open`` is made almost transparently. Only the buffer size is
+	automatically set to 1. The resulting I/O stream is wrapped around by a
+	class that is completely transparent, except that it writes data to the
+	unsafe target file each time you call a method. This simulates concurrent
+	writes to the file.
 
 	The arguments and key-word arguments are explicitly not specified in this
 	function, as they must be translucent towards the real ``open`` function,
@@ -192,18 +193,18 @@ def _open_simulate_concurrency(file, *args, **kwargs):
 	:param file: The path to the file to open.
 	:param args: Any additional arguments supplied to the open function.
 	:param kwargs: Any additional key-word arguments supplied to the open
-		function.
+	function.
 	:return: A wrapped IO stream that simulates concurrent writes to the
 	"""
 	if len(args) >= 2:
 		args_list = list(args)
-		args_list[1] = 0 #Change the "buffering" parameter.
+		args_list[1] = 1 #Change the "buffering" parameter.
 		args = tuple(args_list)
 		original_io_stream = _original_open(file, *args, **kwargs)
 	else: #Provide our own "buffering" parameter.
 		if "buffering" in kwargs:
 			del kwargs["buffering"]
-		original_io_stream = _original_open(file, buffering=0, *args, **kwargs)
+		original_io_stream = _original_open(file, buffering=1, *args, **kwargs)
 	return ConcurrentIOWrapper(original_io_stream, b"1234567890")
 
 class TestLocalStorage(luna.tests.TestCase):
