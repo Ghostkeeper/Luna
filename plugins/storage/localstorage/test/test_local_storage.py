@@ -423,7 +423,7 @@ class TestLocalStorage(luna.tests.TestCase):
 
 		with open(_unsafe_target_file, "rb") as file_handle:
 			result = file_handle.read()
-			self.assertEqual(result, content, "Write must put the exact content in the file.")
+		self.assertEqual(result, content, "Write must put the exact content in the file.")
 
 	def test_write_atomicity(self):
 		"""
@@ -454,4 +454,4 @@ class TestLocalStorage(luna.tests.TestCase):
 
 		with open(_unsafe_target_file, "rb") as file_handle:
 			result = file_handle.read()
-			self.assertEqual(result, content, "Write must overwrite the old file and put the exact content in the file.")
+		self.assertEqual(result, content, "Write must overwrite the old file and put the exact content in the file.")
