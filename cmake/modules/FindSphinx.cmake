@@ -39,10 +39,7 @@ else() #Just find it on the system.
 		set(SPHINX_FOUND FALSE)
 	endif()
 
-	find_package_handle_standard_args(Sphinx
-		DEFAULT_MSG SPHINX_EXECUTABLE
-		VERSION_VAR SPHINX_VERSION_STRING
-	)
+	find_package_handle_standard_args(Sphinx DEFAULT_MSG SPHINX_EXECUTABLE)
 	find_program(SPHINX_APIDOC_EXECUTABLE NAMES sphinx-apidoc HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx generator for reStructuredText API files of Python source code.")
 	find_package_handle_standard_args(Sphinx-apidoc DEFAULT_MSG SPHINX_APIDOC_EXECUTABLE)
 endif()
