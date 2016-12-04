@@ -23,10 +23,30 @@ if(BUILD_SPHINX)
 else() #Just find it on the system.
 	include(FindPackageHandleStandardArgs)
 	find_program(SPHINX_EXECUTABLE NAMES sphinx-build HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx documentation generator.")
-	find_package_handle_standard_args(Sphinx DEFAULT_MSG SPHINX_EXECUTABLE)
+
+	#Find Sphinx's version number.
+	execute_process(
+		COMMAND "${SPHINX_EXECUTABLE}" "--version"
+		OUTPUT_VARIABLE reported_version_string
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	#reported_version_string now looks something like "Sphinx (sphinx-build) 1.4.5". We need the third word.
+	string(REPLACE " " ";" reported_version_list ${reported_version_string})
+	list(GET reported_version_list 2 SPHINX_VERSION_STRING)
+	if(SPHINX_VERSION_STRING VERSION_LESS Sphinx_FIND_VERSION)
+		message(FATAL_ERROR "Found Sphinx version ${SPHINX_VERSION_STRING}, required version ${Sphinx_FIND_VERSION}.")
+		set(SPHINX_FOUND FALSE)
+	endif()
+
+	find_package_handle_standard_args(Sphinx
+		DEFAULT_MSG SPHINX_EXECUTABLE
+		VERSION_VAR SPHINX_VERSION_STRING
+	)
 	find_program(SPHINX_APIDOC_EXECUTABLE NAMES sphinx-apidoc HINTS $ENV{SPHINX_DIR} PATH_SUFFIXES bin DOC "Sphinx generator for reStructuredText API files of Python source code.")
 	find_package_handle_standard_args(Sphinx-apidoc DEFAULT_MSG SPHINX_APIDOC_EXECUTABLE)
 endif()
 
 mark_as_advanced(SPHINX_EXECUTABLE)
 mark_as_advanced(SPHINX_APIDOC_EXECUTABLE)
+mark_as_advanced(SPHINX_VERSION_STRING)

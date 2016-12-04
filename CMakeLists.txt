@@ -56,7 +56,7 @@ message(STATUS "Found these MIME types: ${MIME_TYPES}")
 #--------------------------------Documentation----------------------------------
 option(BUILD_DOCUMENTATION "Generate the documentation." TRUE)
 if(BUILD_DOCUMENTATION)
-	find_package(Sphinx REQUIRED)
+	find_package(Sphinx 1.4.0 REQUIRED)
 	set(DOCUMENTATION_OUTPUT_DIR "${CMAKE_BINARY_DIR}/documentation" CACHE FILEPATH "Where to save generated documentation.")
 	set(DOCUMENTATION_TEMP_DIR "${CMAKE_BINARY_DIR}/documentation_source")
 
