@@ -30,8 +30,8 @@ class TestInit(luna.tests.TestCase):
 					"delete": luna.tests.arbitrary_function,
 					"exists": luna.tests.arbitrary_function,
 					"move": luna.tests.arbitrary_function,
-					"read": luna.tests.arbitrary_function,
-					"write": luna.tests.arbitrary_function
+					"open_read": luna.tests.arbitrary_function,
+					"open_write": luna.tests.arbitrary_function
 				}
 			}
 		},
@@ -43,8 +43,8 @@ class TestInit(luna.tests.TestCase):
 					"delete": luna.tests.CallableObject, #A callable object.
 					"exists": lambda x: x, #A lambda function.
 					"move": functools.partial(luna.tests.arbitrary_function, 3), #A partial function.
-					"read": luna.tests.arbitrary_function,
-					"write": luna.tests.arbitrary_function
+					"open_read": luna.tests.arbitrary_function,
+					"open_write": luna.tests.arbitrary_function
 				}
 			}
 		}
@@ -100,8 +100,8 @@ class TestInit(luna.tests.TestCase):
 					"can_write": luna.tests.arbitrary_function,
 					"delete": luna.tests.arbitrary_function,
 					"exists": luna.tests.arbitrary_function,
-					"read": luna.tests.arbitrary_function,
-					#"write" is missing.
+					"open_read": luna.tests.arbitrary_function,
+					#"open_write" is missing.
 				}
 			}
 		},
@@ -112,8 +112,8 @@ class TestInit(luna.tests.TestCase):
 					"can_write": luna.tests.arbitrary_function,
 					"delete": "This is not a callable object.",
 					"exists": luna.tests.arbitrary_function,
-					"read": luna.tests.arbitrary_function,
-					"write": luna.tests.arbitrary_function
+					"open_read": luna.tests.arbitrary_function,
+					"open_write": luna.tests.arbitrary_function
 				}
 			}
 		}
