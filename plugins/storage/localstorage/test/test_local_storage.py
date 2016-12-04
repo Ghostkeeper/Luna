@@ -62,6 +62,29 @@ class ConcurrentIOWrapper:
 	not wait-free to still pass the test.
 	"""
 
+	def read(self, *args, **kwargs):
+		"""
+		Calls the ``read`` function twice and inserts a concurrent write in
+		between.
+
+		:param args: The positional arguments passed to the ``read`` function.
+		:param kwargs: The key-word arguments passed to the ``read`` function.
+		:return: The result of the ``read`` function.
+		"""
+		if ConcurrentIOWrapper._written_bytes < len(self._write_string):
+			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
+			if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte.
+				if ConcurrentIOWrapper._written_bytes == 0: #The first time, completely overwrite the original file.
+					with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
+						concurrent_handle.write(b"") #Clear the file.
+				with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
+					concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
+					ConcurrentIOWrapper._written_bytes += 1
+			second_part = self._stream.read(*args, **kwargs) #Read the rest of the file.
+			return first_part + second_part
+		else: #Don't do the concurrent write. After some amount of calls the "writing" is done. We assume that there comes a time where this is the case in real situations.
+			return self._stream.read(*args, **kwargs)
+
 	@classmethod
 	def reset(cls):
 		"""
@@ -95,12 +118,9 @@ class ConcurrentIOWrapper:
 		:return: The value of the requested attribute.
 		"""
 		if hasattr(self._stream.__getattribute__(item), "__self__"): #Only catch method calls.
-			if item == "read": #Catch ``read`` with a special function that also interjects halfway.
-				return self._concurrent_write_and_read
-			else:
-				return functools.partial(self._concurrent_write_and_call, self._stream.__getattribute__(item))
+			return functools.partial(self._concurrent_write_and_call, self._stream.__getattribute__(item))
 		else:
-			return self._stream.__getattribute__(item)
+			return self._stream.__getattribute__(item) #Transparent.
 
 	def __enter__(self, *args, **kwargs):
 		"""
@@ -152,29 +172,6 @@ class ConcurrentIOWrapper:
 				concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
 				ConcurrentIOWrapper._written_bytes += 1
 		return result
-
-	def _concurrent_write_and_read(self, *args, **kwargs):
-		"""
-		Calls the ``read`` function twice and inserts a concurrent write in
-		between.
-
-		:param args: The positional arguments passed to the ``read`` function.
-		:param kwargs: The key-word arguments passed to the ``read`` function.
-		:return: The result of the ``read`` function.
-		"""
-		if ConcurrentIOWrapper._written_bytes < len(self._write_string):
-			first_part = self._stream.read(1) #If this fails, the file is empty. That is really a wrong way to test read atomicity with.
-			if ConcurrentIOWrapper._written_bytes < len(self._write_string): #Append one byte.
-				if ConcurrentIOWrapper._written_bytes == 0: #The first time, completely overwrite the original file.
-					with _original_open(_unsafe_target_file, "wb", buffering=0) as concurrent_handle:
-						concurrent_handle.write(b"") #Clear the file.
-				with _original_open(_unsafe_target_file, "ab", buffering=0) as concurrent_handle:
-					concurrent_handle.write(self._write_string[ConcurrentIOWrapper._written_bytes:ConcurrentIOWrapper._written_bytes + 1])
-					ConcurrentIOWrapper._written_bytes += 1
-			second_part = self._stream.read(*args, **kwargs) #Read the rest of the file.
-			return first_part + second_part
-		else: #Don't do the concurrent write. After some amount of calls the "writing" is done. We assume that there comes a time where this is the case in real situations.
-			return self._stream.read(*args, **kwargs)
 
 def _open_simulate_concurrency(file, *args, **kwargs):
 	"""
