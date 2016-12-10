@@ -44,7 +44,7 @@ def can_read(uri):
 
 	if parsed.scheme != "file": #Can only read from file names.
 		return False
-	if parsed.path and parsed.path[-1] != "/": #Must have a file name, not a directory.
+	if not parsed.path or parsed.path[-1] == "/": #Must have a file name, not a directory.
 		return False
 	return True
 
