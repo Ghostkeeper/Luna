@@ -37,9 +37,15 @@ def can_read(uri):
 	if uri is None:
 		raise ValueError("Provided URI is None.")
 	try:
-		return urllib.parse.urlparse(uri).scheme == "file" #Can only read from file schemes.
+		parsed = urllib.parse.urlparse(uri)
 	except ValueError: #Badly-formed IPv6 address.
 		return False #We don't care. We can only read locally anyway.
+
+	if parsed.scheme != "file": #Can only read from file names.
+		return False
+	if parsed.path and parsed.path[-1] != "/": #Must have a file name, not a directory.
+		return False
+	return True
 
 def can_write(uri):
 	"""
