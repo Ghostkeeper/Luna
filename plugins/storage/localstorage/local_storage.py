@@ -19,7 +19,6 @@ should behave atomically.
 
 import shutil #For the move function.
 import os #To delete files, get modification times and flush data to files.
-import tempfile #To write to temporary files in order to write atomically.
 import urllib.parse #To get the scheme from a URI.
 
 import localstorage.atomic_write_stream #To implement atomic writing.
