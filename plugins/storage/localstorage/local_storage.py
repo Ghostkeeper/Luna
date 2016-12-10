@@ -28,7 +28,8 @@ def can_read(uri):
 	Determines if this plug-in could read from a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
-	It can read from the URI if the URI uses the file scheme.
+	It can read from the URI if the URI uses the file scheme and is not a
+	directory.
 
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can read from the specified URI, or
