@@ -53,18 +53,14 @@ def can_write(uri):
 	Determines if this plug-in could write to a URI like the one specified.
 
 	This determination is purely made on the URI, not on the actual file system.
-	It can write to the URI if the URI uses the file scheme.
+	It can write to the URI if the URI uses the file scheme and is not a
+	cirectory.
 
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can write to the specified URI, or
 	``False`` if it can't.
 	"""
-	if uri is None:
-		raise ValueError("Provided URI is None.")
-	try:
-		return urllib.parse.urlparse(uri).scheme == "file" #Can only write to file schemes.
-	except ValueError: #Badly-formed IPv6 address.
-		return False #We don't care. We can only write locally anyway.
+	return can_read(uri) #We can write all URIs that we can read from.
 
 def delete(uri):
 	"""
