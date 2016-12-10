@@ -218,6 +218,12 @@ class TestLocalStorage(luna.tests.TestCase):
 		},
 		"parse error": {
 			"uri": "http://[invalid/file.txt"
+		},
+		"directory": {
+			"uri": "file:///home/username/Documents/"
+		},
+		"fragment only": {
+			"uri": "#relative_to_current_document"
 		}
 	}
 
