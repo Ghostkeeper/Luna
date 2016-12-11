@@ -24,13 +24,13 @@ dictionary. A configuration item can only be created via the ``define``
 function, like so::
 
 	luna.plugins("configuration")["preference"]["user interface"].define(
-		name="language"
+		key="language"
+		data_type="language"
 		default="Common"
-		options={"Common", "Quenya", "Sindarin"}
+		validate=lambda language_key: language_key in luna.plugins("internationalisation").languages
 	)
 
-The parameters of the ``define`` functions depend on the data type. Getting or
-setting an item that doesn't exist yields a ``KeyError``
+Getting or setting an item that doesn't exist yields a ``KeyError``.
 
 It is up to the specific configuration plug-in to decide how to store the
 information persistently. It may store each unique path to a unique file on the
