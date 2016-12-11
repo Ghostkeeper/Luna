@@ -40,9 +40,6 @@ store this information remotely.
 
 import collections #To implement MutableMapping, and for namedtuple.
 
-def __getattr__(item):
-	raise Exception("Not implemented yet.")
-
 ConfigurationEntry = collections.namedtuple("ConfigurationEntry", ["value", "data_type", "validate"])
 """
 An element of configuration that holds a bit more information than just the
@@ -159,3 +156,75 @@ class Configuration(collections.MutableMapping):
 			raise ValueError("The default value {value} for the configuration {key} is invalid according to the provided validator.".format(key=key, value=default_value))
 
 		self._entries[key] = ConfigurationEntry(value=default_value, data_type=data_type, validate=validate)
+
+_configuration_root = Configuration()
+"""
+The root node of the configuration tree.
+
+Since this module itself should also behave like a dictionary, we transparently
+delegate all function calls to that end to the configuration root (in addition
+to providing the rest of the functionality of the actual API). Only the root of
+the tree can only be modified through registering and unregistering a plug-in,
+so only the getters are exposed for this root.
+"""
+
+def __contains__(identity):
+	"""
+	Returns whether a specified configuration type exists.
+
+	This should normally not be used. If a plug-in knows that some configuration
+	type exists, it should have that configuration type as dependency and this
+	guarantees that the plug-in gets disabled if the configuration type is not
+	present (or disabled). However, while a bit far-fetched, it is technically
+	feasible to have optional dependencies on configuration types as well and in
+	those cases we might want to check for the presence of configuration types.
+	:param identity: The identity of the configuration plug-in to check for.
+	:return: ``True`` if the configuration type exists, or ``False`` if it
+	doesn't.
+	"""
+	return identity in _configuration_root
+
+def __getitem__(identity):
+	"""
+	Gets a configuration item belonging to the specified configuration plug-in.
+	:param identity: The identity of a configuration plug-in.
+	:return: The configuration node belonging to the specified configuration
+	plug-in.
+	"""
+	return _configuration_root[identity]
+
+def __iter__():
+	"""
+	Returns an iterator that runs over the configuration nodes of all
+	configuration types.
+	:return: An iterator over the sequence of configuration nodes.
+	"""
+	return iter(_configuration_root)
+
+def __len__():
+	"""
+	Return the number of configuration types.
+	:return: The number of configuration types.
+	"""
+	return len(_configuration_root)
+
+def items():
+	"""
+	Return a view of the configuration types and their accompanying nodes.
+	:return: A view of the configuration types and their accompanying nodes.
+	"""
+	return _configuration_root.items()
+
+def keys():
+	"""
+	Return a sequence of the configuration types.
+	:return: A view of the configuration types.
+	"""
+	return _configuration_root.keys()
+
+def values():
+	"""
+	Return a view of the configuration nodes for all configuration types.
+	:return: A view of the configuration nodes for all configuration types.
+	"""
+	return _configuration_root.values()
