@@ -28,7 +28,12 @@ def metadata():
 		"name": "Configuration Type",
 		"description": "Defines a type of plug-in that stores a configuration for the application persistently.",
 		"version": 1,
-		"dependencies": {},
+		"dependencies": {
+			"datatype": {
+				"version_min": 1,
+				"version_max": 1
+			}
+		},
 
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "configuration",
