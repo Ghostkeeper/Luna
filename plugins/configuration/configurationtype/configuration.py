@@ -153,7 +153,8 @@ class Configuration(collections.MutableMapping):
 		if key in self._entries:
 			raise KeyError("A configuration with the key {key} already exists.".format(key=key))
 
-		#TODO: Check if the data type exists.
+		if data_type not in luna.plugins.api("data").data_types():
+			raise ValueError("Unknown data type for configuration with the key {key}: {data_type}.".format(key=key, data_type=data_type))
 
 		if not luna.plugins.api("data").is_instance(data_type, default_value):
 			raise ValueError("Setting {key} cannot hold default value {value}, since it is not of type {data_type}.".format(key=key, value=str(default_value), data_type=data_type))
