@@ -62,4 +62,4 @@ def validate_metadata(data_metadata):
 			if not callable(data_metadata["data"][required_function]):
 				raise luna.plugins.MetadataValidationError("The {entry} entry is not callable.".format(entry=required_function))
 	except (AttributeError, TypeError):
-		luna.plugins.MetadataValidationError("The data metadata entry is not a dictionary.")
+		raise luna.plugins.MetadataValidationError("The data metadata entry is not a dictionary.")
