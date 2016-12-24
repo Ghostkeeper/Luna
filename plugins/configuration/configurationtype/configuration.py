@@ -134,7 +134,7 @@ class Configuration(collections.MutableMapping):
 		if not luna.plugins.api("data").is_instance(entry.data_type, value):
 			raise ValueError("Setting {key} cannot hold value {value}, since it is not of type {data_type}.".format(key=key, value=str(value), data_type=entry.data_type))
 		if not entry.validate(value):
-			raise ValueError("A value of {value} is not allowed for setting {key}.".format(key=key, value=value))
+			raise ValueError("A value of {value} is not allowed for setting {key}.".format(key=key, value=str(value)))
 		entry.value = value #Store the new value.
 
 	def define(self, key, data_type, default_value, validate):
@@ -158,7 +158,7 @@ class Configuration(collections.MutableMapping):
 		if not luna.plugins.api("data").is_instance(data_type, default_value):
 			raise ValueError("Setting {key} cannot hold default value {value}, since it is not of type {data_type}.".format(key=key, value=str(default_value), data_type=data_type))
 		if not validate(default_value):
-			raise ValueError("The default value {value} for the configuration {key} is invalid according to the provided validator.".format(key=key, value=default_value))
+			raise ValueError("The default value {value} for the configuration {key} is invalid according to the provided validator.".format(key=key, value=str(default_value)))
 
 		self._entries[key] = ConfigurationEntry(value=default_value, data_type=data_type, validate=validate)
 
