@@ -24,6 +24,15 @@ Turns a serialised sequence of ``bytes``, which represents a state of being of a
 
 ----
 
+	.. function:: is_instance(data)
+
+Checks if a data object is of the data type that the plug-in implements.
+
+- ``data``: The object to check for.
+- Return: ``True`` if the object is of this data type, or ``False`` if it isn't.
+
+----
+
 	.. function:: serialise(data)
 
 Serialises an instance of the data type into a stream of ``bytes`` for storage or communication.

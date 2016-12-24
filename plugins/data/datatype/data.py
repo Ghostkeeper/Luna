@@ -34,6 +34,22 @@ def deserialise(data_type, serialised):
 	except KeyError: #Plug-in with specified data type is not available.
 		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
 
+def is_instance(data_type, data):
+	"""
+	Checks whether the specified object is an instance of the specified data
+	type.
+
+	:param data_type: The data type to check for.
+	:param data: An object to check the data type of.
+	:return: ``True`` if the object is of the specified data type, or ``False``
+	if it isn't.
+	"""
+	try:
+		return luna.plugins.plugins_by_type["data"][data_type]["is_instance"](data)
+	except KeyError: #Plug-in with specified data type is not available.
+		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
+		return False
+
 def serialise(data_type, data):
 	"""
 	Serialises the specified data.
@@ -49,3 +65,20 @@ def serialise(data_type, data):
 		return luna.plugins.plugins_by_type["data"][data_type]["serialise"](data)
 	except KeyError: #Plug-in with specified data type is not available.
 		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
+
+def type_of(data):
+	"""
+	Attempts to find the data type of an object.
+
+	This goes by all data types in turn and asks if any of them thinks the
+	object is theirs. The first one that reports it is an instance of its data
+	type will be returned, even if multiple data types would match.
+
+	:param data: An object to check the data type of.
+	:return: The data type of the object, or ``None`` if it has no known data
+	type.
+	"""
+	for identity, data_plugin in luna.plugins.plugins_by_type.items():
+		if data_plugin["is_instance"](data):
+			return identity
+	return None #No data type found.
