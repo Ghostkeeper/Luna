@@ -8,6 +8,8 @@
 An API for finding the available data types and (de)serialising them.
 """
 
+import itertools #To split a byte sequence to check its type with every data plug-in.
+
 import luna.plugins #To find the data types that are available.
 
 def data_types():
@@ -50,6 +52,22 @@ def is_instance(data_type, data):
 		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
 		return False
 
+def is_serialised(data_type, serialised):
+	"""
+	Checks whether a sequence of ``bytes`` represents an instance of the
+	specified data type.
+
+	:param data_type: The data type to check for.
+	:param serialised: A sequence of bytes to check the data type of.
+	:return: ``True`` if the stream of bytes represents an instance of the
+	specified data type, or ``False if it doesn't.
+	"""
+	try:
+		return luna.plugins.plugins_by_type["data"][data_type]["is_serialised"](serialised)
+	except KeyError: #Plug-in with specified data type is not available.
+		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
+		return False
+
 def serialise(data_type, data):
 	"""
 	Serialises the specified data.
@@ -80,5 +98,26 @@ def type_of(data):
 	"""
 	for identity, data_plugin in luna.plugins.plugins_by_type["data"].items():
 		if data_plugin["is_instance"](data):
+			return identity
+	return None #No data type found.
+
+def type_of_serialised(serialised):
+	"""
+	Attempts to find the data type of a serialised form of an object.
+
+	This goes by all data types in turn and asks if any of them thinks the bytes
+	stream is theirs. The first one that reports it is a representation
+	belonging to its data type is returned, even if multiple data types would
+	match.
+
+	:param serialised: A sequence of bytes to find the data type of.
+	:return: The data type that the sequence represents, or ``None`` if it has
+	no known data type.
+	"""
+	num_data_plugins = len(luna.plugins.plugins_by_type["data"])
+	input_streams = itertools.tee(serialised, num_data_plugins) #Create a stream for every plug-in to read from.
+	for stream, plugin in zip(input_streams, luna.plugins.plugins_by_type["data"].items()):
+		identity, metadata = plugin
+		if metadata["is_serialised"](stream):
 			return identity
 	return None #No data type found.

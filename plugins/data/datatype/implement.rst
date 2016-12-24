@@ -33,6 +33,17 @@ Checks if a data object is of the data type that the plug-in implements.
 
 ----
 
+	.. function:: is_serialised(serialised)
+
+Checks if a sequence of bytes is of the data type that the plug-in implements.
+
+For performance reasons, it is important to check this fairly efficiently using as few bytes from the source sequence as possible. Generating bytes from the source sequence may involve slow I/O. Use a magic number if available.
+
+- ``serialised``: A sequence of bytes representing some object.
+- Return: ``True`` if the sequence of bytes represents an object of this data type, or ``False`` if it doesn't.
+
+----
+
 	.. function:: serialise(data)
 
 Serialises an instance of the data type into a stream of ``bytes`` for storage or communication.
