@@ -58,5 +58,8 @@ def validate_metadata(data_metadata):
 	try:
 		if required_functions > data_metadata["data"].keys(): #All required functions must be present.
 			raise luna.plugins.MetadataValidationError("The data plug-in doesn't specify the functions {function_names}.".format(function_names=required_functions - data_metadata.keys()))
+		for required_function in required_functions:
+			if not callable(data_metadata["data"][required_function]):
+				raise luna.plugins.MetadataValidationError("The {entry} entry is not callable.".format(entry=required_function))
 	except (AttributeError, TypeError):
 		luna.plugins.MetadataValidationError("The data metadata entry is not a dictionary.")
