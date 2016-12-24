@@ -74,11 +74,11 @@ def type_of(data):
 	object is theirs. The first one that reports it is an instance of its data
 	type will be returned, even if multiple data types would match.
 
-	:param data: An object to check the data type of.
+	:param data: An object to find the data type of.
 	:return: The data type of the object, or ``None`` if it has no known data
 	type.
 	"""
-	for identity, data_plugin in luna.plugins.plugins_by_type.items():
+	for identity, data_plugin in luna.plugins.plugins_by_type["data"].items():
 		if data_plugin["is_instance"](data):
 			return identity
 	return None #No data type found.
