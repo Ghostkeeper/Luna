@@ -44,8 +44,9 @@ def validate_metadata(data_metadata):
 	"""
 	Validates whether the specified metadata is valid for data plug-ins.
 
-	Data metadata must have a ``serialise`` and a ``deserialise`` field, which
-	must both contain callable objects such as functions.
+	Data metadata must have a ``deserialise``, ``is_instance``,
+	``is_serialised`` and a ``serialise`` field, which must all contain callable
+	objects, such as functions.
 
 	:param configuration_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
@@ -53,7 +54,7 @@ def validate_metadata(data_metadata):
 	if "data" not in data_metadata:
 		raise luna.plugins.MetadataValidationError("This is not a data plug-in.")
 
-	required_functions = {"deserialise", "serialise"}
+	required_functions = {"deserialise", "is_instance", "is_serialised", "serialise"}
 	try:
 		if required_functions > data_metadata.keys(): #All required functions must be present.
 			raise luna.plugins.MetadataValidationError("The data plug-in doesn't specify the functions {function_names}.".format(function_names=required_functions - data_metadata.keys()))
