@@ -48,7 +48,7 @@ def validate_metadata(data_metadata):
 	``is_serialised`` and a ``serialise`` field, which must all contain callable
 	objects, such as functions.
 
-	:param configuration_metadata: The metadata to validate.
+	:param data_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
 	if "data" not in data_metadata:
