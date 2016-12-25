@@ -26,7 +26,7 @@ def arbitrary_function(*args, **kwargs):
 	:param args: Positional arguments.
 	:param kwargs: Key-word arguments.
 	"""
-	raise AssertionError("The arbitrary function was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+	raise AssertionError("The arbitrary function was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
 def parametrise(parameters):
 	"""
@@ -82,7 +82,7 @@ class CallableObject:
 		:param args: Arguments to call the object with.
 		:param kwargs: Key-word arguments to call the object with.
 		"""
-		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
 class _TestCaseMeta(type):
 	"""
@@ -126,4 +126,4 @@ class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 		:param args: Positional arguments.
 		:param kwargs: Key-word arguments.
 		"""
-		raise AssertionError("The arbitrary method was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=args, kwargs=kwargs))
+		raise AssertionError("The arbitrary method was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
