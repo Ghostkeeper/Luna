@@ -8,8 +8,6 @@
 Tests the behaviour of the validation function for MIME plug-ins.
 """
 
-import functools #To test filling in partials via metadata.
-
 import mimetype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.tests #For parametrised tests.

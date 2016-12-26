@@ -8,8 +8,6 @@
 Tests the behaviour of the validation function for configuration types.
 """
 
-import functools #To test filling in partials via metadata.
-
 import configurationtype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.tests #For parametrised tests
