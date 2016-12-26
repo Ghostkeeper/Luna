@@ -69,7 +69,8 @@ class TestConfigurationType(luna.tests.TestCase):
 	Tests the behaviour of the validation function for configuration types.
 	"""
 
-	def test_validate_metadata_correct(self):
+	@staticmethod
+	def test_validate_metadata_correct():
 		"""
 		Tests the ``validate_metadata`` function against metadata that is
 		correct.
