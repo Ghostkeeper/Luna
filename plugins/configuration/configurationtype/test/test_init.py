@@ -30,7 +30,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("An item was requested by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def deserialise(self, *args, **kwargs):
+	def deserialise(self, *args, **kwargs): #pylint: disable=no-self-use
 		"""
 		Sets the state of configuration to what is represented by a byte
 		sequence. This raises an ``AssertionError``.
@@ -40,7 +40,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("The deserialise function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def serialise(self, *args, **kwargs):
+	def serialise(self, *args, **kwargs): #pylint: disable=no-self-use
 		"""
 		Serialises the state of configuration. This raises an
 		``AssertionError``.
