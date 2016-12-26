@@ -71,7 +71,7 @@ class Configuration(collections.MutableMapping):
 	specialise in some specific type of configuration.
 	"""
 
-	def __init__(self, *other, **initial):
+	def __init__(self):
 		"""
 		Initialises a new ``Configuration`` instance.
 
