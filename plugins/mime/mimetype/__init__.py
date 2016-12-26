@@ -38,7 +38,7 @@ def metadata():
 		}
 	}
 
-def validate_metadata(metadata):
+def validate_metadata(mime_metadata):
 	"""
 	Validates that the specified metadata is valid for MIME plug-ins.
 
@@ -51,22 +51,22 @@ def validate_metadata(metadata):
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
 	try:
-		if "mime" not in metadata:
+		if "mime" not in mime_metadata:
 			raise luna.plugins.MetadataValidationError("This is not a MIME plug-in.")
 		required_functions = {"can_read", "read"}
-		if not required_functions <= metadata["mime"].keys(): #All functions must be present.
-			raise luna.plugins.MetadataValidationError("The MIME specifies no functions {function_names}.".format(function_names=", ".join(required_functions - metadata["mime"].keys())))
+		if not required_functions <= mime_metadata["mime"].keys(): #All functions must be present.
+			raise luna.plugins.MetadataValidationError("The MIME specifies no functions {function_names}.".format(function_names=", ".join(required_functions - mime_metadata["mime"].keys())))
 		for function_name in required_functions:
-			if not callable(metadata["mime"][function_name]): #Each must be a callable object (such as a function).
+			if not callable(mime_metadata["mime"][function_name]): #Each must be a callable object (such as a function).
 				raise luna.plugins.MetadataValidationError("The {function_name} metadata entry is not callable.".format(function_name=function_name))
-		if "mimetype" not in metadata["mime"]:
+		if "mimetype" not in mime_metadata["mime"]:
 			raise luna.plugins.MetadataValidationError("The MIME type is missing from the MIME's metadata.")
-		if "name" not in metadata["mime"]:
+		if "name" not in mime_metadata["mime"]:
 			raise luna.plugins.MetadataValidationError("The human-readable name is missing from the MIME's metadata.")
-		if "extensions" in metadata["mime"]: #If there are extensions, it must be a sequence.
-			if not hasattr(metadata["mime"]["extensions"], "__iter__"):
+		if "extensions" in mime_metadata["mime"]: #If there are extensions, it must be a sequence.
+			if not hasattr(mime_metadata["mime"]["extensions"], "__iter__"):
 				raise luna.plugins.MetadataValidationError("The extensions for the MIME type are not a sequence.")
-			if isinstance(metadata["mime"]["extensions"], str): #We want to disallow strings, since iterating over them gives single characters instead of proper extensions, without giving errors at runtime.
+			if isinstance(mime_metadata["mime"]["extensions"], str): #We want to disallow strings, since iterating over them gives single characters instead of proper extensions, without giving errors at runtime.
 				raise luna.plugins.MetadataValidationError("The extensions for the MIME type are a single string, not a sequence.")
 	except (AttributeError, TypeError): #Not a dictionary.
 		raise luna.plugins.MetadataValidationError("The MIME metadata is not a dictionary.")
