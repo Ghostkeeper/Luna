@@ -9,12 +9,16 @@ Tests for each storage plug-in whether it properly implements the storage
 interface.
 """
 
-import plugins #The main plug-ins directory.
+import sys #To find any plug-in directories in the Python Path.
+import os.path #To generate the plug-in directory.
+
 import luna.plugins #To get the plug-ins to test with.
 import luna.tests
 
-for plugin_path in plugins.__path__:
-	luna.plugins.add_plugin_location(plugin_path)
+for root_path in sys.path:
+	plugin_path = os.path.join(root_path, "plugins")
+	if os.path.exists(plugin_path):
+		luna.plugins.add_plugin_location(os.path.join(root_path, "plugins"))
 luna.plugins.discover()
 
 #Ignore multiple spaces after assignment. It's used for outlining, dumb linter.
