@@ -59,12 +59,6 @@ set(PYTHON_FILES "")
 foreach(PYTHON_FILE_RELATIVE ${PYTHON_FILES_RELATIVE})
 	list(APPEND PYTHON_FILES ${CMAKE_SOURCE_DIR}/${PYTHON_FILE_RELATIVE})
 endforeach()
-set(PYTHON_MODULES "")
-foreach(PYTHON_FILE_RELATIVE ${PYTHON_FILES_RELATIVE})
-	string(REPLACE ".py" "" PYTHON_FILE_NO_EXTENSION ${PYTHON_FILE_RELATIVE})
-	string(REPLACE "/" "." PYTHON_MODULE ${PYTHON_FILE_NO_EXTENSION})
-	list(APPEND PYTHON_MODULES ${PYTHON_MODULE})
-endforeach()
 
 #-----------------------------Global Dependencies-------------------------------
 find_package(Python REQUIRED)
