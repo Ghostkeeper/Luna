@@ -90,7 +90,7 @@ class AtomicWriteStream:
 		"""
 		localstorage.local_storage.move(os.path.join(self._directory, self._temp_file.name), self._target_path) #Move the new file into place, replacing the old file if it existed.
 
-	def flush(self):
+	def flush(self): #pylint: disable=no-self-use
 		"""
 		Raises an exception that this operation is not supported.
 
