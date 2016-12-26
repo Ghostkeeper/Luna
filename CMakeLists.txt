@@ -14,6 +14,58 @@ set(LUNA_VERSION_MAJOR 0 CACHE STRING "Major version number. The major version n
 set(LUNA_VERSION_MINOR 0 CACHE STRING "Minor version number. The minor version number must increase for every release that introduces new features and does not alter any pre-existing API.")
 set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version number must increase for every release that only fixes bugs and does not alter any pre-existing API.")
 
+#----------------------------------File Lists-----------------------------------
+set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins without having to use GLOB.
+	__main__.py
+	luna/__init__.py
+	luna/model.py
+	luna/plugins.py
+	luna/tests.py
+	plugins/configuration/configurationtype/__init__.py
+	plugins/configuration/configurationtype/configuration.py
+	plugins/configuration/configurationtype/configuration_error.py
+	plugins/configuration/configurationtype/test/test_init.py
+	plugins/data/datatype/__init__.py
+	plugins/data/datatype/data.py
+	plugins/data/datatype/test/test_init.py
+	plugins/logger/loggertype/__init__.py
+	plugins/logger/loggertype/log.py
+	plugins/logger/loggertype/test/test_init.py
+	plugins/logger/standardout/__init__.py
+	plugins/logger/standardout/buffer_info.py
+	plugins/logger/standardout/c_type_coordinate.py
+	plugins/logger/standardout/c_type_rectangle.py
+	plugins/logger/standardout/standard_out.py
+	plugins/logger/standardout/test/test_standard_out.py
+	plugins/mime/mimetype/__init__.py
+	plugins/mime/mimetype/mime.py
+	plugins/mime/mimetype/test/test_init.py
+	plugins/storage/localstorage/__init__.py
+	plugins/storage/localstorage/atomic_write_stream.py
+	plugins/storage/localstorage/local_storage.py
+	plugins/storage/localstorage/test/test_local_storage.py
+	plugins/storage/storagetype/__init__.py
+	plugins/storage/storagetype/storage.py
+	plugins/storage/storagetype/test/test_init.py
+	plugins/storage/storagetype/test/test_integration.py
+	plugins/userinterface/automatic/__init__.py
+	plugins/userinterface/automatic/automatic.py
+	plugins/userinterface/automatic/state.py
+	plugins/userinterface/userinterfacetype/__init__.py
+	plugins/userinterface/userinterfacetype/test/test_init.py
+	plugins/userinterface/userinterfacetype/user_interface.py
+)
+set(PYTHON_FILES "")
+foreach(PYTHON_FILE_RELATIVE ${PYTHON_FILES_RELATIVE})
+	list(APPEND PYTHON_FILES ${CMAKE_SOURCE_DIR}/${PYTHON_FILE_RELATIVE})
+endforeach()
+set(PYTHON_MODULES "")
+foreach(PYTHON_FILE_RELATIVE ${PYTHON_FILES_RELATIVE})
+	string(REPLACE ".py" "" PYTHON_FILE_NO_EXTENSION ${PYTHON_FILE_RELATIVE})
+	string(REPLACE "/" "." PYTHON_MODULE ${PYTHON_FILE_NO_EXTENSION})
+	list(APPEND PYTHON_MODULES ${PYTHON_MODULE})
+endforeach()
+
 #-----------------------------Global Dependencies-------------------------------
 find_package(Python REQUIRED)
 
@@ -25,8 +77,7 @@ if(BUILD_TESTING)
 	#Code style validation.
 	find_package(PyLint REQUIRED)
 	configure_file("${CMAKE_SOURCE_DIR}/pylintrc.in" "${CMAKE_BINARY_DIR}/pylintrc")
-	file(GLOB_RECURSE PYTHON_FILES *.py)
-	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
+	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_MODULES})
 	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
 endif()
 
@@ -37,13 +88,10 @@ set(PLUGIN_DIRECTORIES "")
 set(MIME_TYPES "") #MIME types.
 set(MIME_EXTENSIONS "") #Extensions for each MIME type.
 set(MIME_NAMES "") #Human-readable names for each MIME type.
-file(GLOB_RECURSE PLUGIN_INIT_FILES __init__.py) #All directories with __init__.py files.
-foreach(INIT_FILE ${PLUGIN_INIT_FILES})
-	string(FIND ${INIT_FILE} ${CMAKE_BINARY_DIR} IS_IN_BUILD_DIR)
-	if(NOT ${IS_IN_BUILD_DIR} EQUAL -1)
-		list(REMOVE_ITEM PLUGIN_INIT_FILES ${INIT_FILE}) #Exclude files in the build directory.
-	else()
-		get_filename_component(PACKAGE_DIR ${INIT_FILE} DIRECTORY) #Get directory containing the __init__.py file.
+foreach(PYTHON_FILE ${PYTHON_FILES})
+	string(FIND ${PYTHON_FILE} "/__init__.py" IS_INIT_FILE)
+	if(NOT ${IS_INIT_FILE} EQUAL -1) #Contains the string "/__init__.py". Let's assume this is the file name.
+		get_filename_component(PACKAGE_DIR ${PYTHON_FILE} DIRECTORY) #Get directory containing the __init__.py file.
 		if(EXISTS ${PACKAGE_DIR}/CMakeLists.txt)
 			add_subdirectory(${PACKAGE_DIR})
 		endif()
