@@ -28,6 +28,8 @@ set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins 
 	plugins/data/datatype/__init__.py
 	plugins/data/datatype/data.py
 	plugins/data/datatype/test/test_init.py
+	plugins/data/enumerated/__init__.py
+	plugins/data/enumerated/enumerated_type.py
 	plugins/logger/loggertype/__init__.py
 	plugins/logger/loggertype/log.py
 	plugins/logger/loggertype/test/test_init.py
