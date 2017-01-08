@@ -12,6 +12,13 @@ import itertools #To split a byte sequence to check its type with every data plu
 
 import luna.plugins #To find the data types that are available.
 
+class SerialisationException(Exception):
+	"""
+	Marker exception to indicate that something went wrong with serialising or
+	deserialising a piece of data.
+	"""
+	pass
+
 def data_types():
 	"""
 	Gives a set of all data types available.

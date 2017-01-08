@@ -12,6 +12,8 @@ import enum #To check types against the Enum class.
 import sys #To find pre-loaded enums in their original modules.
 import unicodedata #To see if the serialisation of enums has only allowed characters.
 
+import luna.plugins #To raise a SerialisationException.
+
 def serialise(instance):
 	"""
 	Serialises an enumerated type.
@@ -22,7 +24,7 @@ def serialise(instance):
 	try:
 		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
 	except TypeError: #Translate the cryptic type error that arises from this if it is no enum.
-		raise TypeError("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
+		raise luna.plugins.api("data").SerialisationException("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
 	return reference.encode(encoding="utf_8")
 
 def deserialise(serialised):
@@ -32,7 +34,10 @@ def deserialise(serialised):
 	:param serialised: A sequence of bytes that represents an enumerated type.
 	:return: An instance of the enumerated type the sequence represents.
 	"""
-	serialised_string = serialised.decode(encoding="utf_8")
+	try:
+		serialised_string = serialised.decode(encoding="utf_8")
+	except UnicodeDecodeError:
+		raise luna.plugins.api("data").SerialisationException("The serialised data is not UTF-8 encoded.")
 	path_segments = serialised_string.split(".")
 	for index, _ in enumerate(path_segments):
 		candidate_module = ".".join(path_segments[:index]) #Join all modules up to this one to get a module path.
@@ -40,11 +45,16 @@ def deserialise(serialised):
 			module = sys.modules[candidate_module] #When we find a module that is imported, continue with getattr below.
 			break
 	else:
-		raise TypeError("The serialised data does not represent an enumerated type or is not imported: {serialised}".format(serialised=serialised_string))
+		raise luna.plugins.api("data").SerialisationException("The serialised data does not represent an enumerated type or is not imported: {serialised}".format(serialised=serialised_string))
 
 	enum_instance = module
 	for path_segment in path_segments[index + 1:]: #Continue iterating where we left off.
-		enum_instance = getattr(enum_instance, path_segment) #Walk down the path with getattr.
+		try:
+			enum_instance = getattr(enum_instance, path_segment) #Walk down the path with getattr.
+		except AttributeError:
+			module_name = ".".join(path_segments[:index])
+			qualname = ".".join(path_segments[index + 1:])
+			raise luna.plugins.api("data").SerialisationException("The serialised data requests an enumerated type {qualname} that is not found in {module_name}.".format(module=module_name, qualname=qualname))
 	return enum_instance
 
 def is_instance(instance):
