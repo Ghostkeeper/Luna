@@ -33,11 +33,18 @@ def deserialise(serialised):
 	:return: An instance of the enumerated type the sequence represents.
 	"""
 	serialised_string = serialised.decode(encoding="utf_8")
-	path = serialised_string.split(".")
-	module_string = ".".join(path[0:-2]) #Remove everything after the last two dots.
-	module = sys.modules[module_string] #The module may not yet be imported at this point, but if it isn't then the plug-in is not loaded and should be considered unsafe.
-	enum_class = getattr(module, path[-2]) #Enum must be reachable from the top level of the module!
-	enum_instance = getattr(enum_class, path[-1])
+	path_segments = serialised_string.split(".")
+	for index, _ in enumerate(path_segments):
+		candidate_module = ".".join(path_segments[:index]) #Join all modules up to this one to get a module path.
+		if candidate_module in sys.modules:
+			module = sys.modules[candidate_module] #When we find a module that is imported, continue with getattr below.
+			break
+	else:
+		raise TypeError("The serialised data does not represent an enumerated type or is not imported: {serialised}".format(serialised=serialised_string))
+
+	enum_instance = module
+	for path_segment in path_segments[index + 1:]: #Continue iterating where we left off.
+		enum_instance = getattr(enum_instance, path_segment) #Walk down the path with getattr.
 	return enum_instance
 
 def is_instance(instance):
