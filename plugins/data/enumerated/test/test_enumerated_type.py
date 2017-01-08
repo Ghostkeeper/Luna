@@ -13,6 +13,7 @@ output a lot, but tests the behaviour of the units instead.
 
 import enum #To define example enumerated types to test with.
 import test.test_enum #Built-in enumerated types to test with.
+import unittest.mock #To replace the dependency on the data module.
 
 import enumerated.enumerated_type #The module we're testing.
 import luna.tests #For parametrised tests.
@@ -62,6 +63,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 			"serialised": b"enumerated.test.EnumContainer.Material.STONE"
 		}
 	})
+	@unittest.mock.patch("luna.plugins.api", unittest.mock.MagicMock())
 	def test_deserialise(self, serialised):
 		"""
 		Tests whether we can deserialise enumerated types.
@@ -85,6 +87,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 			"instance": EnumContainer.Material.STONE
 		}
 	})
+	@unittest.mock.patch("luna.plugins.api", unittest.mock.MagicMock())
 	def test_serialise(self, instance):
 		"""
 		Tests whether we can serialise enumerated types.
