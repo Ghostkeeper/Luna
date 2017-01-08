@@ -12,7 +12,7 @@ import functools #To test filling in partials via metadata.
 
 import datatype #The module we're testing.
 import luna.plugins #To check whether a MetadataValidationError is raised.
-import luna.tests #For parametrised tests
+import luna.tests #For parametrised tests.
 
 class TestDataType(luna.tests.TestCase):
 	"""
