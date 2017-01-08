@@ -49,6 +49,29 @@ class TestEnumeratedType(luna.tests.TestCase):
 	"""
 
 	@luna.tests.parametrise({
+		"custom": {
+			"serialised": b"enumerated.test.Animal.CAT"
+		},
+		"custom2": {
+			"serialised": b"enumerated.test.Animal.BIRD"
+		},
+		"builtins": {
+			"serialised": b"test.test_enum.Fruit.tomato"
+		},
+		"nested": {
+			"serialised": b"enumerated.test.EnumContainer.Material.STONE"
+		}
+	})
+	def test_deserialise(self, serialised):
+		"""
+		Tests whether we can deserialise enumerated types.
+
+		:param serialised: The serialised form of some enumerated type.
+		"""
+		result = enumerated.enumerated_type.deserialise(serialised)
+		self.assertIsInstance(result, enum.Enum)
+
+	@luna.tests.parametrise({
 		"module_local": {
 			"instance": Animal.CAT
 		},
