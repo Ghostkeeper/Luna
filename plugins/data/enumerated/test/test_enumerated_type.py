@@ -89,6 +89,39 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertIsInstance(result, enum.Enum)
 
 	@luna.tests.parametrise({
+		"not_utf_8": {
+			"serialised": bytes([0x80, 0x61, 0x62, 0x63]) #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		},
+		"unknown_module": {
+			"serialised": b"evilcorp.destroy_the_world.VirusType.RANSOMWARE" #evilcorp does not exist.
+		},
+		"unknown_submodule": {
+			"serialised": b"enumerated.test_oops_i_made_a_typo.test_enumerated_type.Animal.DOG" #test_oops_i_made_a_typo does not exist.
+		},
+		"unknown_enum": {
+			"serialised": b"enumerated.test.test_enumerated_type.Colour.RED" #Colour does not exist.
+		},
+		"unknown_instance": {
+			"serialised": b"enumerated.test.test_enumerated_type.Animal.SNAKE" #SNAKE does not exist.
+		},
+		"unknown_subenum": {
+			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Flower.ROSE" #Flower does not exist.
+		},
+		"unknown_subinstance": {
+			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.GLASS" #GLASS does not exist.
+		}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_deserialise_error(self, serialised):
+		"""
+		Tests fail cases in which the deserialisation must raise an exception.
+
+		:param serialised: Some serialised data that is not an enumeration.
+		"""
+		with self.assertRaises(luna.tests.MockException):
+			enumerated.enumerated_type.deserialise(serialised)
+
+	@luna.tests.parametrise({
 		"module_local": {
 			"instance": Animal.CAT
 		},
