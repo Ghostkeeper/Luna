@@ -16,7 +16,7 @@ import test.test_enum #Built-in enumerated types to test with.
 import unittest.mock #To replace the dependency on the data module.
 
 import enumerated.enumerated_type #The module we're testing.
-import luna.tests #For parametrised tests.
+import luna.tests #For parametrised tests and mock exceptions.
 
 class Animal(enum.Enum):
 	"""
