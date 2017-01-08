@@ -144,3 +144,21 @@ class TestEnumeratedType(luna.tests.TestCase):
 		"""
 		result = enumerated.enumerated_type.serialise(instance)
 		self.assertIsInstance(result, bytes, "The serialised enumerated type must be a byte sequence.")
+
+	@luna.tests.parametrise({
+		"integer": {
+			"instance": 3
+		},
+		"custom_object": {
+			"instance": EnumContainer()
+		}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_error(self, instance):
+		"""
+		Tests fail cases in which serialisation must raise an exception.
+
+		:param instance: An object that is not an enumerated type.
+		"""
+		with self.assertRaises(luna.tests.MockException):
+			enumerated.enumerated_type.serialise(instance)
