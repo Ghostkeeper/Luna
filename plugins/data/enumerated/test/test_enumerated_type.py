@@ -41,6 +41,24 @@ class EnumContainer:
 		STONE = 4
 		WOOD = 5
 
+
+def mock_api(plugin_type):
+	"""
+	Mocks calls to different APIs.
+
+	This allows the tests to remain unit tests, even if the actual units try to
+	call upon different plug-ins.
+
+	:param plugin_type: The type of plug-in to mock.
+	:return: A fake API for that plug-in.
+	"""
+	mock = unittest.mock.MagicMock()
+	if plugin_type == "data": #We need to specify the SerialisationException as an actual exception since the "raise" keyword is not Pythonic: It actually tests for type!
+		class SerialisationException(Exception): #This class must extend from Exception for the raise type check.
+			pass
+		mock.SerialisationException = SerialisationException
+	return mock
+
 class TestEnumeratedType(luna.tests.TestCase):
 	"""
 	Tests the behaviour of various functions belonging to the enumerated type.
@@ -63,7 +81,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 			"serialised": b"enumerated.test.EnumContainer.Material.STONE"
 		}
 	})
-	@unittest.mock.patch("luna.plugins.api", unittest.mock.MagicMock())
+	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_deserialise(self, serialised):
 		"""
 		Tests whether we can deserialise enumerated types.
@@ -87,7 +105,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 			"instance": EnumContainer.Material.STONE
 		}
 	})
-	@unittest.mock.patch("luna.plugins.api", unittest.mock.MagicMock())
+	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_serialise(self, instance):
 		"""
 		Tests whether we can serialise enumerated types.
