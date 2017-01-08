@@ -58,7 +58,7 @@ def deserialise(serialised):
 		except AttributeError:
 			module_name = ".".join(path_segments[:index])
 			qualname = ".".join(path_segments[index + 1:])
-			raise luna.plugins.api("data").SerialisationException("The serialised data requests an enumerated type {qualname} that is not found in {module_name}.".format(module=module_name, qualname=qualname))
+			raise luna.plugins.api("data").SerialisationException("The serialised data requests an enumerated type {qualname} that is not found in {module_name}.".format(module_name=module_name, qualname=qualname))
 	return enum_instance
 
 def is_instance(instance):
