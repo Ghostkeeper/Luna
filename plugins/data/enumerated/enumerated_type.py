@@ -20,7 +20,7 @@ def serialise(instance):
 	:return: A byte sequence representing the enumerated type.
 	"""
 	try:
-		reference = instance.__module__ + "." + instance.__class__.__name__ + "." + instance.name
+		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
 	except TypeError: #Translate the cryptic type error that arises from this if it is no enum.
 		raise TypeError("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
 	return reference.encode(encoding="utf_8")
