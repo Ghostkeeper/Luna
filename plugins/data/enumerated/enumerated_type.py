@@ -43,22 +43,14 @@ def deserialise(serialised):
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised data is not UTF-8 encoded.") from e
 	path_segments = serialised_string.split(".")
-	for index, _ in enumerate(path_segments):
-		candidate_module = ".".join(path_segments[:index]) #Join all modules up to this one to get a module path.
-		if candidate_module in sys.modules:
-			module = sys.modules[candidate_module] #When we find a module that is imported, continue with getattr below.
-			break
-	else:
+	if path_segments[0] not in sys.modules:
 		raise luna.plugins.api("data").SerialisationException("The serialised data does not represent an enumerated type or is not imported: {serialised}".format(serialised=serialised_string))
-
-	enum_instance = module
-	for path_segment in path_segments[index + 1:]: #Continue iterating where we left off.
+	enum_instance = sys.modules[path_segments[0]]
+	for path_segment in path_segments[1:]: #Continue iterating where we left off.
 		try:
 			enum_instance = getattr(enum_instance, path_segment) #Walk down the path with getattr.
 		except AttributeError as e:
-			module_name = ".".join(path_segments[:index])
-			qualname = ".".join(path_segments[index + 1:])
-			raise luna.plugins.api("data").SerialisationException("The serialised data requests an enumerated type {qualname} that is not found in {module_name}.".format(module_name=module_name, qualname=qualname)) from e
+			raise luna.plugins.api("data").SerialisationException("The serialised data requests an enumerated type {qualname} that doesn't exist.".format(qualname=serialised_string)) from e
 	return enum_instance
 
 def is_instance(instance):
