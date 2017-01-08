@@ -69,16 +69,16 @@ class TestEnumeratedType(luna.tests.TestCase):
 
 	@luna.tests.parametrise({
 		"custom": {
-			"serialised": b"enumerated.test.Animal.CAT"
+			"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"
 		},
 		"custom2": {
-			"serialised": b"enumerated.test.Animal.BIRD"
+			"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"
 		},
 		"builtins": {
 			"serialised": b"test.test_enum.Fruit.tomato"
 		},
 		"nested": {
-			"serialised": b"enumerated.test.EnumContainer.Material.STONE"
+			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"
 		}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
