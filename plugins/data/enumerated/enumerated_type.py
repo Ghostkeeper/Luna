@@ -20,6 +20,8 @@ def serialise(instance):
 
 	:param instance: The instance of an enumerated type.
 	:return: A byte sequence representing the enumerated type.
+	:raises SerialisationException: The serialisation does not represent an
+	enumerated type.
 	"""
 	try:
 		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
@@ -33,6 +35,8 @@ def deserialise(serialised):
 
 	:param serialised: A sequence of bytes that represents an enumerated type.
 	:return: An instance of the enumerated type the sequence represents.
+	:raises SerialisationException: The serialisation does not represent an
+	enumerated type.
 	"""
 	try:
 		serialised_string = serialised.decode(encoding="utf_8")
