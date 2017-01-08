@@ -25,6 +25,21 @@ class Animal(enum.Enum):
 	DOG = 1
 	BIRD = 2
 
+class EnumContainer:
+	"""
+	A class that contains a nested enum to test with.
+	"""
+	class Material(enum.Enum):
+		"""
+		A nested enumerated type inside another class.
+
+		We test with this because it has a different import path if it is
+		defined this way.
+		"""
+		IRON = 3
+		STONE = 4
+		WOOD = 5
+
 class TestEnumeratedType(luna.tests.TestCase):
 	"""
 	Tests the behaviour of various functions belonging to the enumerated type.
@@ -42,6 +57,9 @@ class TestEnumeratedType(luna.tests.TestCase):
 		},
 		"builtins": {
 			"instance": test.test_enum.Fruit.tomato
+		},
+		"nested": {
+			"instance": EnumContainer.Material.STONE
 		}
 	})
 	def test_serialise(self, instance):
