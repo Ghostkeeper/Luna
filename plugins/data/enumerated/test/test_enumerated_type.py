@@ -41,7 +41,6 @@ class EnumContainer:
 		STONE = 4
 		WOOD = 5
 
-
 def mock_api(plugin_type):
 	"""
 	Mocks calls to different APIs.
@@ -54,9 +53,7 @@ def mock_api(plugin_type):
 	"""
 	mock = unittest.mock.MagicMock()
 	if plugin_type == "data": #We need to specify the SerialisationException as an actual exception since the "raise" keyword is not Pythonic: It actually tests for type!
-		class SerialisationException(Exception): #This class must extend from Exception for the raise type check.
-			pass
-		mock.SerialisationException = SerialisationException
+		mock.SerialisationException = luna.tests.MockException
 	return mock
 
 class TestEnumeratedType(luna.tests.TestCase):

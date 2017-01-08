@@ -84,6 +84,16 @@ class CallableObject:
 		"""
 		raise AssertionError("The callable object was called by the test with parameters {args} and key-word arguments {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
+class MockException(Exception):
+	"""
+	An exception to test against.
+
+	Tests can patch this exception in place of other exceptions in different
+	places, and then test whether the unit raises this exception. If an
+	exception belongs to the same plug-in, then a test can just test against
+	that.
+	"""
+
 class _TestCaseMeta(type):
 	"""
 	Metaclass to capture all parametrised tests and duplicate them for each of
