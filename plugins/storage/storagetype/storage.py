@@ -139,7 +139,7 @@ def open_read(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in luna.plugins.plugins_by_type.values():
+	for storage in luna.plugins.plugins_by_type["storage"].values():
 		if storage["storage"]["can_read"](uri):
 			try:
 				return storage["storage"]["open_read"](uri)
@@ -166,7 +166,7 @@ def open_write(uri):
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
-	for storage in luna.plugins.plugins_by_type.values():
+	for storage in luna.plugins.plugins_by_type["storage"].values():
 		if storage["storage"]["can_write"](uri):
 			try:
 				storage["storage"]["open_write"](uri)
