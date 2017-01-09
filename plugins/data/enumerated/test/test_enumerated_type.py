@@ -122,6 +122,32 @@ class TestEnumeratedType(luna.tests.TestCase):
 			enumerated.enumerated_type.deserialise(serialised)
 
 	@luna.tests.parametrise({
+		"custom": {
+			"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"
+		},
+		"custom2": {
+			"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"
+		},
+		"builtins": {
+			"serialised": b"test.test_enum.Fruit.tomato"
+		},
+		"nested": {
+			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"
+		}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_deserialise_serialise(self, serialised):
+		"""
+		Tests whether deserialising and then serialising results in the same
+		instance.
+		:param serialised: The serialised form to start (and hopefully end up)
+		with.
+		"""
+		instance = enumerated.enumerated_type.deserialise(serialised)
+		new_serialised = enumerated.enumerated_type.serialise(instance)
+		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
+
+	@luna.tests.parametrise({
 		"module_local": {
 			"instance": Animal.CAT
 		},
