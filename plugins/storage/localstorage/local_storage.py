@@ -22,6 +22,7 @@ import os #To delete files, get modification times and flush data to files.
 import urllib.parse #To get the scheme from a URI.
 
 import localstorage.atomic_write_stream #To implement atomic writing.
+import localstorage.bytes_stream_reader #To allow iterating over bytes of the stream.
 
 def can_read(uri):
 	"""
@@ -106,7 +107,7 @@ def open_read(uri):
 	:raises IOError: The file could not be opened for reading.
 	"""
 	path = _uri_to_path(uri)
-	return open(path, "rb")
+	return localstorage.bytes_stream_reader.BytesStreamReader(open(path, "rb"))
 
 def open_write(uri):
 	"""
