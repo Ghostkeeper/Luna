@@ -65,18 +65,10 @@ class TestEnumeratedType(luna.tests.TestCase):
 	"""
 
 	@luna.tests.parametrise({
-		"custom": {
-			"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"
-		},
-		"custom2": {
-			"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"
-		},
-		"builtins": {
-			"serialised": b"test.test_enum.Fruit.tomato"
-		},
-		"nested": {
-			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"
-		}
+		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
+		"custom2":  {"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"},
+		"builtins": {"serialised": b"test.test_enum.Fruit.tomato"},
+		"nested":   {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_deserialise(self, serialised):
@@ -89,27 +81,13 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertIsInstance(result, enum.Enum)
 
 	@luna.tests.parametrise({
-		"not_utf_8": {
-			"serialised": bytes([0x80, 0x61, 0x62, 0x63]) #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
-		},
-		"unknown_module": {
-			"serialised": b"evilcorp.destroy_the_world.VirusType.RANSOMWARE" #evilcorp does not exist.
-		},
-		"unknown_submodule": {
-			"serialised": b"enumerated.test_oops_i_made_a_typo.test_enumerated_type.Animal.DOG" #test_oops_i_made_a_typo does not exist.
-		},
-		"unknown_enum": {
-			"serialised": b"enumerated.test.test_enumerated_type.Colour.RED" #Colour does not exist.
-		},
-		"unknown_instance": {
-			"serialised": b"enumerated.test.test_enumerated_type.Animal.SNAKE" #SNAKE does not exist.
-		},
-		"unknown_subenum": {
-			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Flower.ROSE" #Flower does not exist.
-		},
-		"unknown_subinstance": {
-			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.GLASS" #GLASS does not exist.
-		}
+		"not_utf_8":           {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		"unknown_module":      {"serialised": b"evilcorp.destroy_the_world.VirusType.RANSOMWARE"}, #evilcorp does not exist.
+		"unknown_submodule":   {"serialised": b"enumerated.test_oops_i_made_a_typo.test_enumerated_type.Animal.DOG"}, #test_oops_i_made_a_typo does not exist.
+		"unknown_enum":        {"serialised": b"enumerated.test.test_enumerated_type.Colour.RED"}, #Colour does not exist.
+		"unknown_instance":    {"serialised": b"enumerated.test.test_enumerated_type.Animal.SNAKE"}, #SNAKE does not exist.
+		"unknown_subenum":     {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Flower.ROSE"}, #Flower does not exist.
+		"unknown_subinstance": {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.GLASS"} #GLASS does not exist.
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_deserialise_error(self, serialised):
@@ -122,18 +100,10 @@ class TestEnumeratedType(luna.tests.TestCase):
 			enumerated.enumerated_type.deserialise(serialised)
 
 	@luna.tests.parametrise({
-		"custom": {
-			"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"
-		},
-		"custom2": {
-			"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"
-		},
-		"builtins": {
-			"serialised": b"test.test_enum.Fruit.tomato"
-		},
-		"nested": {
-			"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"
-		}
+		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
+		"custom2":  {"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"},
+		"builtins": {"serialised": b"test.test_enum.Fruit.tomato"},
+		"nested":   {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_deserialise_serialise(self, serialised):
@@ -148,18 +118,10 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
-		"module_local": {
-			"instance": Animal.CAT
-		},
-		"module_local2": { #Different module-local one that is not the first-defined entry.
-			"instance": Animal.BIRD
-		},
-		"builtins": {
-			"instance": test.test_enum.Fruit.tomato
-		},
-		"nested": {
-			"instance": EnumContainer.Material.STONE
-		}
+		"module_local":  {"instance": Animal.CAT},
+		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
+		"builtins":      {"instance": test.test_enum.Fruit.tomato},
+		"nested":        {"instance": EnumContainer.Material.STONE}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_serialise(self, instance):
@@ -172,18 +134,10 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertIsInstance(result, bytes, "The serialised enumerated type must be a byte sequence.")
 
 	@luna.tests.parametrise({
-		"module_local": {
-			"instance": Animal.CAT
-		},
-		"module_local2": { #Different module-local one that is not the first-defined entry.
-			"instance": Animal.BIRD
-		},
-		"builtins": {
-			"instance": test.test_enum.Fruit.tomato
-		},
-		"nested": {
-			"instance": EnumContainer.Material.STONE
-		}
+		"module_local":  {"instance": Animal.CAT},
+		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
+		"builtins":      {"instance": test.test_enum.Fruit.tomato},
+		"nested":        {"instance": EnumContainer.Material.STONE}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_serialise_deserialise(self, instance):
@@ -197,12 +151,8 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertEqual(instance, deserialised, "The enumerated type must be the same after serialising and deserialising.")
 
 	@luna.tests.parametrise({
-		"integer": {
-			"instance": 3
-		},
-		"custom_object": {
-			"instance": EnumContainer()
-		}
+		"integer":       {"instance": 3},
+		"custom_object": {"instance": EnumContainer()}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_serialise_error(self, instance):
