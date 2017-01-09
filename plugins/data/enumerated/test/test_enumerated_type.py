@@ -63,6 +63,8 @@ class TestEnumeratedType(luna.tests.TestCase):
 	In particular, it focuses on how these functions interact and integrate with
 	each other.
 	"""
+	#Ignore multiple spaces after assignment. It's used for outlining, dumb linter.
+	#pylint: disable=C0326
 
 	@luna.tests.parametrise({
 		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
