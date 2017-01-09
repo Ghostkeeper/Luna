@@ -30,6 +30,28 @@ class BytesStreamReader:
 		"""
 		self._wrapped = wrapped
 
+	def __enter__(self):
+		"""
+		Starts reading from the stream.
+
+		This command is simply passed on to the wrapped stream.
+		:return: This BytesStreamReader instance.
+		"""
+		self._wrapped.__enter__()
+		return self #Need to override this because we want to return ourselves, not the BufferedReader instance.
+
+	def __exit__(self, exception_type, exception_value, traceback):
+		"""
+		Stops reading from the stream.
+		:param exception_type: The type of any exception thrown during the
+		``with`` block, or ``None`` if no exception was thrown.
+		:param exception_value: An instance of the exception that was thrown
+		during the ``with`` block, or ``None`` if no exception was thrown.
+		:param traceback: The traceback of any exception that was thrown during
+		the ``with`` block, or ``None`` if no exception was thrown.
+		"""
+		self._wrapped.__exit__()
+
 	def __getattr__(self, item):
 		"""
 		Passes ordinary calls to the stream on to the wrapped `BufferedReader`.
