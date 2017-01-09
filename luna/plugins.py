@@ -371,7 +371,7 @@ def _safe_log_warning(message, **formatted_strings):
 	in the log message.
 	"""
 	if "logger" in _plugin_types:
-		api("logger").warning(message, formatted_strings)
+		api("logger").warning(message, **formatted_strings)
 	else:
 		logging.exception(message.format(**formatted_strings)) #pylint: disable=logging-format-interpolation
 
