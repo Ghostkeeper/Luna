@@ -146,6 +146,31 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertIsInstance(result, bytes, "The serialised enumerated type must be a byte sequence.")
 
 	@luna.tests.parametrise({
+		"module_local": {
+			"instance": Animal.CAT
+		},
+		"module_local2": { #Different module-local one that is not the first-defined entry.
+			"instance": Animal.BIRD
+		},
+		"builtins": {
+			"instance": test.test_enum.Fruit.tomato
+		},
+		"nested": {
+			"instance": EnumContainer.Material.STONE
+		}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_deserialise(self, instance):
+		"""
+		Tests whether serialising and then deserialising results in the original
+		instance.
+		:param instance: The instance to start (and hopefully end up) with.
+		"""
+		serialised = enumerated.enumerated_type.serialise(instance)
+		deserialised = enumerated.enumerated_type.deserialise(serialised)
+		self.assertEqual(instance, deserialised, "The enumerated type must be the same after serialising and deserialising.")
+
+	@luna.tests.parametrise({
 		"integer": {
 			"instance": 3
 		},
