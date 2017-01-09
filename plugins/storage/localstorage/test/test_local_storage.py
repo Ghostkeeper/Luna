@@ -66,7 +66,6 @@ class ConcurrentIOWrapper:
 		"""
 		Calls the ``read`` function twice and inserts a concurrent write in
 		between.
-
 		:param args: The positional arguments passed to the ``read`` function.
 		:param kwargs: The key-word arguments passed to the ``read`` function.
 		:return: The result of the ``read`` function.
@@ -98,13 +97,12 @@ class ConcurrentIOWrapper:
 		"""
 		Creates a new I/O wrapper around a specified stream.
 
-		All calls to this wrapper are passed on to the stream, but during this
-		time, some other streams are passed on to the
+		All calls to this wrapper are passed on to the stream, but every call,
+		some other data may be written to the unsafe file.
 		:param stream: The stream to wrap around.
 		:param write_string: A string of characters to write during I/O
-			operations with the stream. Note that this string is always written
-			to the unsafe file, which is not necessarily the file for this
-			stream.
+		operations with the stream. Note that this string is always written to
+		the unsafe file, which is not necessarily the file for this stream.
 		"""
 		self._stream = stream
 		self._write_string = write_string
@@ -113,7 +111,6 @@ class ConcurrentIOWrapper:
 		"""
 		Writes data to the concurrent stream, gets an attribute from the actual
 		stream, then writes more data to the concurrent stream.
-
 		:param item: The name of the attribute to get.
 		:return: The value of the requested attribute.
 		"""
@@ -125,7 +122,6 @@ class ConcurrentIOWrapper:
 	def __enter__(self, *args, **kwargs):
 		"""
 		Enters the scope of the I/O stream.
-
 		:param args: Positional arguments to pass to the I/O stream.
 		:param kwargs: Key-word arguments to pass to the I/O stream.
 		:return: The wrapping I/O stream.
@@ -140,7 +136,6 @@ class ConcurrentIOWrapper:
 		This needs to exist for the with-clause to allow being called on the
 		wrapper. It is a completely transparent wrapper around the actual I/O
 		stream.
-
 		:param args: Positional arguments to pass to the I/O stream.
 		:param kwargs: Key-word arguments to pass to the I/O stream.
 		:return: The result of exiting the I/O stream's scope.
@@ -153,7 +148,6 @@ class ConcurrentIOWrapper:
 
 		A byte is written to the unsafe target file before and after a function
 		call.
-
 		:param function: The function to call.
 		:param args: The positional arguments to call the function with.
 		:param kwargs: The key-word arguments to call the function with.
@@ -186,7 +180,6 @@ def _open_simulate_concurrency(file, *args, **kwargs):
 	The arguments and key-word arguments are explicitly not specified in this
 	function, as they must be translucent towards the real ``open`` function,
 	even when the real ``open`` function changes.
-
 	:param file: The path to the file to open.
 	:param args: Any additional arguments supplied to the open function.
 	:param kwargs: Any additional key-word arguments supplied to the open
@@ -281,7 +274,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		"""
 		Tests whether the plug-in says it can read files that it should be able
 		to read.
-
 		:param uri: A URI of a file that the local storage plug-in should be
 		able to read.
 		"""
@@ -292,7 +284,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		"""
 		Tests whether the plug-in says it can write files that it should be able
 		to write.
-
 		:param uri: A URI of a file that the local storage plug-in should be
 		able to write.
 		"""
@@ -303,7 +294,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		"""
 		Tests whether the plug-in says it cannot read files that it should not
 		be able to read.
-
 		:param uri: A URI of a resource that the local storage plug-in should
 		not be able to read.
 		"""
@@ -314,7 +304,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		"""
 		Tests whether the plug-in says it cannot write files that it should not
 		be able to write.
-
 		:param uri: A URI of a resource that the local storage plug-in should
 		not be able to write.
 		"""
@@ -378,7 +367,6 @@ class TestLocalStorage(luna.tests.TestCase):
 
 		This writes some content to a file, reads it back and sees whether it is
 		the same.
-
 		:param content: The content to put in the file before reading.
 		"""
 		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
@@ -419,7 +407,6 @@ class TestLocalStorage(luna.tests.TestCase):
 
 		This uses the write functionality to write content to a file, then reads
 		it back to verify that the content was written correctly.
-
 		:param content: The content to write to the file, as `bytes`.
 		"""
 		with localstorage.local_storage.open_write(_unsafe_target_file) as file_handle:
@@ -447,7 +434,6 @@ class TestLocalStorage(luna.tests.TestCase):
 		Tests writing to a file that already exists.
 
 		The old file must get overwritten by the new file.
-
 		:param content: The content to write to the file, as `bytes`.
 		"""
 		with open(_unsafe_target_file, "w") as file_handle: #Make sure the file exists.

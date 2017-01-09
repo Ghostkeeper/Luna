@@ -21,7 +21,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:return: Dictionary of metadata.
 	"""
 	return {
@@ -50,7 +49,6 @@ def validate_metadata(configuration_metadata):
 	Configuration's metadata must have a ``configuration`` field, which must
 	have a ``name`` entry and an ``instance`` entry. The ``instance`` entry must
 	implement ``__getitem__``, ``__iter__``, ``serialise`` and ``deserialise``.
-
 	:param configuration_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

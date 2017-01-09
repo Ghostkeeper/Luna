@@ -30,7 +30,6 @@ def can_read(uri):
 	This determination is purely made on the URI, not on the actual file system.
 	It can read from the URI if the URI uses the file scheme and is not a
 	directory.
-
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can read from the specified URI, or
 	``False`` if it can't.
@@ -54,8 +53,7 @@ def can_write(uri):
 
 	This determination is purely made on the URI, not on the actual file system.
 	It can write to the URI if the URI uses the file scheme and is not a
-	cirectory.
-
+	directory.
 	:param uri: An absolute URI.
 	:return: ``True`` if this plug-in can write to the specified URI, or
 	``False`` if it can't.
@@ -65,7 +63,6 @@ def can_write(uri):
 def delete(uri):
 	"""
 	Deletes the resource at the specified location.
-
 	:param uri: The location of the resource to delete.
 	:raises IOError: The file could not be deleted.
 	"""
@@ -74,7 +71,6 @@ def delete(uri):
 def exists(uri):
 	"""
 	Checks if the specified resource exists.
-
 	:param uri: The location of the resource to check for.
 	:return: ``True`` if the file exists, or ``False`` if it doesn't.
 	:raises IOError: The existence check could not be performed.
@@ -86,7 +82,6 @@ def move(source, destination):
 	Moves a resource from one location to another.
 
 	Any existing resource at the destination will get overwritten.
-
 	:param source: The location of a resource that must be moved.
 	:param destination: The new location of the resource.
 	:raises IOError: Moving the resource failed.
@@ -106,7 +101,6 @@ def open_read(uri):
 	it. So if that happens, this module will still be reading from a file that
 	is long gone. It reads the data that it got at the point where it opened the
 	stream.
-
 	:param uri: The URI of the resource to read.
 	:return: A stream that reads the contents of the resource as a bytes string.
 	:raises IOError: The file could not be opened for reading.
@@ -128,7 +122,6 @@ def open_write(uri):
 
 	Since flushing the stream is directly in conflict with atomic writing,
 	flushing the stream returned by this write function is not supported.
-
 	:param uri: The location of the resource to write the data to.
 	:param data: The data to write to the resource, as a bytes string.
 	:raises IOError: The data could not be written.
@@ -142,7 +135,6 @@ def _uri_to_path(uri):
 
 	This already assumes that this is local. The input must have been checked by
 	``can_read`` or ``can_write``.
-
 	:param uri: The URI to convert to a path.
 	:return: A local path that can be read by Python's file I/O.
 	"""

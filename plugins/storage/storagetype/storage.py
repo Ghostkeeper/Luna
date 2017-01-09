@@ -28,7 +28,6 @@ def delete(uri):
 	Any plug-in that reports it can write to the URI will be used to delete the
 	entry. If there are multiple plug-ins that can write to the URI, an
 	arbitrary one will be chosen.
-
 	:param uri: The URI to delete.
 	:raises IOError: The operation failed.
 	"""
@@ -53,10 +52,9 @@ def exists(uri):
 	Any plug-in that reports it can read from the URI will be used to check for
 	its existence. If there are multiple plug-ins that can read from the URI, an
 	arbitrary one will be chosen.
-
 	:param uri: The URI to check for existence.
 	:return: ``True`` if the specified location exists, or ``False`` if it
-		doesn't.
+	doesn't.
 	:raises IOError: The operation failed.
 	"""
 	uri = _to_absolute_uri(uri)
@@ -84,7 +82,6 @@ def move(source, destination):
 	a different plug-in will be chosen to write the data to the destination.
 
 	Any old data at the destination will get overwritten.
-
 	:param source: The URI of the data to move.
 	:param destination: The new URI of the data.
 	:raises IOError: The operation failed.
@@ -137,7 +134,6 @@ def open_read(uri):
 	Any plug-in that reports it can read from the URI will be used to read the
 	data. If there are multiple plug-ins that can read from the URI, an
 	arbitrary one will be chosen.
-
 	:param uri: The URI from which to read the data.
 	:return: A stream of ``bytes`` that streams the data stored at the URI.
 	:raises IOError: The operation failed.
@@ -165,7 +161,6 @@ def open_write(uri):
 	one will be chosen.
 
 	Any old data at the specified URI will get overwritten.
-
 	:param uri: The URI to which to write the data.
 	:return: A stream for ``bytes`` that will get written to this URI.
 	:raises IOError: The operation failed.
@@ -185,7 +180,6 @@ def _to_absolute_uri(uri):
 	"""
 	Converts the input URI into an absolute URI, relative to the current working
 	directory.
-
 	:param uri: A URI, absolute or relative.
 	:return: An absolute URI.
 	"""

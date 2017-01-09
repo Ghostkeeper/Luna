@@ -46,7 +46,6 @@ class AtomicWriteStream:
 		Starts writing to the file.
 
 		This command is simply passed on to the temporary file.
-
 		:return: This AtomicWriteStream instance.
 		"""
 		self._temp_file.__enter__()
@@ -57,7 +56,6 @@ class AtomicWriteStream:
 		Stops writing to the file.
 
 		When this happens, the temporary file is moved to the final destination.
-
 		:param exception_type: The type of any exception thrown during the with
 		block, or ``None`` if no exception was thrown.
 		:param exception_value: An instance of the exception that was thrown
@@ -77,7 +75,6 @@ class AtomicWriteStream:
 		This makes the stream behaves as if it wraps the temporary file.
 		Normally it would be desirable to use inheritance instead, but the
 		actual file stream in the ``tempfile`` module is not exposed.
-
 		:param name: The name of the attribute to get from the temporary file
 		stream.
 		:return: The value of the attribute in the temporary file stream.
@@ -103,7 +100,6 @@ class AtomicWriteStream:
 		making a new copy of the current buffer before moving the old buffer to
 		the file, and the first operation takes linear time to the size of the
 		file. Copying the file at every flush is too expensive.
-
 		:raises BufferError: This operation is not supported.
 		"""
 		raise BufferError("This is a file stream that writes atomically, and can therefore not be flushed.")

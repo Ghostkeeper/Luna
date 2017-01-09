@@ -17,7 +17,6 @@ import luna.plugins #To raise a SerialisationException.
 def serialise(instance):
 	"""
 	Serialises an enumerated type.
-
 	:param instance: The instance of an enumerated type.
 	:return: A byte sequence representing the enumerated type.
 	:raises SerialisationException: The serialisation does not represent an
@@ -32,7 +31,6 @@ def serialise(instance):
 def deserialise(serialised):
 	"""
 	Deserialises a serialisation of an enumerated type.
-
 	:param serialised: A sequence of bytes that represents an enumerated type.
 	:return: An instance of the enumerated type the sequence represents.
 	:raises SerialisationException: The serialisation does not represent an
@@ -56,7 +54,6 @@ def deserialise(serialised):
 def is_instance(instance):
 	"""
 	Detects whether an object is an instance of an enumerated type.
-
 	:param instance: The object to determine the type of.
 	:return: ``True`` if the instance is an enumerated type, or ``False`` if
 	it's not.
@@ -66,7 +63,6 @@ def is_instance(instance):
 def is_serialised(serialised):
 	"""
 	Detects whether a byte sequence represents an enumerated type.
-
 	:param serialised: A sequence of bytes of which the represented type is
 	unknown.
 	:return: ``True`` if the sequence represents an enumerated type, or
@@ -109,7 +105,6 @@ def _is_id_start(character):
 	"""
 	Returns whether a character is an allowed first character of an identifier
 	in Python.
-
 	:param character: The character to check for.
 	:return: ``True`` if the character is allowed as a first character, or
 	``False`` if it isn't.
@@ -120,7 +115,6 @@ def _is_id_continue(character):
 	"""
 	Returns whether a character is an allowed continuation character of an
 	identifier in Python.
-
 	:param character: The character to check for.
 	:return: ``True`` if the character is allowed as a first character, or
 	``False`` if it isn't.

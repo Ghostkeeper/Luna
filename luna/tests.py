@@ -22,7 +22,6 @@ def arbitrary_function(*args, **kwargs):
 
 	The function should not be called by the test. Calling the function raises
 	an ``AssertionError`` to indicate that the test failed.
-
 	:param args: Positional arguments.
 	:param kwargs: Key-word arguments.
 	"""
@@ -33,17 +32,15 @@ def parametrise(parameters):
 	Causes a test to run multiple times with different parameters.
 
 	This only works for functions inside a `TestCase` class.
-
 	:param parameters: A dictionary containing individual tests. The keys in the
-		dictionary act as a name for the test, which is appended to the function
-		name. The values of the dictionary are dictionaries themselves. These
-		act as the parameters that are filled into the function.
+	dictionary act as a name for the test, which is appended to the function
+	name. The values of the dictionary are dictionaries themselves. These act as
+	the parameters that are filled into the function.
 	:return: A parametrised test case.
 	"""
 	def parametrise_decorator(original_function):
 		"""
 		Adds the parameters with which the test must be run to the function.
-
 		:param original_function: The function to parametrise.
 		:return: A function with the parameters attached.
 		"""
@@ -63,7 +60,6 @@ class AlmostDictionary:
 	def keys(self):
 		"""
 		Pretends to return the keys of a dictionary.
-
 		:return: A list of strings that look like the keys of the dictionary.
 		"""
 		return dir(self).keys()
@@ -78,7 +74,6 @@ class CallableObject:
 
 		The object should not be called by the test. Calling the object raises
 		an ``AssertionError`` to indicate that the test failed.
-
 		:param args: Arguments to call the object with.
 		:param kwargs: Key-word arguments to call the object with.
 		"""
@@ -132,7 +127,6 @@ class TestCase(unittest.TestCase, metaclass=_TestCaseMeta):
 
 		The method should not be called by the test. Calling the method raises
 		an ``AssertionError`` to indicate that the test failed.
-
 		:param args: Positional arguments.
 		:param kwargs: Key-word arguments.
 		"""

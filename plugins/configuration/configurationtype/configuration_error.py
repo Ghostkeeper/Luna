@@ -20,7 +20,6 @@ class ConfigurationError(Exception):
 	def __init__(self, message, configuration_type):
 		"""
 		Creates a new ConfigurationError.
-
 		:param message: The message describing the error that occurred.
 		:param configuration_type: The configuration type with which the error
 		occurred.

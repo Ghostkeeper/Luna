@@ -22,7 +22,6 @@ class IncompleteConfiguration:
 		Gets a configuration element. This raises an ``AssertionError``.
 
 		The metadata validator should never call any function on the instance.
-
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
 		"""
@@ -32,7 +31,6 @@ class IncompleteConfiguration:
 		"""
 		Sets the state of configuration to what is represented by a byte
 		sequence. This raises an ``AssertionError``.
-
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
 		"""
@@ -42,7 +40,6 @@ class IncompleteConfiguration:
 		"""
 		Serialises the state of configuration. This raises an
 		``AssertionError``.
-
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
 		"""
@@ -58,7 +55,6 @@ class ValidConfiguration(IncompleteConfiguration):
 		Creates an iterator over the class. This raises an ``AssertionError``.
 
 		The metadata validator should never call any function on the instance.
-
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
 		"""
@@ -156,7 +152,6 @@ class TestConfigurationType(luna.tests.TestCase):
 		The function is tested with various instances of metadata, all of which
 		are incorrect. The test expects the function to raise a
 		``MetadataValidationError``.
-
 		:param metadata: Incorrect metadata.
 		"""
 		with self.assertRaises(luna.plugins.MetadataValidationError): #Should give this exception.

@@ -13,7 +13,6 @@ import standardout.standard_out #Implementing functions.
 def metadata():
 	"""
 	Provides the metadata for the StandardOut plug-in.
-
 	:returns: Dictionary of metadata.
 	"""
 	return {

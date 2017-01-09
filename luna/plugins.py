@@ -92,7 +92,6 @@ def activate(identity):
 
 	The plug-in must already be discovered. The plug-in will be registered at
 	all plug-in types it implements.
-
 	:param identity: The identity of the plug-in to activate.
 	"""
 	if identity not in _plugins:
@@ -111,7 +110,6 @@ def add_plugin_location(location):
 	plug-ins.
 
 	It looks recursively through all subfolders of the specified folder.
-
 	:param location: The location to add to the location list.
 	"""
 	if not location or not os.path.isdir(location): #Invalid plug-in location.
@@ -126,10 +124,9 @@ def api(plugin_type):
 	type. Some API calls may invoke actions on multiple plug-ins at once, or
 	just on a specific one. For details on the API of a specific plug-in type,
 	please refer to the plug-in that defines the type.
-
 	:param plugin_type: The plug-in type to get the API of.
 	:return: An object with methods to interact with plug-ins of the specified
-		type.
+	type.
 	:raises ImportError: The plug-in type is unknown.
 	"""
 	if plugin_type not in _plugin_types:
@@ -168,7 +165,6 @@ def deactivate(identity):
 	Deactivates a plug-in, so that it will no longer be used.
 
 	The plug-in will be unregistered from all plug-in types it implements.
-
 	:param identity: The identity of the plug-in to deactivate.
 	"""
 	if identity not in _plugins:
@@ -198,7 +194,6 @@ def _find_candidate_directories():
 
 	A candidate is a folder inside a plug-in location, which has a file
 	``__init__.py``. The file is not yet executed at this point.
-
 	:returns: A sequence of directories that supposedly contain plug-ins.
 	"""
 	for location in _plugin_locations:
@@ -214,7 +209,6 @@ def _load_candidates(directories):
 
 	This is intended to be used on Python packages, containing an init
 	script.
-
 	:param directories: A sequence of paths where plug-ins can be found.
 	:return: A sequence of Python packages representing plug-ins.
 	"""
@@ -252,16 +246,15 @@ def _meets_requirements(candidate_metadata, requirements, candidate_identity, de
 
 	If a candidate doesn't meet the requirements, a warning is put in the log
 	and the method returns ``False``.
-
 	:param candidate_metadata: The metadata dictionary of a candidate dependency
-		of the plug-in.
+	of the plug-in.
 	:param requirements: The requirements set by a plug-in that depends on the
-		candidate.
+	candidate.
 	:param candidate_identity: The identity of the candidate. Used for logging.
 	:param depending_identity: The identity of the plug-in that depends on the
-		candidate. Used for logging.
+	candidate. Used for logging.
 	:return: ``True`` if the candidate meets the requirements, or ``False`` if
-		it doesn't.
+	it doesn't.
 	"""
 	#Minimum version requirement.
 	try:
@@ -289,7 +282,6 @@ def _parse_metadata(modules):
 
 	The metadata is then split and stored as _UnresolvedCandidate instances for
 	further processing.
-
 	:param modules: A sequence of modules to parse the metadata of.
 	:return: A sequence of _UnresolvedCandidate instances representing the
 	modules and metadata.
@@ -330,7 +322,6 @@ def _register(plugin_identity, type_identity):
 	This registers the plug-in here in the plug-ins module, and then calls the
 	register function of the plug-in type plug-in in case that plug-in wants to
 	do additional work when registering a new plug-in.
-
 	:param plugin_identity: The identity of the plug-in to register.
 	:param type_identity: The plug-in type with which to register the plug-in.
 	"""
@@ -350,7 +341,6 @@ def _resolve_dependencies(candidates):
 
 	This returns the candidates for which dependencies are met. Candidates for
 	which the dependencies are not met are left out.
-
 	:param candidates: The candidates to resolve the dependencies of.
 	:return: A sequence of candidates which have their dependencies met.
 	"""
@@ -376,7 +366,6 @@ def _resolve_dependencies(candidates):
 def _safe_log_warning(message, **formatted_strings):
 	"""
 	Logs a warning while it is unknown whether the logging API is loaded yet.
-
 	:param message: The message to log.
 	:param formatted_strings: Any strings to replace bracket-enclosed keywords
 	in the log message.
@@ -393,7 +382,6 @@ def _unregister(plugin_identity, type_identity):
 	This unregisters the plug-in here in the plug-ins module, and then calls the
 	unregister function of the plug-in type plug-in in case that plug-in wants
 	to do additional work when unregistering a new plug-in.
-
 	:param plugin_identity: The identity of the plug-in to unregister.
 	:param type_identity: The plug-in type from which to unregister the plug-in.
 	"""
@@ -413,7 +401,6 @@ def _validate_metadata(candidates):
 
 	It validates the metadata of each plug-in type each candidate claims to
 	implement.
-
 	:param candidates: A sequence of candidates to validate.
 	:return: The same sequence, but filtered to only have candidates with valid
 	metadata.
@@ -437,7 +424,6 @@ def _validate_metadata_global(metadata):
 
 	The global part of the metadata includes the part of metadata that is common
 	among all plug-ins.
-
 	:param metadata: A dictionary containing the metadata of the plug-in.
 	:raises MetadataValidationError: The metadata is invalid.
 	"""
@@ -457,7 +443,6 @@ def _validate_metadata_type(metadata):
 
 	If it is incorrect, an exception is raised. At this point, the metadata must
 	already be validated as plug-in metadata.
-
 	:param metadata: A dictionary containing the metadata of the plug-in.
 	:raises MetadataValidationError: The metadata is invalid.
 	"""

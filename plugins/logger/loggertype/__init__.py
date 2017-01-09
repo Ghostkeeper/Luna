@@ -20,7 +20,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:returns: Dictionary of metadata.
 	"""
 	return {
@@ -40,7 +39,6 @@ def metadata():
 def register(identity, logger_metadata): #pylint: disable=unused-argument
 	"""
 	Sets the log levels of a new plug-in to the defaults.
-
 	:param identity: The identity of the plug-in to register.
 	:param logger_metadata: The metadata of a logger plug-in.
 	"""
@@ -54,7 +52,6 @@ def validate_metadata(logger_metadata):
 	Logger's metadata must have a ``logger`` field, which must contain five
 	entries: ``critical``, ``debug``, ``error``, ``info`` and ``warning``. These
 	entries must contain callable objects (such as functions).
-
 	:param logger_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

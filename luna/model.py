@@ -27,7 +27,6 @@ def model(original_class):
 	This adds a ``listen`` function to the class, which can be used to listen to
 	any or all changes to the class. This intended to be used by a viewer to
 	update its view of the model towards the user.
-
 	:param original_class: The class to turn into a part of the model.
 	:return: The same class, transformed to allow listening to its members.
 	"""
@@ -38,7 +37,6 @@ def model(original_class):
 	def new_init(self, *args, **kwargs):
 		"""
 		Initialises the model such that lists of listeners are tracked.
-
 		:param self: The model instance.
 		:param args: Positional arguments passed to the model's ``__init__``.
 		:param kwargs: Key-word arguments passed to the model's ``__init__``.
@@ -61,13 +59,12 @@ def model(original_class):
 		def new_function(old_function, self, *args, **kwargs):
 			"""
 			Changes the model and calls the instance listeners of the model.
-
 			:param old_function: The function that changes the model.
 			:param self: The model instance.
 			:param args: Positional arguments passed to the function that
-				changes the model.
+			changes the model.
 			:param kwargs: Key-word arguments passed to the function that
-				changes the model.
+			changes the model.
 			:return: The result of the function that changed the model.
 			"""
 			result = old_function(self, *args, **kwargs)
@@ -96,7 +93,6 @@ def model(original_class):
 
 		It calls the attribute listeners of the changed attribute, and all
 		instance listeners.
-
 		:param self: The model instance.
 		:param name: The name of the attribute to change.
 		:param value: The new value of the attribute.
@@ -137,12 +133,11 @@ def model(original_class):
 		Note that the listening is 'shallow'. That means that if some
 		attribute's attribute is changed, no listeners will be called. Only
 		changes to the contents of this instance itself will trigger a callback.
-
 		:param self: The instance to listen to for changes.
 		:param listener: A callable object to call when any or all of the
-			attributes in this instance changes.
+		attributes in this instance changes.
 		:param attribute: If provided, the listener will only be called when
-			this attribute is changed. Must be a str if provided.
+		this attribute is changed. Must be a str if provided.
 		"""
 		#Take a weak reference to the listener.
 		if inspect.ismethod(listener) and hasattr(listener, "__self__"): #Is a bound method.

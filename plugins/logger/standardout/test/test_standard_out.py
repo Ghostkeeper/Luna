@@ -48,7 +48,6 @@ class TestStandardOut(luna.tests.TestCase):
 	def test_critical(self, message, title):
 		"""
 		Tests printing a critical message.
-
 		:param message: The message to print.
 		:param title: The title to give the message.
 		"""
@@ -60,7 +59,6 @@ class TestStandardOut(luna.tests.TestCase):
 	def test_debug(self, message, title):
 		"""
 		Tests printing a debug message.
-
 		:param message: The message to print.
 		:param title: The title to give the message.
 		"""
@@ -72,7 +70,6 @@ class TestStandardOut(luna.tests.TestCase):
 	def test_error(self, message, title):
 		"""
 		Tests printing an error message.
-
 		:param message: The message to print.
 		:param title: The title to give the message.
 		"""
@@ -84,7 +81,6 @@ class TestStandardOut(luna.tests.TestCase):
 	def test_info(self, message, title):
 		"""
 		Tests printing an information message.
-
 		:param message: The message to print.
 		:param title: The title to give the message.
 		"""
@@ -115,7 +111,6 @@ class TestStandardOut(luna.tests.TestCase):
 	def test_warning(self, message, title):
 		"""
 		Tests printing a warning message.
-
 		:param message: The message to print.
 		:param title: The title to give the message.
 		"""

@@ -24,7 +24,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:return: Dictionary of metadata.
 	"""
 	return {
@@ -47,7 +46,6 @@ def validate_metadata(data_metadata):
 	Data metadata must have a ``deserialise``, ``is_instance``,
 	``is_serialised`` and a ``serialise`` field, which must all contain callable
 	objects, such as functions.
-
 	:param data_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

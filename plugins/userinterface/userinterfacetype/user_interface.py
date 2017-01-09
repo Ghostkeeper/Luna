@@ -20,7 +20,6 @@ Set of user interface identities that are currently running.
 def join(user_interface):
 	"""
 	Blocks the current thread until the specified user interface has stopped.
-
 	:param user_interface: The identity of the user interface to wait for.
 	"""
 	user_interface_object = luna.plugins.plugins_by_type["userinterface"][user_interface]
@@ -39,7 +38,6 @@ def start(user_interface):
 
 	Only one instance of a specific plug-in may be run at the same time.
 	Starting the same interface again will have no effect.
-
 	:param user_interface: The plug-in identity of a user interface to run.
 	"""
 	if user_interface in _running:

@@ -26,7 +26,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:returns: Dictionary of metadata.
 	"""
 	return {
@@ -50,7 +49,6 @@ def validate_metadata(storage_metadata):
 	entries: ``can_read``, ``can_write``, ``delete``, ``exists``, ``move``,
 	``open_read`` and ``open_write``. These entries must contain callable
 	objects (such as functions).
-
 	:param storage_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

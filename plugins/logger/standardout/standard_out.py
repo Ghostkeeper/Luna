@@ -41,11 +41,10 @@ def critical(message, title="Critical", stack_trace=None, exception=None):
 	A timestamp is added alongside the message. If a title is provided, it is
 	written before the message. If a stack trace is provided, it is printed
 	after the message.
-
 	:param message: The message string.
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
-		as a list of ``FrameInfo`` objects, most recent frame first.
+	as a list of ``FrameInfo`` objects, most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
@@ -63,11 +62,10 @@ def debug(message, title="Debug", stack_trace=None, exception=None):
 	A timestamp is added alongside the message. If a title is provided, it is
 	written before the message. If a stack trace is provided, it is printed
 	after the message.
-
 	:param message: The message string.
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
-		as a list of ``FrameInfo`` objects, most recent frame first.
+	as a list of ``FrameInfo`` objects, most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
@@ -85,11 +83,10 @@ def error(message, title="Error", stack_trace=None, exception=None):
 	A timestamp is added alongside the message. If a title is provided, it is
 	written before the message. If a stack trace is provided, it is printed
 	after the message.
-
 	:param message: The message string.
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
-		as a list of ``FrameInfo`` objects, most recent frame first.
+	as a list of ``FrameInfo`` objects, most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
@@ -107,11 +104,10 @@ def info(message, title="Information", stack_trace=None, exception=None):
 	A timestamp is added alongside the message. If a title is provided, it is
 	written before the message. If a stack trace is provided, it is printed
 	after the message.
-
 	:param message: The message string.
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
-		as a list of ``FrameInfo`` objects, most recent frame first.
+	as a list of ``FrameInfo`` objects, most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
@@ -129,11 +125,10 @@ def warning(message, title="Warning", stack_trace=None, exception=None):
 	A timestamp is added alongside the message. If a title is provided, it is
 	written before the message. If a stack trace is provided, it is printed
 	after the message.
-
 	:param message: The message string.
 	:param title: A header for the message.
 	:param stack_trace: A trace of the call stack where the message originated,
-		as a list of ``FrameInfo`` objects, most recent frame first.
+	as a list of ``FrameInfo`` objects, most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	formatted = datetime.datetime.strftime(datetime.datetime.now(), "[%H:%M:%S] ") #Format the date and time.
@@ -188,7 +183,6 @@ def _colour_print(message, colour="default"):
 	the ``_ansi_colour_codes`` dictionary in order to be supported by both
 	terminals. If a colour code is provided that is not supported by a terminal,
 	that message will show up in the default colour for that terminal.
-
 	:param message: The text to print.
 	:param colour: The colour of the message to display. If the colour is not
 		supported, the default colour is used.
@@ -214,10 +208,9 @@ def _print_stack_trace(stack_trace, exception=None):
 
 	The stack trace is formatted similarly to how Python formats its stack
 	trace.
-
 	:param stack_trace: A stack trace, as a list of ``FrameInfo`` objects
-		resulting from ``inspect.getouterframes`` or ``inspect.getinnerframes``,
-		most recent frame first.
+	resulting from ``inspect.getouterframes`` or ``inspect.getinnerframes``,
+	most recent frame first.
 	:param exception: An exception that was raised, if any.
 	"""
 	print("Stack trace:")

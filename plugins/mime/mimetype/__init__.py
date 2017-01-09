@@ -22,7 +22,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:returns: Dictionary of metadata.
 	"""
 	return {
@@ -46,7 +45,6 @@ def validate_metadata(mime_metadata):
 	callables: ``can_read`` and ``read``. It must also provide the MIME type
 	itself as a string, a human-readable name for the type, and optionally a
 	list of extensions.
-
 	:param metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

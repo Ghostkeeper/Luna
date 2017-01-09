@@ -47,7 +47,6 @@ def mock_api(plugin_type):
 
 	This allows the tests to remain unit tests, even if the actual units try to
 	call upon different plug-ins.
-
 	:param plugin_type: The type of plug-in to mock.
 	:return: A fake API for that plug-in.
 	"""
@@ -76,7 +75,6 @@ class TestEnumeratedType(luna.tests.TestCase):
 	def test_deserialise(self, serialised):
 		"""
 		Tests whether we can deserialise enumerated types.
-
 		:param serialised: The serialised form of some enumerated type.
 		"""
 		result = enumerated.enumerated_type.deserialise(serialised)
@@ -95,7 +93,6 @@ class TestEnumeratedType(luna.tests.TestCase):
 	def test_deserialise_error(self, serialised):
 		"""
 		Tests fail cases in which the deserialisation must raise an exception.
-
 		:param serialised: Some serialised data that is not an enumeration.
 		"""
 		with self.assertRaises(luna.tests.MockException):
@@ -129,7 +126,6 @@ class TestEnumeratedType(luna.tests.TestCase):
 	def test_serialise(self, instance):
 		"""
 		Tests whether we can serialise enumerated types.
-
 		:param instance: The enumerated type instance to serialise.
 		"""
 		result = enumerated.enumerated_type.serialise(instance)
@@ -160,7 +156,6 @@ class TestEnumeratedType(luna.tests.TestCase):
 	def test_serialise_error(self, instance):
 		"""
 		Tests fail cases in which serialisation must raise an exception.
-
 		:param instance: An object that is not an enumerated type.
 		"""
 		with self.assertRaises(luna.tests.MockException):

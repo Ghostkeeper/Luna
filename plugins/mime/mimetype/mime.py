@@ -15,7 +15,6 @@ import luna.plugins #To get the list of MIME plug-ins.
 def all_extensions():
 	"""
 	Gives a sequence of all extensions we have MIME types for.
-
 	:return: A sequence of all extensions we have MIME types for.
 	"""
 	for mime_plugin in luna.plugins.plugins_by_type["mime"]:

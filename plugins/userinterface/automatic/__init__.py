@@ -18,7 +18,6 @@ import automatic.automatic as automatic_module #Prevent mixing up the package na
 def metadata():
 	"""
 	Provides the metadata for the Automatic plug-in.
-
 	:returns: Dictionary of metadata.
 	"""
 	return {

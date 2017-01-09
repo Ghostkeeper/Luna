@@ -69,7 +69,6 @@ class TestIntegration(luna.tests.TestCase):
 		Tests the can_read function with normal parameters.
 
 		The can_read function must always return a boolean answer in that case.
-
 		:param can_read: The can_read function to test.
 		:param uri: The URI to feed to the can_read function.
 		"""
@@ -81,7 +80,6 @@ class TestIntegration(luna.tests.TestCase):
 		Tests the can_read function with faulty parameters.
 
 		The can_read function must raise an exception in that case.
-
 		:param can_read: The can_read function to test.
 		:param uri: The URI to feed to the can_read function.
 		:param exception: The exception the function is expected to raise.
@@ -95,7 +93,6 @@ class TestIntegration(luna.tests.TestCase):
 		Tests the can_write function with normal parameters.
 
 		The can_write function must always return a boolean answer in that case.
-
 		:param can_write: The can_write function to test.
 		:param uri: The URI to feed to the can_write function.
 		"""
@@ -107,7 +104,6 @@ class TestIntegration(luna.tests.TestCase):
 		Tests the can_write function with faulty parameters.
 
 		The can_write function must raise an exception in that case.
-
 		:param can_write: The can_write function to test.
 		:param uri: The URI to feed to the can_write function.
 		:param exception: The exception the function is expected to raise.

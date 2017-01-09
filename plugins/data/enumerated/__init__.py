@@ -23,7 +23,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:return: Dictionary of metadata.
 	"""
 	return {

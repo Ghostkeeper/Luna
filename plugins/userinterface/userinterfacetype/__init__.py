@@ -24,7 +24,6 @@ def metadata():
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
-
 	:return: Dictionary of metadata.
 	"""
 	return {
@@ -48,7 +47,6 @@ def validate_metadata(user_interface_metadata):
 	User interface metadata must have a ``userinterface`` entry, which must
 	contain three entries: ``join``, ``start`` and ``stop``. These entries must
 	contain callable objects (such as functions).
-
 	:param user_interface_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""

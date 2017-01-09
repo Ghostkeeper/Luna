@@ -56,7 +56,6 @@ _logger_levels = {}
 def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 	"""
 	Logs a new critical message with all loggers.
-
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
@@ -89,7 +88,6 @@ def critical(message, title="Critical", include_stack_trace=True, **kwargs):
 def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 	"""
 	Logs a new debug message with all loggers.
-
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
@@ -117,7 +115,6 @@ def debug(message, title="Debug", include_stack_trace=True, **kwargs):
 def error(message, title="Error", include_stack_trace=True, **kwargs):
 	"""
 	Logs a new error message with all loggers.
-
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
@@ -150,7 +147,6 @@ def error(message, title="Error", include_stack_trace=True, **kwargs):
 def info(message, title="Information", include_stack_trace=True, **kwargs):
 	"""
 	Logs a new information message with all loggers.
-
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an
@@ -189,7 +185,6 @@ def set_levels(levels, identity=None):
 
 	If given a logger identity, the log levels are only set for the specified
 	logger. If not given a name, the log levels are set for all loggers.
-
 	:param levels: A list of log levels that the logger(s) will log.
 	:param identity: The identity of a logger plug-in if setting the levels for
 	a specific logger, or None if setting the levels for all loggers.
@@ -203,7 +198,6 @@ def set_levels(levels, identity=None):
 def warning(message, title="Warning", include_stack_trace=True, **kwargs):
 	"""
 	Logs a new warning message with all loggers.
-
 	:param message: The message of the log entry.
 	:param title: A title for the entry.
 	:param include_stack_trace: If this function is called from within an

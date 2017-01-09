@@ -53,7 +53,6 @@ class TestLoggerType(luna.tests.TestCase):
 		The function is tested with various instances of metadata, all of which
 		are correct. It is tested if the validation deems the metadata correct
 		also.
-
 		:param metadata: Correct metadata.
 		"""
 		loggertype.validate_metadata(metadata) #Should not give an exception.
@@ -119,7 +118,6 @@ class TestLoggerType(luna.tests.TestCase):
 		The function is tested with various instances of metadata, all of which
 		are incorrect. The test expects the function to raise a
 		``MetadataValidationError``.
-
 		:param metadata: Incorrect metadata.
 		"""
 		with self.assertRaises(luna.plugins.MetadataValidationError): #Should give this exception.
