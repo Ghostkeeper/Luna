@@ -69,7 +69,10 @@ def is_serialised(serialised):
 	:return: ``True`` if the sequence represents an enumerated type, or
 	``False`` if it doesn't.
 	"""
-	unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
+	try:
+		unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
+	except UnicodeDecodeError as e:
+		return False #If it's not UTF-8 encoded, it's not an enum.
 	next_should_continue = False #Whether the next character should be a continuation character (True) or a start character (False)
 	for character in unicode_string:
 		if next_should_continue: #Should be a continuation character.
