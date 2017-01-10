@@ -81,7 +81,7 @@ def is_serialised(serialised):
 			if not _is_id_start(character):
 				return False
 			next_should_continue = True
-	return True #All characters are allowed.
+	return next_should_continue #All characters are correct, but we mustn't end with an empty piece.
 
 _allowed_id_continue_categories = {"Ll", "Lm", "Lo", "Lt", "Lu", "Mc", "Mn", "Nd", "Nl", "Pc"}
 """
