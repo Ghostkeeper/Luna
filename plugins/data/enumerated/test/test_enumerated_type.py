@@ -200,7 +200,9 @@ class TestEnumeratedType(luna.tests.TestCase):
 		:param instance: The enumerated type instance to serialise.
 		"""
 		result = enumerated.enumerated_type.serialise(instance)
-		self.assertIsInstance(result, bytes, "The serialised enumerated type must be a byte sequence.")
+		for byte in result:
+			self.assertIsInstance(byte, int, "The serialised enumerated type must be a byte sequence.")
+		self.assertTrue(hasattr(result, "read"), "The serialised enumerated type must be a byte stream.")
 
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
