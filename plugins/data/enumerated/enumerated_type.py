@@ -38,7 +38,7 @@ def deserialise(serialised):
 	enumerated type.
 	"""
 	try:
-		serialised_string = serialised.decode(encoding="utf_8")
+		serialised_string = serialised.read().decode(encoding="utf_8")
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised data is not UTF-8 encoded.") from e
 	path_segments = serialised_string.split(".")
