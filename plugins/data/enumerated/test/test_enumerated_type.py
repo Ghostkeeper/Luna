@@ -132,6 +132,21 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertTrue(enumerated.enumerated_type.is_instance(instance))
 
 	@luna.tests.parametrise({
+		"none":       {"instance": None},
+		"integer":    {"instance": 42},
+		"bytes":      {"instance": b"module.Class.INSTANCE"}, #The serialised form of an enumerated type maybe, but not the enumerated type itself.
+		"object":     {"instance": EnumContainer()},
+		"enum_class": {"instance": Animal} #Yes, this is an enumerated type, but not an *instance* of an enumerated type.
+	})
+	def test_is_not_instance(self, instance):
+		"""
+		Tests whether it is correctly detected that these are not enumerated
+		types.
+		:param instance: Not an enumerated type.
+		"""
+		self.assertFalse(enumerated.enumerated_type.is_instance(instance))
+
+	@luna.tests.parametrise({
 		"empty":              {"serialised": b""},
 		"single_piece":       {"serialised": b"Class"},
 		"two_pieces":         {"serialised": b"Class.INSTANCE"},
