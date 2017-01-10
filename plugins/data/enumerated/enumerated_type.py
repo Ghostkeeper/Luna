@@ -73,6 +73,7 @@ def is_serialised(serialised):
 		unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
 	except UnicodeDecodeError:
 		return False #If it's not UTF-8 encoded, it's not an enum.
+	num_pieces = 1 #How many period-delimited pieces we find. We want at least 2: A class and an instance.
 	next_should_continue = False #Whether the next character should be a continuation character (True) or a start character (False)
 	for character in unicode_string:
 		if next_should_continue: #Should be a continuation character.
@@ -80,11 +81,12 @@ def is_serialised(serialised):
 				return False
 			if character == ".":
 				next_should_continue = False
+				num_pieces += 1
 		else: #Should be a start character.
 			if not _is_id_start(character):
 				return False
 			next_should_continue = True
-	return next_should_continue #All characters are correct, but we mustn't end with an empty piece.
+	return next_should_continue and num_pieces >= 2 #All characters are correct, but we mustn't end with an empty piece.
 
 _allowed_id_continue_categories = {"Ll", "Lm", "Lo", "Lt", "Lu", "Mc", "Mn", "Nd", "Nl", "Pc"}
 """
