@@ -116,7 +116,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		"""
 		instance = enumerated.enumerated_type.deserialise(luna.stream.BytesStreamReader(io.BytesIO(serialised)))
 		new_serialised = enumerated.enumerated_type.serialise(instance)
-		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
+		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
