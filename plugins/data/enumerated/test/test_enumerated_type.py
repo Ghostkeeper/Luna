@@ -172,11 +172,11 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertFalse(enumerated.enumerated_type.is_serialised(io.BytesIO(serialised)), "This must not be identified as a serialised enumerated type.")
 
 	@luna.tests.parametrise({
-		"simple": {"serialised": b"module.Type.INSTANCE"},
-		"long": {"serialised": b"module.submodule.Class.Subclass.Type.INSTANCE"},
+		"simple":        {"serialised": b"module.Type.INSTANCE"},
+		"long":          {"serialised": b"module.submodule.Class.Subclass.Type.INSTANCE"},
 		"special_chars": {"serialised": "number7._under_score.middle·dot.punct﹍４bu".encode("utf_8")},
-		"single_chars": {"serialised": b"a.b.C.d.E.f"},
-		"alphabets": {"serialised": "aa.Bb.ŇţȕʭπҎԴחڛܔނइকગଅஇఈఈഈഈฒກཀလႴᄍሐᎰᐄᚄᚭកᡳᥕᦆᴆᴷᵣᵦᵶᶢḆὩℝℋⅦⅷⰁⲘⴓⴵⶵ〥るルㄥㅂㆯ㐔ꀎ가更ﬀﭚﶩＤｱ".encode("utf_8")}
+		"single_chars":  {"serialised": b"a.b.C.d.E.f"},
+		"alphabets":     {"serialised": "aa.Bb.ŇţȕʭπҎԴחڛܔނइকગଅஇఈఈഈഈฒກཀလႴᄍሐᎰᐄᚄᚭកᡳᥕᦆᴆᴷᵣᵦᵶᶢḆὩℝℋⅦⅷⰁⲘⴓⴵⶵ〥るルㄥㅂㆯ㐔ꀎ가更ﬀﭚﶩＤｱ".encode("utf_8")}
 	})
 	def test_is_serialised(self, serialised):
 		"""
