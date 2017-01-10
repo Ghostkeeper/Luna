@@ -71,11 +71,14 @@ option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
 	enable_testing()
 
-	#Code style validation.
-	find_package(PyLint REQUIRED)
-	configure_file("${CMAKE_SOURCE_DIR}/pylintrc.in" "${CMAKE_BINARY_DIR}/pylintrc")
-	add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
-	set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
+	option(TEST_PYLINT "Test code style of Python code." TRUE)
+	if(TEST_PYLINT)
+		#Code style validation.
+		find_package(PyLint REQUIRED)
+		configure_file("${CMAKE_SOURCE_DIR}/pylintrc.in" "${CMAKE_BINARY_DIR}/pylintrc")
+		add_test(NAME CodeStyle COMMAND ${PYTHON_EXECUTABLE} -m pylint --rcfile=${CMAKE_BINARY_DIR}/pylintrc ${PYTHON_FILES})
+		set_tests_properties(CodeStyle PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
+	endif()
 endif()
 
 #-----------------------------Plug-in Directories-------------------------------
