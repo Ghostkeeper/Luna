@@ -19,7 +19,7 @@ import enumerated.enumerated_type #The functions that implement the data type.
 
 def metadata():
 	"""
-	Provides the metadata for the Data Type plug-in.
+	Provides the metadata for the Enumerated plug-in.
 
 	This gives human-readable information on the plug-in, dependency resolution
 	information, and tells the plug-in system what this plug-in can do.
