@@ -12,7 +12,6 @@ output a lot, but tests the behaviour of the units instead.
 """
 
 import enum #To define example enumerated types to test with.
-import io #To simulate a byte stream.
 import test.test_enum #Built-in enumerated types to test with.
 import unittest.mock #To replace the dependency on the data module.
 
