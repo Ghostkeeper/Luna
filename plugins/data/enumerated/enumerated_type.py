@@ -9,6 +9,7 @@ Provides the implementation of enumerated types as a data type definition.
 """
 
 import enum #To check types against the Enum class.
+import io #To decode streams of UTF-8 data lazily.
 import sys #To find pre-loaded enums in their original modules.
 import unicodedata #To see if the serialisation of enums has only allowed characters.
 
@@ -68,7 +69,7 @@ def is_serialised(serialised):
 	:return: ``True`` if the sequence represents an enumerated type, or
 	``False`` if it doesn't.
 	"""
-	unicode_string = serialised.decode(encoding="utf_8") #TODO: Lazy decode?
+	unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
 	next_should_continue = False #Whether the next character should be a continuation character (True) or a start character (False)
 	for character in unicode_string:
 		if next_should_continue: #Should be a continuation character.
