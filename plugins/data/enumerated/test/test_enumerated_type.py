@@ -118,6 +118,30 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
+		"empty":              {"serialised": b""},
+		"single_piece":       {"serialised": b"Class"},
+		"invalid_start":      {"serialised": b"1Class.INSTANCE"},
+		"invalid_second":     {"serialised": b"Class.2INSTANCE"},
+		"empty_piece":        {"serialised": b"module..Class.INSTANCE"}, #There are two dots between "module" and "Class".
+		"not_utf_8":          {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		"disallowed_char":    {"serialised": b"You.Are(Not).Alone"},
+		"disallowed_start":   {"serialised": b"You.Are.(Not).Alone"},
+		"dash":               {"serialised": b"Thats.some.weird-ass.class.NAME"},
+		"spaces":             {"serialised": b"Listening to Two Steps From Hell right now"},
+		"end_dot":            {"serialised": b"module.Class."},
+		"special_start":      {"serialised": "module.Class.４evah".encode("utf_8")},
+		"special_disallowed": {"serialised": "smilies.Cost.LIVES☠".encode("utf_8")}
+	})
+	def test_is_not_serialised(self, serialised):
+		"""
+		Tests whether bytes streams that don't represent enumerated types are
+		identified as such.
+		:param serialised: A sequence of bytes that doesn't represent an
+		enumerated type.
+		"""
+		self.assertFalse(enumerated.enumerated_type.is_serialised(io.BytesIO(serialised)), "This must not be identified as a serialised enumerated type.")
+
+	@luna.tests.parametrise({
 		"simple": {"serialised": b"Type.INSTANCE"},
 		"long": {"serialised": b"module.submodule.Class.Subclass.Type.INSTANCE"},
 		"special_chars": {"serialised": "number7._under_score.middle·dot.punct﹍４bu".encode("utf_8")},
