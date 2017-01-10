@@ -71,7 +71,7 @@ def is_serialised(serialised):
 	"""
 	try:
 		unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
-	except UnicodeDecodeError as e:
+	except UnicodeDecodeError:
 		return False #If it's not UTF-8 encoded, it's not an enum.
 	next_should_continue = False #Whether the next character should be a continuation character (True) or a start character (False)
 	for character in unicode_string:
