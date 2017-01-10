@@ -17,6 +17,7 @@ import test.test_enum #Built-in enumerated types to test with.
 import unittest.mock #To replace the dependency on the data module.
 
 import enumerated.enumerated_type #The module we're testing.
+import luna.stream #To create streams of bytes as input.
 import luna.tests #For parametrised tests and mock exceptions.
 
 class Animal(enum.Enum):
@@ -78,7 +79,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		Tests whether we can deserialise enumerated types.
 		:param serialised: The serialised form of some enumerated type.
 		"""
-		result = enumerated.enumerated_type.deserialise(io.BytesIO(serialised))
+		result = enumerated.enumerated_type.deserialise(luna.stream.BytesStreamReader(io.BytesIO(serialised)))
 		self.assertIsInstance(result, enum.Enum)
 
 	@luna.tests.parametrise({
@@ -97,7 +98,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		:param serialised: Some serialised data that is not an enumeration.
 		"""
 		with self.assertRaises(luna.tests.MockException):
-			enumerated.enumerated_type.deserialise(io.BytesIO(serialised))
+			enumerated.enumerated_type.deserialise(luna.stream.BytesStreamReader(io.BytesIO(serialised)))
 
 	@luna.tests.parametrise({
 		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
@@ -113,7 +114,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		:param serialised: The serialised form to start (and hopefully end up)
 		with.
 		"""
-		instance = enumerated.enumerated_type.deserialise(io.BytesIO(serialised))
+		instance = enumerated.enumerated_type.deserialise(luna.stream.BytesStreamReader(io.BytesIO(serialised)))
 		new_serialised = enumerated.enumerated_type.serialise(instance)
 		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
 
@@ -169,7 +170,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		:param serialised: A sequence of bytes that doesn't represent an
 		enumerated type.
 		"""
-		self.assertFalse(enumerated.enumerated_type.is_serialised(io.BytesIO(serialised)), "This must not be identified as a serialised enumerated type.")
+		self.assertFalse(enumerated.enumerated_type.is_serialised(luna.stream.BytesStreamReader(io.BytesIO(serialised))), "This must not be identified as a serialised enumerated type.")
 
 	@luna.tests.parametrise({
 		"simple":        {"serialised": b"module.Type.INSTANCE"},
@@ -184,7 +185,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		identified as such.
 		:param serialised: A correct serialised form of an enumerated type.
 		"""
-		self.assertTrue(enumerated.enumerated_type.is_serialised(io.BytesIO(serialised)), "This must be identified as a serialised enumerated type.")
+		self.assertTrue(enumerated.enumerated_type.is_serialised(luna.stream.BytesStreamReader(io.BytesIO(serialised))), "This must be identified as a serialised enumerated type.")
 
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
@@ -215,7 +216,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 		:param instance: The instance to start (and hopefully end up) with.
 		"""
 		serialised = enumerated.enumerated_type.serialise(instance)
-		deserialised = enumerated.enumerated_type.deserialise(io.BytesIO(serialised))
+		deserialised = enumerated.enumerated_type.deserialise(serialised)
 		self.assertEqual(instance, deserialised, "The enumerated type must be the same after serialising and deserialising.")
 
 	@luna.tests.parametrise({
