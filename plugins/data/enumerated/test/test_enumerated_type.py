@@ -120,15 +120,16 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"empty":              {"serialised": b""},
 		"single_piece":       {"serialised": b"Class"},
-		"invalid_start":      {"serialised": b"1Class.INSTANCE"},
-		"invalid_second":     {"serialised": b"Class.2INSTANCE"},
+		"two_pieces":         {"serialised": b"Class.INSTANCE"},
+		"invalid_start":      {"serialised": b"module.1Class.INSTANCE"},
+		"invalid_second":     {"serialised": b"module.Class.2INSTANCE"},
 		"empty_piece":        {"serialised": b"module..Class.INSTANCE"}, #There are two dots between "module" and "Class".
-		"not_utf_8":          {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		"not_utf_8":          {"serialised": bytes([0x80, 0x61, 0x2E, 0x62, 0x2E, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "a.b.c".
 		"disallowed_char":    {"serialised": b"You.Are(Not).Alone"},
 		"disallowed_start":   {"serialised": b"You.Are.(Not).Alone"},
 		"dash":               {"serialised": b"Thats.some.weird-ass.class.NAME"},
-		"spaces":             {"serialised": b"Listening to Two Steps From Hell right now"},
-		"end_dot":            {"serialised": b"module.Class."},
+		"spaces":             {"serialised": b"Listening to Two Steps From Hell.right.now"},
+		"end_dot":            {"serialised": b"module.submodule.Class."},
 		"special_start":      {"serialised": "module.Class.４evah".encode("utf_8")},
 		"special_disallowed": {"serialised": "smilies.Cost.LIVES☠".encode("utf_8")}
 	})
@@ -142,11 +143,11 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertFalse(enumerated.enumerated_type.is_serialised(io.BytesIO(serialised)), "This must not be identified as a serialised enumerated type.")
 
 	@luna.tests.parametrise({
-		"simple": {"serialised": b"Type.INSTANCE"},
+		"simple": {"serialised": b"module.Type.INSTANCE"},
 		"long": {"serialised": b"module.submodule.Class.Subclass.Type.INSTANCE"},
 		"special_chars": {"serialised": "number7._under_score.middle·dot.punct﹍４bu".encode("utf_8")},
 		"single_chars": {"serialised": b"a.b.C.d.E.f"},
-		"alphabets": {"serialised": "Aa.ŇţȕʭπҎԴחڛܔނइকગଅஇఈఈഈഈฒກཀလႴᄍሐᎰᐄᚄᚭកᡳᥕᦆᴆᴷᵣᵦᵶᶢḆὩℝℋⅦⅷⰁⲘⴓⴵⶵ〥るルㄥㅂㆯ㐔ꀎ가更ﬀﭚﶩＤｱ".encode("utf_8")}
+		"alphabets": {"serialised": "aa.Bb.ŇţȕʭπҎԴחڛܔނइকગଅஇఈఈഈഈฒກཀလႴᄍሐᎰᐄᚄᚭកᡳᥕᦆᴆᴷᵣᵦᵶᶢḆὩℝℋⅦⅷⰁⲘⴓⴵⶵ〥るルㄥㅂㆯ㐔ꀎ가更ﬀﭚﶩＤｱ".encode("utf_8")}
 	})
 	def test_is_serialised(self, serialised):
 		"""
