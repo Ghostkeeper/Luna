@@ -28,7 +28,7 @@ def serialise(instance):
 		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
 	except AttributeError: #Translate the cryptic type error that arises from this if it is no enum.
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
-	return luna.stream.BytesStreamReader(io.BytesIO(reference.encode(encoding="utf_8")))
+	return luna.stream.BytesStreamReader(reference.encode(encoding="utf_8"))
 
 def deserialise(serialised):
 	"""

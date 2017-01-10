@@ -9,6 +9,8 @@ This module presents some classes that help with streaming data for
 inter-component communication.
 """
 
+import io #To use the standard I/O streams as helper.
+
 class BytesStreamReader:
 	"""
 	A stream that wraps around a ``BufferedReader`` instance and allows
@@ -28,6 +30,8 @@ class BytesStreamReader:
 		stream.
 		:param wrapped: The ``BufferedReader`` stream to wrap around.
 		"""
+		if type(wrapped) == bytes:
+			wrapped = io.BytesIO(wrapped)
 		self._wrapped = wrapped
 
 	def __enter__(self):
