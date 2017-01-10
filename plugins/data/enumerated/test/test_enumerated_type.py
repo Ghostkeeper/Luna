@@ -117,6 +117,21 @@ class TestEnumeratedType(luna.tests.TestCase):
 		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
+		"simple": {"serialised": b"Type.INSTANCE"},
+		"long": {"serialised": b"module.submodule.Class.Subclass.Type.INSTANCE"},
+		"special_chars": {"serialised": "number7._under_score.middle·dot.punct﹍４๑٢ ෲ.bu".encode("utf_8")},
+		"single_chars": {"serialised": b"a.b.C.d.E.f"},
+		"alphabets": {"serialised": "Aa.ŇţȕʭπҎԴחڛܔނइকગଅஇఈఈഈഈฒກཀလႴᄍሐᎰᐄᚄᚭកᡳᥕᦆᴆᴷᵣᵦᵶᶢḆὩℝℋⅦⅷⰁⲘⴓⴵⶵ〥るルㄥㅂㆯ㐔ꀎ가更ﬀﭚﶩＤｱ".encode("utf_8")}
+	})
+	def test_is_serialised(self, serialised):
+		"""
+		Tests whether serialised forms of enumerated types are correctly
+		identified as such.
+		:param serialised: A correct serialised form of an enumerated type.
+		"""
+		self.assertTrue(enumerated.enumerated_type.is_serialised(serialised), "This must be identified as a serialised enumerated type.")
+
+	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
 		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
 		"builtins":      {"instance": test.test_enum.Fruit.tomato},
