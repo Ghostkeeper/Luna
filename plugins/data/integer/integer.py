@@ -65,7 +65,7 @@ def serialise(instance):
 	"""
 	output = luna.stream.BytesStreamReader(io.BytesIO())
 	try:
-		json.dump(instance, output) #The default encoding for JSON is already UTF-8.
+		output.write(json.dumps(instance).encode("utf_8"))
 	except TypeError as e:
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not an integer.") from e
 	return output
