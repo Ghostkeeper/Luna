@@ -178,6 +178,50 @@ class TestRealNumber(luna.tests.TestCase):
 		self.assertFalse(real.real_number.is_instance(instance))
 
 	@luna.tests.parametrise({
+		"empty":           {"serialised": b""},
+		"not_utf_8":       {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		"letters":         {"serialised": b"ghostkeeper"},
+		"foreign_digits":  {"serialised": "４.0".encode("utf_8")},
+		"integer":         {"serialised": b"3"},
+		"imaginary":       {"serialised": b"9.8i"},
+		"no_fractional":   {"serialised": b"0."},
+		"no_exponent":     {"serialised": b"0.3e"},
+		"no_exponent_neg": {"serialised": b"0.3e-"},
+		"minus":           {"serialised": b"-"},
+	})
+	def test_is_not_serialised(self, serialised):
+		"""
+		Tests whether bytes streams that don't represent real numbers are
+		identified as such.
+		:param serialised: A sequence of bytes that doesn't represent a real
+		number.
+		"""
+		self.assertFalse(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must not be identified as a serialised real number.")
+
+	@luna.tests.parametrise({
+		"zero":           {"serialised": b"0.0"},
+		"fourtytwo":      {"serialised": b"42.0"},
+		"pi":             {"serialised": b"3.1416"},
+		"pi_long":        {"serialised": b"3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132"},
+		"exponent":       {"serialised": b"2e4"},
+		"frac_exponent":  {"serialised": b"11.5e2"},
+		"uppercase_exp":  {"serialised": b"4.55E6"},
+		"negative":       {"serialised": b"-3.2"},
+		"very_high":      {"serialised": b"2e100"},
+		"negative_exp":   {"serialised": b"3e-100"},
+		"positive_exp":   {"serialised": b"7.1e+10"},
+		"float_rounding": {"serialised": b"3.0"}, #Number can't be exactly represented with IEEE 754.
+		"very_negative":  {"serialised": b"-1000000000000000000000000.0"} #-10^24.
+	})
+	def test_is_serialised(self, serialised):
+		"""
+		Tests whether serialised forms of real numbers are correctly identified
+		as such.
+		:param serialised: A correct serialised form of a real number.
+		"""
+		self.assertTrue(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must be identified as a serialised real number.")
+
+	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
 		"three":         {"instance": 3.0},
 		"pi":            {"instance": 3.1416},
