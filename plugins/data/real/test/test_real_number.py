@@ -143,7 +143,7 @@ class TestRealNumber(luna.tests.TestCase):
 		instance = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
 		new_serialised = real.real_number.serialise(instance)
 		allowed_answers = {serialised} | synonyms #Allow original string as well as all synonyms.
-		self.assertIn(new_serialised.read(), allowed_answers, "The serialised form must be consistent or a synonym after deserialising and serialising.")
+		self.assertIn(new_serialised.read(), allowed_answers, "The serialised form {serialised} must be consistent or a synonym after deserialising and serialising.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
@@ -196,7 +196,7 @@ class TestRealNumber(luna.tests.TestCase):
 		:param serialised: A sequence of bytes that doesn't represent a real
 		number.
 		"""
-		self.assertFalse(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must not be identified as a serialised real number.")
+		self.assertFalse(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "{serialised} must not be identified as a serialised real number.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":           {"serialised": b"0.0"},
@@ -219,7 +219,7 @@ class TestRealNumber(luna.tests.TestCase):
 		as such.
 		:param serialised: A correct serialised form of a real number.
 		"""
-		self.assertTrue(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must be identified as a serialised real number.")
+		self.assertTrue(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "{serialised} must be identified as a serialised real number.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
@@ -238,8 +238,8 @@ class TestRealNumber(luna.tests.TestCase):
 		"""
 		result = real.real_number.serialise(instance)
 		for byte in result:
-			self.assertIsInstance(byte, int, "The serialised real number must be a byte sequence.")
-		self.assertTrue(hasattr(result, "read"), "The serialised real number must be a byte stream.")
+			self.assertIsInstance(byte, int, "The serialised real number for {instance} must be a byte sequence.".format(instance=str(instance)))
+		self.assertTrue(hasattr(result, "read"), "The serialised real number for {instance} must be a byte stream.".format(instance=str(instance)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
@@ -260,7 +260,7 @@ class TestRealNumber(luna.tests.TestCase):
 		"""
 		serialised = real.real_number.serialise(instance)
 		deserialised = real.real_number.deserialise(serialised)
-		self.assertEqual(instance, deserialised, "The real number must be the same after serialising and deserialising.")
+		self.assertEqual(instance, deserialised, "The real number {instance} must be the same after serialising and deserialising.".format(instance=str(instance)))
 
 	@luna.tests.parametrise({
 		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like a real number.
