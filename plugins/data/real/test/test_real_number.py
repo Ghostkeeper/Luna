@@ -133,6 +133,7 @@ class TestRealNumber(luna.tests.TestCase):
 		"zero":          {"instance": 0.0},
 		"three":         {"instance": 3.0},
 		"pi":            {"instance": 3.1416},
+		"pi_long":       {"instance": 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132},
 		"very_big":      {"instance": 2e65},
 		"negative":      {"instance": -42.0},
 		"very_small":    {"instance": 3e-100},
