@@ -90,6 +90,37 @@ class TestInteger(luna.tests.TestCase):
 		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
+		"empty":          {"serialised": b""},
+		"not_utf_8":      {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
+		"letters":        {"serialised": b"ghostkeeper"},
+		"foreign_digits": {"serialised": "４".encode("utf_8")},
+		"float":          {"serialised": b"3.1416"},
+		"round_float":    {"serialised": b"9.0"}
+	})
+	def test_is_not_serialised(self, serialised):
+		"""
+		Tests whether bytes streams that don't represent integers are identified
+		as such.
+		:param serialised: A sequence of bytes that doesn't represent an
+		integer.
+		"""
+		self.assertFalse(integer_module.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must not be identified as a serialised integer.")
+
+	@luna.tests.parametrise({
+		"zero":       {"serialised": b"0"},
+		"fourtytwo":  {"serialised": b"42"},
+		"septillion": {"serialised": b"1000000000000000000000000"}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
+		"negative":   {"serialised": b"-99"}
+	})
+	def test_is_serialised(self, serialised):
+		"""
+		Tests whether serialised forms of integers are correctly identified as
+		such.
+		:param serialised: A correct serialised form of an integer.
+		"""
+		self.assertTrue(integer_module.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must be identified as a serialised integer.")
+
+	@luna.tests.parametrise({
 		"zero":       {"instance": 0},
 		"fourtytwo":  {"instance": 42},
 		"septillion": {"instance": 1000000000000000000000000}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
