@@ -38,8 +38,8 @@ def deserialise(data_type, serialised):
 	"""
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["deserialise"](serialised)
-	except KeyError: #Plug-in with specified data type is not available.
-		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
+	except KeyError as e: #Plug-in with specified data type is not available.
+		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type)) from e
 
 def is_instance(data_type, data):
 	"""
@@ -83,8 +83,8 @@ def serialise(data_type, data):
 	"""
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["serialise"](data)
-	except KeyError: #Plug-in with specified data type is not available.
-		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
+	except KeyError as e: #Plug-in with specified data type is not available.
+		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type)) from e
 
 def type_of(data):
 	"""
