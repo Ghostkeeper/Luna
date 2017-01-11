@@ -72,6 +72,24 @@ class TestInteger(luna.tests.TestCase):
 			integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
 
 	@luna.tests.parametrise({
+		"zero":       {"serialised": b"0"},
+		"fourtytwo":  {"serialised": b"42"},
+		"septillion": {"serialised": b"1000000000000000000000000"}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
+		"negative":   {"serialised": b"-99"}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_deserialise_serialise(self, serialised):
+		"""
+		Tests whether deserialising and then serialising results in the same
+		instance.
+		:param serialised: The serialised form to start (and hopefully end up)
+		with.
+		"""
+		instance = integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
+		new_serialised = integer_module.serialise(instance)
+		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
+
+	@luna.tests.parametrise({
 		"zero":       {"instance": 0},
 		"fourtytwo":  {"instance": 42},
 		"septillion": {"instance": 1000000000000000000000000}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
@@ -87,6 +105,23 @@ class TestInteger(luna.tests.TestCase):
 		for byte in result:
 			self.assertIsInstance(byte, int, "The serialised integer must be a byte sequence.")
 		self.assertTrue(hasattr(result, "read"), "The serialised integer must be a byte stream.")
+
+	@luna.tests.parametrise({
+		"zero":       {"instance": 0},
+		"fourtytwo":  {"instance": 42},
+		"septillion": {"instance": 1000000000000000000000000}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
+		"negative":   {"instance": -99}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_deserialise(self, instance):
+		"""
+		Tests whether serialising and then deserialising results in the original
+		instance.
+		:param instance: The instance to start (and hopefully end up) with.
+		"""
+		serialised = integer_module.serialise(instance)
+		deserialised = integer_module.deserialise(serialised)
+		self.assertEqual(instance, deserialised, "The integer must be the same after serialising and deserialising.")
 
 	@luna.tests.parametrise({
 		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like an integer.
