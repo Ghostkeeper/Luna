@@ -83,12 +83,39 @@ class TestRealNumber(luna.tests.TestCase):
 			real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
 
 	@luna.tests.parametrise({
-		"zero":       {"instance": 0.0},
-		"three":      {"instance": 3.0},
-		"pi":         {"instance": 3.1416},
-		"very_big":   {"instance": 2e65},
-		"negative":   {"instance": -42.0},
-		"very_small": {"instance": 3e-100},
+		"zero":           {"serialised": b"0.0"},
+		"fourtytwo":      {"serialised": b"42.0"},
+		"pi":             {"serialised": b"3.1416"},
+		"pi_long":        {"serialised": b"3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132"},
+		"exponent":       {"serialised": b"2e4"},
+		"frac_exponent":  {"serialised": b"11.5e2"},
+		"uppercase_exp":  {"serialised": b"4.55E6"},
+		"negative":       {"serialised": b"-3.2"},
+		"very_high":      {"serialised": b"2e100"},
+		"negative_exp":   {"serialised": b"3e-100"},
+		"positive_exp":   {"serialised": b"7.1e+10"},
+		"float_rounding": {"serialised": b"3.0"}, #Number can't be exactly represented with IEEE 754.
+		"very_negative":  {"serialised": b"-1000000000000000000000000.0"} #-10^24.
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_deserialise_serialise(self, serialised):
+		"""
+		Tests whether deserialising and then serialising results in the same
+		instance.
+		:param serialised: The serialised form to start (and hopefully end up)
+		with.
+		"""
+		instance = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
+		new_serialised = real.real_number.serialise(instance)
+		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
+
+	@luna.tests.parametrise({
+		"zero":          {"instance": 0.0},
+		"three":         {"instance": 3.0},
+		"pi":            {"instance": 3.1416},
+		"very_big":      {"instance": 2e65},
+		"negative":      {"instance": -42.0},
+		"very_small":    {"instance": 3e-100},
 		"very_negative": {"instance": -1000000000000000000000000.0} #-10^24.
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
@@ -101,6 +128,26 @@ class TestRealNumber(luna.tests.TestCase):
 		for byte in result:
 			self.assertIsInstance(byte, int, "The serialised real number must be a byte sequence.")
 		self.assertTrue(hasattr(result, "read"), "The serialised real number must be a byte stream.")
+
+	@luna.tests.parametrise({
+		"zero":          {"instance": 0.0},
+		"three":         {"instance": 3.0},
+		"pi":            {"instance": 3.1416},
+		"very_big":      {"instance": 2e65},
+		"negative":      {"instance": -42.0},
+		"very_small":    {"instance": 3e-100},
+		"very_negative": {"instance": -1000000000000000000000000.0} #-10^24.
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_deserialise(self, instance):
+		"""
+		Tests whether serialising and then deserialising results in the original
+		instance.
+		:param instance: The instance to start (and hopefully end up) with.
+		"""
+		serialised = real.real_number.serialise(instance)
+		deserialised = real.real_number.deserialise(serialised)
+		self.assertEqual(instance, deserialised, "The real number must be the same after serialising and deserialising.")
 
 	@luna.tests.parametrise({
 		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like a real number.
