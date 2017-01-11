@@ -48,14 +48,12 @@ def is_serialised(serialised):
 	:return: ``True`` if the stream likely represents an integer, or ``False``
 	if it does not.
 	"""
-	try:
-		unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
-	except UnicodeDecodeError:
-		return False #If it's not UTF-8 encoded, it's not an integer.
-	for character in unicode_string:
-		if not character.isdigit():
-			return False
-	return len(unicode_string) >= 1 #All characters are digits and there is at least one digit.
+	first_byte = True
+	for byte in serialised:
+		if (byte < b"0"[0] or byte > b"9"[0]) and (not first_byte or byte == b"-"): #Minus is allowed for first byte, as negative sign.
+			return False #Not a byte representing a digit.
+		first_byte = False
+	return not first_byte #All characters are correct and there has been at least one byte.
 
 def serialise(instance):
 	"""
