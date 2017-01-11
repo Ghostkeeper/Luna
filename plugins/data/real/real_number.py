@@ -89,7 +89,7 @@ def is_serialised(serialised):
 			else:
 				return False
 		elif state == "exponent_initial": #Initial state of exponent, may be negative or a number.
-			if byte == b"-"[0]:
+			if byte == b"-"[0] or byte == b"+"[0]:
 				state = "exponent_start"
 			elif byte >= b"0"[0] and byte <= b"9"[0]:
 				state = "exponent"
