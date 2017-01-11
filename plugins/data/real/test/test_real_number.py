@@ -81,3 +81,36 @@ class TestRealNumber(luna.tests.TestCase):
 		"""
 		with self.assertRaises(luna.tests.MockException):
 			real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
+
+	@luna.tests.parametrise({
+		"zero":       {"instance": 0.0},
+		"three":      {"instance": 3.0},
+		"pi":         {"instance": 3.1416},
+		"very_big":   {"instance": 2e65},
+		"negative":   {"instance": -42.0},
+		"very_small": {"instance": 3e-100},
+		"very_negative": {"instance": -1000000000000000000000000.0} #-10^24.
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise(self, instance):
+		"""
+		Tests whether we can serialise integers.
+		:param instance: The integer to serialise.
+		"""
+		result = real.real_number.serialise(instance)
+		for byte in result:
+			self.assertIsInstance(byte, int, "The serialised real number must be a byte sequence.")
+		self.assertTrue(hasattr(result, "read"), "The serialised real number must be a byte stream.")
+
+	@luna.tests.parametrise({
+		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like a real number.
+		"custom_object": {"instance": luna.tests.CallableObject()}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_error(self, instance):
+		"""
+		Tests fail cases in which serialisation must raise an exception.
+		:param instance: An object that is not a real number.
+		"""
+		with self.assertRaises(luna.tests.MockException):
+			real.real_number.serialise(instance)
