@@ -90,6 +90,35 @@ class TestInteger(luna.tests.TestCase):
 		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
+		"zero":       {"instance": 0},
+		"fourtytwo":  {"instance": 42},
+		"septillion": {"instance": 1000000000000000000000000}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
+		"negative":   {"instance": -99}
+	})
+	def test_is_instance(self, instance):
+		"""
+		Tests whether it is correctly detected that these are integers.
+		:param instance: An integer of which we must detect that it is an
+		integer.
+		"""
+		self.assertTrue(integer_module.is_instance(instance))
+
+	@luna.tests.parametrise({
+		"none":   {"instance": None},
+		"string": {"instance": "G"}, #G-string.
+		"class":  {"instance": int},
+		"bytes":  {"instance": b"42"}, #The serialised form of an integer, but not the integer itself.
+		"float":  {"instance": 3.1416},
+		"object": {"instance": luna.tests.CallableObject()}
+	})
+	def test_is_not_instance(self, instance):
+		"""
+		Tests whether it is correctly detected that these are not integers.
+		:param instance: Not an integer.
+		"""
+		self.assertFalse(integer_module.is_instance(instance))
+
+	@luna.tests.parametrise({
 		"empty":          {"serialised": b""},
 		"not_utf_8":      {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
 		"letters":        {"serialised": b"ghostkeeper"},
