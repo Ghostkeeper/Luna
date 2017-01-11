@@ -26,7 +26,7 @@ def deserialise(serialised):
 		instance = json.load(io.TextIOWrapper(serialised, encoding="utf_8"))
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence is not proper UTF-8, so it doesn't represent an integer.") from e
-	except JSONDecodeError as e:
+	except json.JSONDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent a JSON-format document and therefore doesn't represent an integer.") from e
 	if type(instance) != int:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent an integer, but an instance of type {instance_type}.".format(instance_type=type(instance)))
