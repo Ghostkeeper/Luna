@@ -16,20 +16,6 @@ import unicodedata #To see if the serialisation of enums has only allowed charac
 import luna.plugins #To raise a SerialisationException.
 import luna.stream #To return streams of serialised enumerated types.
 
-def serialise(instance):
-	"""
-	Serialises an enumerated type.
-	:param instance: The instance of an enumerated type.
-	:return: A byte sequence representing the enumerated type.
-	:raises SerialisationException: The instance we need to serialise does not
-	behave like an enumerated type.
-	"""
-	try:
-		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
-	except AttributeError: #Translate the cryptic type error that arises from this if it is no enum.
-		raise luna.plugins.api("data").SerialisationException("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
-	return luna.stream.BytesStreamReader(reference.encode(encoding="utf_8"))
-
 def deserialise(serialised):
 	"""
 	Deserialises a serialisation of an enumerated type.
@@ -88,6 +74,20 @@ def is_serialised(serialised):
 				return False
 			next_should_continue = True
 	return next_should_continue and num_pieces >= 3 #All characters are correct, but we mustn't end with an empty piece.
+
+def serialise(instance):
+	"""
+	Serialises an enumerated type.
+	:param instance: The instance of an enumerated type.
+	:return: A byte sequence representing the enumerated type.
+	:raises SerialisationException: The instance we need to serialise does not
+	behave like an enumerated type.
+	"""
+	try:
+		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
+	except AttributeError: #Translate the cryptic type error that arises from this if it is no enum.
+		raise luna.plugins.api("data").SerialisationException("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
+	return luna.stream.BytesStreamReader(reference.encode(encoding="utf_8"))
 
 _allowed_id_continue_categories = {"Ll", "Lm", "Lo", "Lt", "Lu", "Mc", "Mn", "Nd", "Nl", "Pc"}
 """
