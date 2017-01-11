@@ -21,8 +21,8 @@ def serialise(instance):
 	Serialises an enumerated type.
 	:param instance: The instance of an enumerated type.
 	:return: A byte sequence representing the enumerated type.
-	:raises SerialisationException: The serialisation does not represent an
-	enumerated type.
+	:raises SerialisationException: The instance we need to serialise does not
+	behave like an enumerated type.
 	"""
 	try:
 		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
