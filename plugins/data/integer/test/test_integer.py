@@ -70,3 +70,33 @@ class TestInteger(luna.tests.TestCase):
 		"""
 		with self.assertRaises(luna.tests.MockException):
 			integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
+
+	@luna.tests.parametrise({
+		"zero":       {"instance": 0},
+		"fourtytwo":  {"instance": 42},
+		"septillion": {"instance": 1000000000000000000000000}, #10^24, way too large to be represented by 32-bit integers, or even 64-bit.
+		"negative":   {"instance": -99}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise(self, instance):
+		"""
+		Tests whether we can serialise integers.
+		:param instance: The integer to serialise.
+		"""
+		result = integer_module.serialise(instance)
+		for byte in result:
+			self.assertIsInstance(byte, int, "The serialised integer must be a byte sequence.")
+		self.assertTrue(hasattr(result, "read"), "The serialised integer must be a byte stream.")
+
+	@luna.tests.parametrise({
+		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like an integer.
+		"custom_object": {"instance": luna.tests.CallableObject()}
+	})
+	@unittest.mock.patch("luna.plugins.api", mock_api)
+	def test_serialise_error(self, instance):
+		"""
+		Tests fail cases in which serialisation must raise an exception.
+		:param instance: An object that is not an integer.
+		"""
+		with self.assertRaises(luna.tests.MockException):
+			integer_module.serialise(instance)
