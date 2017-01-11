@@ -63,9 +63,8 @@ def serialise(instance):
 	:param instance: The integer to serialise.
 	:return: A sequence of bytes representing the integer.
 	"""
-	output = luna.stream.BytesStreamReader(io.BytesIO())
 	try:
-		output.write(json.dumps(instance).encode("utf_8"))
+		output = luna.stream.BytesStreamReader(json.dumps(instance).encode("utf_8"))
 	except TypeError as e:
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not an integer.") from e
 	return output
