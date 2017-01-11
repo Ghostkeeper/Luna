@@ -50,7 +50,7 @@ def is_serialised(serialised):
 	"""
 	first_byte = True
 	for byte in serialised:
-		if not ((byte >= b"0"[0] and byte <= b"9"[0]) or (first_byte and byte == b"-"[0])): #Minus is allowed for first byte, as negative sign.
+		if not (byte >= b"0"[0] and byte <= b"9"[0]) and not (first_byte and byte == b"-"[0]): #Minus is allowed for first byte, as negative sign.
 			return False #Not a byte representing a digit.
 		first_byte = False
 	return not first_byte #All characters are correct and there has been at least one byte.
