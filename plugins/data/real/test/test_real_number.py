@@ -154,6 +154,38 @@ class TestRealNumber(luna.tests.TestCase):
 		"very_small":    {"instance": 3e-100},
 		"very_negative": {"instance": -1000000000000000000000000.0} #-10^24.
 	})
+	def test_is_instance(self, instance):
+		"""
+		Tests whether it is correctly detected that these are real numbers.
+		:param instance: A real number of which we must detect that it is a real
+		number.
+		"""
+		self.assertTrue(real.real_number.is_instance(instance))
+
+	@luna.tests.parametrise({
+		"none":    {"instance": None},
+		"string":  {"instance": "G"}, #G-string.
+		"class":   {"instance": float},
+		"bytes":   {"instance": b"3.1416"}, #The serialised form of a real number, but not the real number itself.
+		"integer": {"instance": 5}, #Technically a real number, but we don't want to identify it as such since that would give confusion for detecting integers.
+		"object":  {"instance": luna.tests.CallableObject()}
+	})
+	def test_is_not_instance(self, instance):
+		"""
+		Tests whether it is correctly detected that these are not real numbers.
+		:param instance: Not a real number.
+		"""
+		self.assertFalse(real.real_number.is_instance(instance))
+
+	@luna.tests.parametrise({
+		"zero":          {"instance": 0.0},
+		"three":         {"instance": 3.0},
+		"pi":            {"instance": 3.1416},
+		"very_big":      {"instance": 2e65},
+		"negative":      {"instance": -42.0},
+		"very_small":    {"instance": 3e-100},
+		"very_negative": {"instance": -1000000000000000000000000.0} #-10^24.
+	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
 	def test_serialise(self, instance):
 		"""
