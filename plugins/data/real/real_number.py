@@ -49,13 +49,63 @@ def is_serialised(serialised):
 	:return: ``True`` if the stream likely represents a real number, or
 	``False`` if it does not.
 	"""
-	#TODO
-	first_byte = True
+	#This works with a simple finite state automaton in a linear fashion:
+	#initial -> integer_start -> integer -> fractional_start -> fractional -> exponent_initial -> exponent_start -> exponent
+	#Each state represents what character is expected next.
+	#The FSA solution is not pretty, but it's the only way it could be made to work with a possibly infinite byte stream.
+	state = "initial"
 	for byte in serialised:
-		if not (byte >= b"0"[0] and byte <= b"9"[0]) and not (first_byte and byte == b"-"[0]): #Minus is allowed for first byte, as negative sign.
-			return False #Not a byte representing a digit.
-		first_byte = False
-	return not first_byte #All characters are correct and there has been at least one byte.
+		if state == "initial": #Initial state: May be a negative sign or integer_start.
+			if byte == b"-"[0]:
+				state = "integer_start"
+			elif byte >= b"0"[0] and byte <= b"9"[0]:
+				state = "integer"
+			else:
+				return False
+		elif state == "integer_start": #First character of integer. An integer must have at least 1 digit.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				state = "integer"
+			else:
+				return False
+		elif state == "integer": #Consecutive characters of the integer. May be a period, indicating start of fractional, or an E, indicating start of exponent.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				pass #Still integer.
+			if byte == b"."[0]:
+				state = "fractional_start"
+			elif byte == b"e"[0] or byte == b"E"[0]:
+				state = "exponent_initial"
+			else:
+				return False
+		elif state == "fractional_start": #Start of fractional part.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				state = "fractional"
+			else:
+				return False
+		elif state == "fractional": #Continuation of factional part. May be an E, indicating start of exponent.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				pass #Still fractional part.
+			elif byte == b"e"[0] or byte == b"E"[0]:
+				state = "exponent_initial"
+			else:
+				return False
+		elif state == "exponent_initial": #Initial state of exponent, may be negative or a number.
+			if byte == b"-"[0]:
+				state = "exponent_start"
+			elif byte >= b"0"[0] and byte <= b"9"[0]:
+				state = "exponent"
+			else:
+				return False
+		elif state == "exponent_start": #First character of an exponent. Not an end state.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				state = "exponent"
+			else:
+				return False
+		elif state == "exponent": #Continuation of an exponent.
+			if byte >= b"0"[0] and byte <= b"9"[0]:
+				pass #Still exponent.
+			else:
+				return False
+	return state == "integer" or state == "fractional" or state == "exponent" #Allowable end states.
 
 def serialise(instance):
 	"""
