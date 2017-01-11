@@ -83,31 +83,67 @@ class TestRealNumber(luna.tests.TestCase):
 			real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
 
 	@luna.tests.parametrise({
-		"zero":           {"serialised": b"0.0"},
-		"fourtytwo":      {"serialised": b"42.0"},
-		"pi":             {"serialised": b"3.1416"},
-		"pi_long":        {"serialised": b"3.141592653589793"},
-		"exponent":       {"serialised": b"2e4"},
-		"frac_exponent":  {"serialised": b"11.5e2"},
-		"uppercase_exp":  {"serialised": b"4.55E6"},
-		"negative":       {"serialised": b"-3.2"},
-		"very_high":      {"serialised": b"2e100"},
-		"negative_exp":   {"serialised": b"3e-100"},
-		"positive_exp":   {"serialised": b"7.1e+10"},
-		"float_rounding": {"serialised": b"3.0"}, #Number can't be exactly represented with IEEE 754.
-		"very_negative":  {"serialised": b"-1000000000000000000000000.0"} #-10^24.
+		"zero": {
+			"serialised": b"0.0"
+		},
+		"fourtytwo": {
+			"serialised": b"42.0"
+		},
+		"pi": {
+			"serialised": b"3.1416"
+		},
+		"pi_long": {
+			"serialised": b"3.141592653589793"
+		},
+		"exponent": {
+			"serialised": b"2e4",
+			"synonyms": {b"2.0e+4", b"20000.0"}
+		},
+		"frac_exponent": {
+			"serialised": b"11.5e2",
+			"synonyms": {b"11.5e+2", b"1150.0"}
+		},
+		"uppercase_exp": {
+			"serialised": b"4.55E6",
+			"synonyms": {b"4.55e+6", b"4550000.0"}
+		},
+		"negative": {
+			"serialised": b"-3.2"
+		},
+		"very_high": {
+			"serialised": b"2e100",
+			"synonyms": {b"2e+100", b"20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+		},
+		"negative_exp": {
+			"serialised": b"3e-100",
+			"synonyms": {b"0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003"}
+		},
+		"positive_exp": {
+			"serialised": b"7.1e+10",
+			"synonyms": {b"71000000000.0"}
+		},
+		"float_rounding": {
+			"serialised": b"3.0" #Number can't be exactly represented with IEEE 754.
+		},
+		"very_negative": {
+			"serialised": b"-1000000000000000000000000.0", #-10^24.
+			"synonyms": {b"-1e+24"}
+		}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
-	def test_deserialise_serialise(self, serialised):
+	def test_deserialise_serialise(self, serialised, synonyms=set()):
 		"""
 		Tests whether deserialising and then serialising results in the same
 		instance.
 		:param serialised: The serialised form to start (and hopefully end up)
 		with.
+		:param synonyms: Other allowed serialisations representing the same
+		number.
 		"""
 		instance = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
 		new_serialised = real.real_number.serialise(instance)
-		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
+		allowed_answers = {serialised} | synonyms #Allow original string as well as all synonyms.
+		self.assertIn(new_serialised.read(), allowed_answers, "The serialised form must be consistent or a synonym after deserialising and serialising.")
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
