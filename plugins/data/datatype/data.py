@@ -37,7 +37,7 @@ def deserialise(data_type, serialised):
 	:return: An instance of the specified data type.
 	"""
 	try:
-		return luna.plugins.plugins_by_type["data"][data_type]["deserialise"](serialised)
+		return luna.plugins.plugins_by_type["data"][data_type]["data"]["deserialise"](serialised)
 	except KeyError: #Plug-in with specified data type is not available.
 		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
 
@@ -51,7 +51,7 @@ def is_instance(data_type, data):
 	if it isn't.
 	"""
 	try:
-		return luna.plugins.plugins_by_type["data"][data_type]["is_instance"](data)
+		return luna.plugins.plugins_by_type["data"][data_type]["data"]["is_instance"](data)
 	except KeyError: #Plug-in with specified data type is not available.
 		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
 		return False
@@ -66,7 +66,7 @@ def is_serialised(data_type, serialised):
 	specified data type, or ``False if it doesn't.
 	"""
 	try:
-		return luna.plugins.plugins_by_type["data"][data_type]["is_serialised"](serialised)
+		return luna.plugins.plugins_by_type["data"][data_type]["data"]["is_serialised"](serialised)
 	except KeyError: #Plug-in with specified data type is not available.
 		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
 		return False
@@ -82,7 +82,7 @@ def serialise(data_type, data):
 	:return: A sequence of bytes representing exactly the state of the data.
 	"""
 	try:
-		return luna.plugins.plugins_by_type["data"][data_type]["serialise"](data)
+		return luna.plugins.plugins_by_type["data"][data_type]["data"]["serialise"](data)
 	except KeyError: #Plug-in with specified data type is not available.
 		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type))
 
@@ -98,7 +98,7 @@ def type_of(data):
 	type.
 	"""
 	for identity, data_plugin in luna.plugins.plugins_by_type["data"].items():
-		if data_plugin["is_instance"](data):
+		if data_plugin["data"]["is_instance"](data):
 			return identity
 	return None #No data type found.
 
@@ -118,6 +118,6 @@ def type_of_serialised(serialised):
 	input_streams = itertools.tee(serialised, num_data_plugins) #Create a stream for every plug-in to read from.
 	for stream, plugin in zip(input_streams, luna.plugins.plugins_by_type["data"].items()):
 		identity, metadata = plugin
-		if metadata["is_serialised"](stream):
+		if metadata["data"]["is_serialised"](stream):
 			return identity
 	return None #No data type found.
