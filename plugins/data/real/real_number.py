@@ -105,7 +105,7 @@ def is_serialised(serialised):
 				pass #Still exponent.
 			else:
 				return False
-	return state == "integer" or state == "fractional" or state == "exponent" #Allowable end states.
+	return state == "fractional" or state == "exponent" #Allowable end states.
 
 def serialise(instance):
 	"""
