@@ -70,7 +70,7 @@ def is_serialised(serialised):
 		elif state == "integer": #Consecutive characters of the integer. May be a period, indicating start of fractional, or an E, indicating start of exponent.
 			if byte >= b"0"[0] and byte <= b"9"[0]:
 				pass #Still integer.
-			if byte == b"."[0]:
+			elif byte == b"."[0]:
 				state = "fractional_start"
 			elif byte == b"e"[0] or byte == b"E"[0]:
 				state = "exponent_initial"
