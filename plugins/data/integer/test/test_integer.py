@@ -17,7 +17,6 @@ import integer.integer as integer_module #The module we're testing.
 import luna.stream #To create streams of bytes as input.
 import luna.tests #For parametrised tests and mock exceptions.
 
-
 def mock_api(plugin_type):
 	"""
 	Mocks calls to different APIs.

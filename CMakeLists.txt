@@ -36,6 +36,7 @@ set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins 
 	plugins/data/integer/test/test_integer.py
 	plugins/data/real/__init__.py
 	plugins/data/real/real_number.py
+	plugins/data/real/test/test_real_number.py
 	plugins/logger/loggertype/__init__.py
 	plugins/logger/loggertype/log.py
 	plugins/logger/loggertype/test/test_init.py
