@@ -93,7 +93,8 @@ class TestRealNumber(luna.tests.TestCase):
 			"serialised": b"3.1416"
 		},
 		"pi_long": {
-			"serialised": b"3.141592653589793"
+			"serialised": b"3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132",
+			"synonyms": {b"3.141592653589793"}
 		},
 		"exponent": {
 			"serialised": b"2e4",
