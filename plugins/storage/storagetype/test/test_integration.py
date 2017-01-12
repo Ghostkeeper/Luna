@@ -9,8 +9,8 @@ Tests for each storage plug-in whether it properly implements the storage
 interface.
 """
 
-import sys #To find any plug-in directories in the Python Path.
 import os.path #To generate the plug-in directory.
+import sys #To find any plug-in directories in the Python Path.
 
 import luna.plugins #To get the plug-ins to test with.
 import luna.tests
