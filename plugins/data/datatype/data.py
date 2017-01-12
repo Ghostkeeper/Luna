@@ -58,7 +58,7 @@ def is_instance(data_type, data):
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["is_instance"](data)
 	except KeyError: #Plug-in with specified data type is not available.
-		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
+		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.", data_type=data_type)
 		return False
 
 def is_serialised(data_type, serialised):
@@ -73,7 +73,7 @@ def is_serialised(data_type, serialised):
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["is_serialised"](serialised)
 	except KeyError: #Plug-in with specified data type is not available.
-		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
+		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.", data_type=data_type)
 		return False
 
 def serialise(data, data_type=None):
