@@ -131,7 +131,7 @@ class TestRealNumber(luna.tests.TestCase):
 		}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
-	def test_deserialise_serialise(self, serialised, synonyms=set()):
+	def test_deserialise_serialise(self, serialised, synonyms=None):
 		"""
 		Tests whether deserialising and then serialising results in the same
 		instance.
@@ -140,6 +140,8 @@ class TestRealNumber(luna.tests.TestCase):
 		:param synonyms: Other allowed serialisations representing the same
 		number.
 		"""
+		if synonyms is None:
+			synonyms = set() #Empty set as default.
 		instance = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
 		new_serialised = real.real_number.serialise(instance)
 		allowed_answers = {serialised} | synonyms #Allow original string as well as all synonyms.
