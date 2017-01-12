@@ -26,16 +26,21 @@ def data_types():
 	"""
 	luna.plugins.plugins_by_type["data"].keys()
 
-def deserialise(data_type, serialised):
+def deserialise(serialised, data_type=None):
 	"""
 	Deserialises the specified sequence of bytes, turning it into an instance of
 	the specified data type.
-	:param data_type: The type of data the serialised ``bytes`` should be
-	interpreted as.
-	:param data: A serialised form of data representing an instance of the
+	:param serialised: A serialised form of data representing an instance of the
 	specified data type, in the form of a byte sequence.
+	:param data_type: The type of data the serialised ``bytes`` should be
+	interpreted as. If no data type is provided, the data type is found
+	automatically.
 	:return: An instance of the specified data type.
 	"""
+	if data_type is None:
+		data_type = type_of_serialised(serialised)
+		if data_type is None:
+			raise SerialisationException("The data type could not automatically be determined.")
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["deserialise"](serialised)
 	except KeyError as e: #Plug-in with specified data type is not available.
@@ -71,16 +76,21 @@ def is_serialised(data_type, serialised):
 		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.")
 		return False
 
-def serialise(data_type, data):
+def serialise(data, data_type=None):
 	"""
 	Serialises the specified data.
 
 	The result is a sequence of bytes. The ``deserialise`` operation turns it
 	back into a copy of the original object.
-	:param data_type: The type of data that will be provided.
 	:param data: The data that must be serialised.
+	:param data_type: The type of data that will be provided. If no data type is
+	provided, the data type is found automatically.
 	:return: A sequence of bytes representing exactly the state of the data.
 	"""
+	if data_type is None:
+		data_type = type_of(data)
+		if data_type is None:
+			raise SerialisationException("The data type of object {instance} could not automatically be determined.".format(instance=str(data)))
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["serialise"](data)
 	except KeyError as e: #Plug-in with specified data type is not available.
