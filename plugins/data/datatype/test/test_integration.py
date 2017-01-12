@@ -13,6 +13,7 @@ import sys #To find any plug-in directories in the Python Path.
 import test.test_enum #For an example enumerated type.
 
 import luna.plugins #To get the plug-ins to test with.
+import luna.stream #To provide byte streams as serialised input.
 import luna.tests #To create parametrised tests.
 
 for root_path in sys.path:
@@ -51,3 +52,23 @@ class TestIntegration(luna.tests.TestCase):
 			if is_instance(instance):
 				instance_of.add(identity)
 		self.assertLessEqual(len(instance_of), 1, "Instance {instance} is found to be an instance of multiple data types: {data_plugins}".format(instance=str(instance), data_plugins=", ".join(instance_of)))
+
+	@luna.tests.parametrise({
+		"empty":   {"serialised": b""},
+		"integer": {"serialised": b"42"},
+		"float":   {"serialised": b"3.1416"},
+		"letters": {"serialised": b"ghostkeeper"},
+	})
+	def test_is_serialised_unique(self, serialised):
+		"""
+		Tests whether a sequence of bytes is identified as the serialised form
+		of only one data type.
+		:param serialised: A sequence of bytes that should represent only one
+		data type.
+		"""
+		serialised_of = set() #The plug-ins that this sequence is supposedly the serialised form of.
+		for identity, metadata in luna.plugins.plugins_by_type["data"].items():
+			is_serialised = metadata["data"]["is_serialised"]
+			if is_serialised(luna.stream.BytesStreamReader(serialised)):
+				serialised_of.add(identity)
+		self.assertLessEqual(len(serialised_of), 1, "Byte sequence {serialised} is found to be the serialised form of multiple data types: {data_plugins}".format(serialised=str(serialised), data_plugins=", ".join(serialised_of)))
