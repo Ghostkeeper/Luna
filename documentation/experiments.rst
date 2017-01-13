@@ -42,7 +42,3 @@ One of the goals listed in :doc:`goals` is to explore more exotic programming te
 |             |           | implementation needs to be so vastly different     |
 |             |           | that no generic library could be made.             |
 +-------------+-----------+----------------------------------------------------+
-| Declarative | Planned   | Seems to make defining UI's very elegant. Involves |
-| UI          |           | some complicated hacks. Integrates with other      |
-|             |           | Python code very well.                             |
-+-------------+-----------+----------------------------------------------------+
