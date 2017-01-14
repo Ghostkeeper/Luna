@@ -49,17 +49,21 @@ Gives an iterator over the configuration items in this configuration type.
 
 ----
 
-	.. function:: deserialise(self, serialised)
+	.. function:: load(self, directory)
 
-Deserialises all of the configuration instance from a serialised string. This overwrites all configuration items in the configuration type by the configuration that the string represents.
+Loads all of the configuration instance from a specified directory. This overwrites all configuration items in the configuration type by the configuration that the string represents.
 
-- ``serialised``: The serialised representation of a configuration state.
-- Raises: ``ConfigurationError`` if the provided serialisation is not a well-formed representation of any configuration state.
+The directory to load the configuration from is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced however, and it is advisable to access only data within the confines of the specified directory and its subdirectories.
+
+- ``directory``: The directory containing serialised configuration data to load the configuration from.
+- Raises: ``ConfigurationError`` if the provided configuration is not a well-formed representation of any configuration state.
 
 ----
 
-	.. function:: serialise(self)
+	.. function:: save(self, directory)
 
-Serialises the current configuration state to a string. All of the configuration in a configuration type must get serialised into the string. This method should be a snapshot of the configuration state, meaning that it should be atomic and not return a representation of a state of the configuration that never existed at a single point in time.
+Saves the current configuration state to a specified directory. This method should be a snapshot of the configuration state, meaning that it should be atomic and not save a representation of a state of the configuration that never existed at a single point in time.
 
-- Return: A string representing the current configuration state.
+The directory to save the configuration to is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced, however, and it is advisable to access only data within the confines of the specified directory and its subdirectories.
+
+- ``directory``: The directory to save the configuration data to.
