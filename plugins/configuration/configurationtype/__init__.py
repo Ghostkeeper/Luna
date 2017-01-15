@@ -64,6 +64,6 @@ def validate_metadata(configuration_metadata):
 	except TypeError:
 		raise luna.plugins.MetadataValidationError("The configuration metadata entry is not a dictionary.")
 	instance_attributes = set(dir(configuration_metadata["configuration"]["instance"]))
-	required_methods = {"__getitem__", "__iter__", "serialise", "deserialise"}
+	required_methods = {"__getitem__", "__iter__", "load", "save"}
 	if required_methods > instance_attributes: #Instance is not implementing all required functions.
 		raise luna.plugins.MetadataValidationError("The configuration instance doesn't implement the required functions {functions}.".format(functions=", ".join(required_methods - instance_attributes)))
