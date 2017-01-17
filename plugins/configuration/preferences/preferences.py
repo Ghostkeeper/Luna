@@ -23,3 +23,4 @@ class Preferences:
 		original_class = self.__class__
 		parent_class = luna.plugins.api("configuration").Configuration
 		self.__class__ = original_class.__class__(original_class.__name__ + "Configuration", (original_class, parent_class), {}) #Add the configuration class mixin.
+		super().__init__() #Execute the Configuration class' initialisation method to create the data structures.
