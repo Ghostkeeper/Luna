@@ -14,3 +14,12 @@ class Preferences:
 	"""
 	Offers a system to create global application preferences.
 	"""
+
+	def prepare(self):
+		"""
+		Finalizes the class initialisation using data that is only available at
+		run time.
+		"""
+		original_class = self.__class__
+		parent_class = luna.plugins.api("configuration").Configuration
+		self.__class__ = original_class.__class__(original_class.__name__ + "Configuration", (original_class, parent_class), {}) #Add the configuration class mixin.
