@@ -103,7 +103,7 @@ def _initialise_listeners(instance):
 			result = old_method(self, *args, **kwargs)
 			for listener in self._instance_listeners:
 				try:
-					listener()(function_name, None)
+					listener()(None, None)
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
