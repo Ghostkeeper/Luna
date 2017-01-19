@@ -20,6 +20,7 @@ set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins 
 	luna/__init__.py
 	luna/listen.py
 	luna/plugins.py
+	luna/test/test_listen.py
 	luna/tests.py
 	plugins/configuration/configurationtype/__init__.py
 	plugins/configuration/configurationtype/configuration.py
@@ -77,6 +78,12 @@ find_package(Python REQUIRED)
 option(BUILD_TESTING "Build a target for automatically testing the code." TRUE)
 if(BUILD_TESTING)
 	enable_testing()
+
+	option(TEST_LUNA "Test the base framework modules." TRUE)
+	if(TEST_LUNA)
+		add_test(NAME luna.listen COMMAND ${PYTHON_EXECUTABLE} -m unittest luna.test.test_listen WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+		set_tests_properties(luna.listen PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
+	endif()
 
 	option(TEST_PYLINT "Test code style of Python code." TRUE)
 	if(TEST_PYLINT)
