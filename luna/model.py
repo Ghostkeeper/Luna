@@ -126,7 +126,11 @@ def _initialise_listeners(instance):
 		:param name: The name of the attribute to change.
 		:param value: The new value of the attribute.
 		"""
+		old_value = getattr(self, name)
 		old_setattr(name, value) #Note that self is not provided since old_setattr already gets __setattr__ from instance and is therefore a method-wrapper.
+		if hasattr(self, name): #Only detect that we haven't actually changed the value if the value existed before setting.
+			if old_value == getattr(self, name):
+				return #Set to the same value it already had. No change!
 		for listener in self._instance_listeners: #Instance listeners always need to be called.
 			try:
 				listener()(name, value)
