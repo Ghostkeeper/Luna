@@ -18,7 +18,7 @@ set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version n
 set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins without having to use GLOB.
 	__main__.py
 	luna/__init__.py
-	luna/model.py
+	luna/listen.py
 	luna/plugins.py
 	luna/tests.py
 	plugins/configuration/configurationtype/__init__.py
