@@ -51,7 +51,7 @@ class TestListen(unittest.TestCase):
 		listener = unittest.mock.MagicMock()
 		luna.listen.listen(listener, self, "field_integer")
 		self.field_integer = 1
-		listener.assert_called_with("field_integer", 1)
+		listener.assert_called_once_with("field_integer", 1)
 		self.field_integer = 0 #Trigger two changes.
 		listener.assert_called_with("field_integer", 0)
 		self.assertEqual(listener.call_count, 2, "The state was changed twice.")
