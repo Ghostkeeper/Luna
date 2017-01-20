@@ -25,6 +25,17 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0
 		self.field_string = ""
 
+	def test_listen_all_fields(self):
+		"""
+		Tests listening to all changes of an instance.
+		"""
+		listener = unittest.mock.MagicMock()
+		luna.listen.listen(listener, self)
+		self.field_integer = 1
+		listener.assert_called_once_with("field_integer", 1)
+		self.field_string = "I love you."
+		listener.assert_called_with("field_string", "I love you.")
+
 	def test_listen_nochange(self):
 		"""
 		Tests that the listener doesn't get called if the state doesn't change.
