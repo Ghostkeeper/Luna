@@ -46,3 +46,12 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0 #Trigger two changes.
 		listener.assert_called_with("field_integer", 0)
 		self.assertEqual(listener.call_count, 2, "The state was changed twice.")
+
+	def test_listen_nochange(self):
+		"""
+		Tests that the listener doesn't get called if the state doesn't change.
+		"""
+		listener = unittest.mock.MagicMock()
+		luna.listen.listen(listener, self, "field_integer")
+		self.field_integer = 0 #Equal to starting state.
+		listener.assert_not_called()
