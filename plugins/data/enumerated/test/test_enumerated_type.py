@@ -12,7 +12,7 @@ output a lot, but tests the behaviour of the units instead.
 """
 
 import enum #To define example enumerated types to test with.
-import test.test_enum #Built-in enumerated types to test with.
+import plistlib #Built-in enumerated types to test with.
 import unittest.mock #To replace the dependency on the data module.
 
 import enumerated.enumerated_type #The module we're testing.
@@ -69,7 +69,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
 		"custom2":  {"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"},
-		"builtins": {"serialised": b"test.test_enum.Fruit.tomato"},
+		"builtins": {"serialised": b"plistlib.PlistFormat.FMT_BINARY"},
 		"nested":   {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
@@ -102,7 +102,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"custom":   {"serialised": b"enumerated.test.test_enumerated_type.Animal.CAT"},
 		"custom2":  {"serialised": b"enumerated.test.test_enumerated_type.Animal.BIRD"},
-		"builtins": {"serialised": b"test.test_enum.Fruit.tomato"},
+		"builtins": {"serialised": b"plistlib.PlistFormat.FMT_BINARY"},
 		"nested":   {"serialised": b"enumerated.test.test_enumerated_type.EnumContainer.Material.STONE"}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
@@ -120,7 +120,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
 		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
-		"builtins":      {"instance": test.test_enum.Fruit.tomato},
+		"builtins":      {"instance": plistlib.PlistFormat.FMT_BINARY},
 		"nested":        {"instance": EnumContainer.Material.STONE}
 	})
 	def test_is_instance(self, instance):
@@ -189,7 +189,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
 		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
-		"builtins":      {"instance": test.test_enum.Fruit.tomato},
+		"builtins":      {"instance": plistlib.PlistFormat.FMT_BINARY},
 		"nested":        {"instance": EnumContainer.Material.STONE}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
@@ -206,7 +206,7 @@ class TestEnumeratedType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"module_local":  {"instance": Animal.CAT},
 		"module_local2": {"instance": Animal.BIRD}, #Different module-local one that is not the first-defined entry.
-		"builtins":      {"instance": test.test_enum.Fruit.tomato},
+		"builtins":      {"instance": plistlib.PlistFormat.FMT_BINARY},
 		"nested":        {"instance": EnumContainer.Material.STONE}
 	})
 	@unittest.mock.patch("luna.plugins.api", mock_api)
