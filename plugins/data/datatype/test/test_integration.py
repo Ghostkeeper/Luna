@@ -10,7 +10,7 @@ Tests for each data plug-in whether it properly implements the data interface.
 
 import os.path #To generate the plug-in directory.
 import sys #To find any plug-in directories in the Python Path.
-import test.test_enum #For an example enumerated type.
+import plistlib #For an example enumerated type.
 
 import luna.plugins #To get the plug-ins to test with.
 import luna.stream #To provide byte streams as serialised input.
@@ -33,7 +33,7 @@ class TestIntegration(luna.tests.TestCase):
 		"integer": {"instance": 42},
 		"float":   {"instance": 3.14},
 		"string":  {"instance": "Communism jokes are not funny unless everyone gets them."},
-		"enum":    {"instance": test.test_enum.Fruit.banana},
+		"enum":    {"instance": plistlib.PlistFormat.FMT_XML}, #Some built-in enumerated type.
 		"object":  {"instance": object()}
 	})
 	def test_is_instance_unique(self, instance):
