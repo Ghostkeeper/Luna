@@ -8,12 +8,20 @@
 Provides a class that allows for creating global application preferences.
 """
 
+import luna.listen #To prepare the preferences for use when plug-ins are loaded.
 import luna.plugins #To get the configuration data type to extend from.
 
 class Preferences:
 	"""
 	Offers a system to create global application preferences.
 	"""
+
+	def __init__(self):
+		luna.listen.listen(self.check_prepare, luna.plugins, "state")
+
+	def check_prepare(self, _, new_state):
+		if new_state == luna.plugins.PluginsState.LOADED:
+			self.prepare()
 
 	def prepare(self):
 		"""
