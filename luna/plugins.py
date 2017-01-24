@@ -15,6 +15,8 @@ import logging #Fallback logging for if the logger plug-ins aren't loaded yet.
 import os #To search through folders to find the plug-ins.
 import sys #Make fallback logger output to stdout instead of stderr.
 
+import luna.listen #For the listenable models.
+
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO, stream=sys.stdout) #Set the fallback log level to the default for the application.
 
 class PluginsState(enum.Enum):
@@ -77,7 +79,7 @@ All plug-ins, by their identities.
 This also includes all plug-ins that are not registered.
 """
 
-plugins_by_type = {} #pylint: disable=C0103
+plugins_by_type = luna.listen.DictionaryModel() #pylint: disable=C0103
 """
 All plug-ins, indexed by their types.
 
@@ -356,7 +358,7 @@ def _parse_metadata(modules):
 			unregister = metadata["type"]["unregister"] if ("unregister" in metadata["type"]) else lambda *args, **kwargs: None
 			plugin_type = _PluginType(api=metadata["type"]["api"], register=register, unregister=unregister, validate_metadata=metadata["type"]["validate_metadata"])
 			_plugin_types[metadata["type"]["type_name"]] = plugin_type
-			plugins_by_type[metadata["type"]["type_name"]] = {}
+			plugins_by_type[metadata["type"]["type_name"]] = luna.listen.DictionaryModel()
 
 		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
 

@@ -20,6 +20,16 @@ import functools #To copy documentation to function wrappers and for partial fun
 import inspect #To check if listeners are bound methods, so we need to make a different type of reference then.
 import weakref #To automatically remove listeners if their class instances are removed.
 
+class DictionaryModel(dict):
+	"""
+	Wrapper for dictionaries that can be used with listeners.
+
+	Normal dictionaries are implemented in Python natively and so cannot be
+	modified to the extent that listeners require. If you wish to listen for
+	modification of a dictionary, use this wrapper instead of a normal
+	dictionary class.
+	"""
+
 def listen(listener, instance, attribute=None):
 	"""
 	Listen for changes of the specified attribute or the specified instance.
