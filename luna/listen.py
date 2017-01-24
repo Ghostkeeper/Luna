@@ -58,6 +58,21 @@ def listen(listener, instance, attribute=None):
 	else:
 		listener = weakref.ref(listener)
 
+	_add_listener(listener, instance, attribute)
+
+def _add_listener(listener, instance, attribute=None):
+	"""
+	Adds the specified listener to an instance for listening.
+
+	This is basically a version of `listen` that does not take the weak
+	reference, so that it can be used internally with functional programming
+	techniques like partial functions.
+	:param listener: The listener to add.
+	:param instance: The instance the listener is listening to.
+	:param attribute: The attribute of the instance the listener is listening
+	to. If not set, the listener will be registered as listening to all changes
+	to all attributes.
+	"""
 	if not hasattr(instance, "_instance_listeners") or not hasattr(instance, "_attribute_listeners"):
 		_initialise_listeners(instance) #Create lists of listeners.
 
@@ -132,8 +147,10 @@ def _initialise_listeners(instance):
 			if old_value == getattr(self, name):
 				return #Set to the same value it already had. No change!
 		for listener in self._instance_listeners: #Instance listeners always need to be called.
+			if type(listener) is weakref:
+				listener = listener() #Dereference the weakref.
 			try:
-				listener()(name, value)
+				listener(name, value)
 			except TypeError:
 				if not listener: #Garbage collection nicked it!
 					self._instance_listeners.remove(listener)
@@ -141,8 +158,10 @@ def _initialise_listeners(instance):
 					raise
 		if name in self._attribute_listeners:
 			for listener in self._attribute_listeners[name]:
+				if type(listener) is weakref:
+					listener = listener() #Dereference the weakref.
 				try:
-					listener()(name, value)
+					listener(name, value)
 				except TypeError:
 					if not listener: #Garbage collection nicked it!
 						self._attribute_listeners[name].remove(listener)
