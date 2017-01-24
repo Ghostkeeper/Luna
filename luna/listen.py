@@ -157,13 +157,14 @@ def _initialise_listeners(instance):
 			"""
 			result = old_method(self, *args, **kwargs)
 			for listener in self._instance_listeners:
-				try:
-					listener()(None, None)
-				except TypeError:
-					if not listener: #Garbage collection nicked it!
+				if type(listener) is weakref:
+					listener_instance = listener()
+					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
-					else: #An actual TypeError raised by the listener. Need to pass this on.
-						raise
+						continue
+				else:
+					listener_instance = listener
+				listener_instance(None, None)
 			return result
 		setattr(modified_class, function_name, functools.partial(new_function, old_method)) #Replace the method with a hooked method.
 
