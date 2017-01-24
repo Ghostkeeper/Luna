@@ -41,10 +41,21 @@ class PluginsState(enum.Enum):
 	The proper plug-ins are fully loaded and ready to use.
 	"""
 
-state = PluginsState.NOT_LOADED
-"""
-Tracks the current state of the plug-in loading process.
-"""
+class Plugins:
+	"""
+	Represents the currently loaded plug-ins.
+
+	This is basically a holder for the state variable. If this variable is held
+	in the module itself we wouldn't be able to listen for state changes.
+	"""
+
+	def __init__(self):
+		"""
+		Initialises the state variable for the plug-ins.
+		"""
+		self.state = PluginsState.NOT_LOADED #Tracks the current state of the plug-in loading process.
+
+instance = Plugins()
 
 _plugin_locations = []
 """
@@ -177,8 +188,7 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	global state
-	state = PluginsState.IMPORTING
+	instance.state = PluginsState.IMPORTING
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	candidate_modules = _load_candidates(candidate_directories)
 	candidates = list(_parse_metadata(candidate_modules)) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
@@ -193,7 +203,7 @@ def discover():
 	for succeeded_candidate in resolved_candidates:
 		activate(succeeded_candidate.identity)
 
-	state = PluginsState.LOADED #We're done!
+	instance.state = PluginsState.LOADED #We're done!
 
 def deactivate(identity):
 	"""
