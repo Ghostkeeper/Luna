@@ -188,19 +188,23 @@ def _initialise_listeners(instance):
 				return #Set to the same value it already had. No change!
 		for listener in self._instance_listeners: #Instance listeners always need to be called.
 			if type(listener) is weakref:
-				listener = listener() #Dereference the weakref.
-				if listener is None: #Garbage collection nicked it!
+				listener_instance = listener() #Dereference the weakref.
+				if listener_instance is None: #Garbage collection nicked it!
 					self._instance_listeners.remove(listener)
 					continue
-			listener(name, value)
+			else:
+				listener_instance = listener
+			listener_instance(name, value)
 		if name in self._attribute_listeners:
 			for listener in self._attribute_listeners[name]:
 				if type(listener) is weakref:
-					listener = listener() #Dereference the weakref.
-					if listener is None: #Garbage collection nicked it!
+					listener_instance = listener() #Dereference the weakref.
+					if listener_instance is None: #Garbage collection nicked it!
 						self._attribute_listeners[name].remove(listener)
 						continue
-				listener(name, value)
+				else:
+					listener_instance = listener
+				listener_instance(name, value)
 	modified_class.__setattr__ = new_setattr
 	instance.__class__ = modified_class #Swap out the class of the object, and thereby change its methods.
 
