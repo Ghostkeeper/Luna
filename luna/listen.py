@@ -60,6 +60,36 @@ def listen(listener, instance, attribute=None):
 
 	_add_listener(listener, instance, attribute)
 
+def listen_value(listener, instance, attribute, value):
+	"""
+	Listen for when a specific attribute obtains a specific value.
+
+	The listener will get called when the specified attribute of the specified
+	instance gets the specified value.
+
+	If the value was set to the specified value but already had this value
+	before, the listeners are not called. It does not count as a change.
+
+	Listening to instances or attributes of instances requires changing the
+	object inherently to add extra methods, overriding `__setattr__`, and to add
+	extra fields to hold the listeners. This is not possible if the class of the
+	instance is defined natively (for instance with a `list` or `dict`) or if
+	the class has a `__slots__` field. For those cases, it is advisable to use a
+	transparent wrapper.
+	:param listener: A callable object without any arguments.
+	:param instance: The instance to listen to for changes.
+	:param attribute: The name of the attribute of the instance to listen to for
+	changes.
+	:param value: The required value before the listener will get called.
+	"""
+	#Take a weak reference to the listener.
+	if inspect.ismethod(listener) and hasattr(listener, "__self__"): #Is a bound method.
+		listener = weakref.WeakMethod(listener) #Then we use the special WeakMethod that destroys the reference if the instance this method is bound to is destroyed.
+	else:
+		listener = weakref.ref(listener)
+
+	_add_listener(functools.partial(_value_checking_listener, listener, value), instance, attribute)
+
 def _add_listener(listener, instance, attribute=None):
 	"""
 	Adds the specified listener to an instance for listening.
@@ -169,3 +199,23 @@ def _initialise_listeners(instance):
 						raise
 	modified_class.__setattr__ = new_setattr
 	instance.__class__ = modified_class #Swap out the class of the object, and thereby change its methods.
+
+def _value_checking_listener(listener, required_value, _, value):
+	"""
+	A wrapper for a listener that calls the listener only when a specific value
+	is given to the attribute.
+
+	This is intended to be turned into a partial function, filling in the
+	listener and the required value. If this is done, the first two arguments of
+	the listener are properly the attribute and the value respectively, so that
+	they can get called as a listener.
+	:param listener: A weak reference to the listener to call.
+	:param required_value: The required value for the attribute before the
+	listener gets called.
+	:param _: The attribute that was changed. This is ignored because this
+	listener wrapper is only called when the attribute is correct anyway.
+	:param value: The actual value the attribute obtained, which is checked
+	against the required value.
+	"""
+	if listener() is not None and value == required_value:
+		listener()() #Dereference the weakref and then call.
