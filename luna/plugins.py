@@ -196,7 +196,7 @@ def discover():
 	for validated_candidate in validated_candidates:
 		_plugins[validated_candidate.identity] = validated_candidate.metadata
 
-	state = PluginsState.RESOLVING_DEPENDENCIES
+	instance.state = PluginsState.RESOLVING_DEPENDENCIES
 	resolved_candidates = list(_resolve_dependencies(validated_candidates))
 	for failed_candidate in [candidate for candidate in validated_candidates if candidate not in resolved_candidates]:
 		deactivate(failed_candidate.identity)
