@@ -18,8 +18,13 @@ class Preferences:
 
 	def __init__(self):
 		"""
-		Registers the preparation for this class to occur when plug-ins are done
-		loading.
+		Registers the initialisation for this class to occur when plug-ins are
+		done loading.
+
+		The initialisation of this class can't be done directly in this method,
+		since the instance of this class is created when the metadata of the
+		preferences plug-in is loaded. It is then not yet guaranteed that the
+		parent class of this class (``Configuration``) is defined yet.
 		"""
 		luna.listen.listen(self.check_prepare, luna.plugins.instance, "state")
 
