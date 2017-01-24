@@ -17,7 +17,7 @@ class Preferences:
 	"""
 
 	def __init__(self):
-		luna.listen.listen(self.check_prepare, luna.plugins, "state")
+		luna.listen.listen(self.check_prepare, luna.plugins.instance, "state")
 
 	def check_prepare(self, _, new_state):
 		if new_state == luna.plugins.PluginsState.LOADED:
