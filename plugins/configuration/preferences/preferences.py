@@ -17,6 +17,10 @@ class Preferences:
 	"""
 
 	def __init__(self):
+		"""
+		Registers the preparation for this class to occur when plug-ins are done
+		loading.
+		"""
 		luna.listen.listen(self.check_prepare, luna.plugins.instance, "state")
 
 	def check_prepare(self, _, new_state):
