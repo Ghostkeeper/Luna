@@ -26,11 +26,7 @@ class Preferences:
 		preferences plug-in is loaded. It is then not yet guaranteed that the
 		parent class of this class (``Configuration``) is defined yet.
 		"""
-		luna.listen.listen(self.check_prepare, luna.plugins.instance, "state")
-
-	def check_prepare(self, _, new_state):
-		if new_state == luna.plugins.PluginsState.LOADED:
-			self.prepare()
+		luna.listen.listen_value(self.prepare, luna.plugins.instance, "state", luna.plugins.PluginsState.LOADED)
 
 	def prepare(self):
 		"""
