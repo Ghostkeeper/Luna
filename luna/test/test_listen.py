@@ -44,6 +44,7 @@ class TestListen(unittest.TestCase):
 		luna.listen.listen(listener, self)
 		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
 		listener.assert_called_once_with("field_float", 3.1416)
+		delattr(self, "field_float") #Clean-up.
 
 	def test_listen_nochange(self):
 		"""
