@@ -73,6 +73,14 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0 #Equal to starting state.
 		self.listener.assert_not_called()
 
+	def test_listen_nonexisting_attribute(self):
+		"""
+		Tests listening to attributes that don't exist yet.
+		"""
+		luna.listen.listen(self.listener, self, "field_float")
+		self.field_float = 3.14
+		self.listener.assert_called_with("field_float", 3.14)
+
 	def test_listen_simple(self):
 		"""
 		Tests a simple happy path with a single state change and single
