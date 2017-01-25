@@ -24,6 +24,8 @@ class TestListen(unittest.TestCase):
 		"""
 		self.field_integer = 0
 		self.field_string = ""
+		self.listener = unittest.mock.MagicMock()
+		self.listener.reset_mock()
 
 	def tearDown(self):
 		"""
@@ -36,64 +38,58 @@ class TestListen(unittest.TestCase):
 		"""
 		Tests listening to all changes of an instance.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self)
+		luna.listen.listen(self.listener, self)
 		self.field_integer = 1
-		listener.assert_called_once_with("field_integer", 1)
+		self.listener.assert_called_once_with("field_integer", 1)
 		self.field_string = "I love you."
-		listener.assert_called_with("field_string", "I love you.")
+		self.listener.assert_called_with("field_string", "I love you.")
 
 	def test_listen_new_fields(self):
 		"""
 		Test listening to all changes of an instance and then making new fields.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self)
+		luna.listen.listen(self.listener, self)
 		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
-		listener.assert_called_once_with("field_float", 3.1416)
+		self.listener.assert_called_once_with("field_float", 3.1416)
 
 	def test_listen_nochange(self):
 		"""
 		Tests that the listener doesn't get called if the state doesn't change.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self, "field_integer")
+		luna.listen.listen(self.listener, self, "field_integer")
 		self.field_integer = 0 #Equal to starting state.
-		listener.assert_not_called()
+		self.listener.assert_not_called()
 
 	def test_listen_simple(self):
 		"""
 		Tests a simple happy path with a single state change and single
 		listener.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self, "field_integer")
+		luna.listen.listen(self.listener, self, "field_integer")
 		self.field_integer = 1 #Triggers a change.
-		listener.assert_called_once_with("field_integer", 1)
+		self.listener.assert_called_once_with("field_integer", 1)
 
 	def test_listen_twice(self):
 		"""
 		Tests listening for two consecutive state changes.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self, "field_integer")
+		luna.listen.listen(self.listener, self, "field_integer")
 		self.field_integer = 1
-		listener.assert_called_once_with("field_integer", 1)
+		self.listener.assert_called_once_with("field_integer", 1)
 		self.field_integer = 0 #Trigger two changes.
-		listener.assert_called_with("field_integer", 0)
-		self.assertEqual(listener.call_count, 2, "The state was changed twice.")
+		self.listener.assert_called_with("field_integer", 0)
+		self.assertEqual(self.listener.call_count, 2, "The state was changed twice.")
 
 	def test_listen_multiple_attributes(self):
 		"""
 		Tests listening for two attributes and the instance at the same time.
 		"""
-		listener = unittest.mock.MagicMock()
-		luna.listen.listen(listener, self, "field_integer")
-		luna.listen.listen(listener, self, "field_string")
-		luna.listen.listen(listener, self)
+		luna.listen.listen(self.listener, self, "field_integer")
+		luna.listen.listen(self.listener, self, "field_string")
+		luna.listen.listen(self.listener, self)
 		self.field_integer = 1
-		listener.assert_called_with("field_integer", 1)
-		self.assertEqual(listener.call_count, 2, "The listener must be called once for the attribute and once for the instance.")
+		self.listener.assert_called_with("field_integer", 1)
+		self.assertEqual(self.listener.call_count, 2, "The listener must be called once for the attribute and once for the instance.")
 		self.field_string = "poo"
-		listener.assert_called_with("field_string", "poo")
-		self.assertEqual(listener.call_count, 4, "The listener must be called twice for two attributes and twice for the instance.")
+		self.listener.assert_called_with("field_string", "poo")
+		self.assertEqual(self.listener.call_count, 4, "The listener must be called twice for two attributes and twice for the instance.")
