@@ -82,3 +82,18 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0 #Trigger two changes.
 		listener.assert_called_with("field_integer", 0)
 		self.assertEqual(listener.call_count, 2, "The state was changed twice.")
+
+	def test_listen_multiple_attributes(self):
+		"""
+		Tests listening for two attributes and the instance at the same time.
+		"""
+		listener = unittest.mock.MagicMock()
+		luna.listen.listen(listener, self, "field_integer")
+		luna.listen.listen(listener, self, "field_string")
+		luna.listen.listen(listener, self)
+		self.field_integer = 1
+		listener.assert_called_with("field_integer", 1)
+		self.assertEqual(listener.call_count, 2, "The listener must be called once for the attribute and once for the instance.")
+		self.field_string = "poo"
+		listener.assert_called_with("field_string", "poo")
+		self.assertEqual(listener.call_count, 4, "The listener must be called twice for two attributes and twice for the instance.")
