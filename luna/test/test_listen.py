@@ -42,7 +42,7 @@ class TestListen(unittest.TestCase):
 		"""
 		listener = unittest.mock.MagicMock()
 		luna.listen.listen(listener, self)
-		self.field_float = 3.1416
+		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
 		listener.assert_called_once_with("field_float", 3.1416)
 
 	def test_listen_nochange(self):
