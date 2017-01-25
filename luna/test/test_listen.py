@@ -25,6 +25,13 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0
 		self.field_string = ""
 
+	def tearDown(self):
+		"""
+		Cleans up the object after possibly modifying it.
+		"""
+		if hasattr(self, "field_float"):
+			delattr(self, "field_float")
+
 	def test_listen_all_fields(self):
 		"""
 		Tests listening to all changes of an instance.
@@ -44,7 +51,6 @@ class TestListen(unittest.TestCase):
 		luna.listen.listen(listener, self)
 		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
 		listener.assert_called_once_with("field_float", 3.1416)
-		delattr(self, "field_float") #Clean-up.
 
 	def test_listen_nochange(self):
 		"""
