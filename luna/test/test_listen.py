@@ -48,7 +48,7 @@ class TestListen(unittest.TestCase):
 		Tests listening to attributes that don't exist yet.
 		"""
 		luna.listen.listen(self.listener, self, "field_float")
-		self.field_float = 3.14
+		self.field_float = 3.14 #pylint: disable=attribute-defined-outside-init
 		self.listener.assert_called_with("field_float", 3.14)
 
 	def test_listen_multiple_attributes(self):
