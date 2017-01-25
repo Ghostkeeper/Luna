@@ -19,46 +19,6 @@ import luna.listen #For the listenable models.
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO, stream=sys.stdout) #Set the fallback log level to the default for the application.
 
-class PluginsState(enum.Enum):
-	"""
-	Presents the different states the plug-in loading could be in.
-	"""
-	NOT_LOADED = 0
-	"""
-	No plug-ins were ever loaded.
-	"""
-
-	IMPORTING = 1
-	"""
-	Importing the modules and finding candidates, and validating their metadata.
-	"""
-
-	RESOLVING_DEPENDENCIES = 2
-	"""
-	Resolving dependencies and activating/deactivating plug-ins based on that.
-	"""
-
-	LOADED = 3
-	"""
-	The proper plug-ins are fully loaded and ready to use.
-	"""
-
-class Plugins:
-	"""
-	Represents the currently loaded plug-ins.
-
-	This is basically a holder for the state variable. If this variable is held
-	in the module itself we wouldn't be able to listen for state changes.
-	"""
-
-	def __init__(self):
-		"""
-		Initialises the state variable for the plug-ins.
-		"""
-		self.state = PluginsState.NOT_LOADED #Tracks the current state of the plug-in loading process.
-
-instance = Plugins()
-
 _plugin_locations = []
 """
 List of directories where to look for plug-ins.
@@ -190,7 +150,6 @@ def discover():
 	plug-ins are not deleted then. Only new plug-ins are added by this
 	function.
 	"""
-	instance.state = PluginsState.IMPORTING
 	candidate_directories = _find_candidate_directories() #Generates a sequence of directories that might contain plug-ins.
 	candidate_modules = _load_candidates(candidate_directories)
 	candidates = list(_parse_metadata(candidate_modules)) #Sync the lazy generators here because we need to have all plug-in types ready for the next stage.
@@ -198,14 +157,11 @@ def discover():
 	for validated_candidate in validated_candidates:
 		plugins[validated_candidate.identity] = validated_candidate.metadata
 
-	instance.state = PluginsState.RESOLVING_DEPENDENCIES
 	resolved_candidates = list(_resolve_dependencies(validated_candidates))
 	for failed_candidate in [candidate for candidate in validated_candidates if candidate not in resolved_candidates]:
 		deactivate(failed_candidate.identity)
 	for succeeded_candidate in resolved_candidates:
 		activate(succeeded_candidate.identity)
-
-	instance.state = PluginsState.LOADED #We're done!
 
 def deactivate(identity):
 	"""
