@@ -26,14 +26,16 @@ One of the goals listed in :doc:`goals` is to explore more exotic programming te
 |             |           | there will really never be more than one           |
 |             |           | implementation of the type.                        |
 +-------------+-----------+----------------------------------------------------+
-| Model       | In        | Difficult to implement. Difficult to debug. Could  |
-| change      | Progress  | make onChange listeners extremely easy and elegant |
-| listeners   |           | to use. Forces the programmer to use an explicit   |
-|             |           | state that gets updated rather than firing an      |
-|             |           | event, so this makes code more clear. Elegance is  |
-|             |           | nice. Dict, set and list are immutable in Python   |
-|             |           | which requires them to be used in a less elegant   |
-|             |           | manner.                                            |
+| Model       | In        | Largely a success. Difficult to implement.         |
+| change      | Progress  | Difficult to debug. Makes onChange listeners       |
+| listeners   |           | extremely easy and elegant to use. Forces the      |
+|             |           | programmer to use an explicit state that gets      |
+|             |           | updated rather than firing an event, so this makes |
+|             |           | code more clear. Elegance is nice. Dict, set and   |
+|             |           | list are immutable in Python which requires them   |
+|             |           | to be used in a less elegant manner. Also,         |
+|             |           | module-global variables cannot be listened to      |
+|             |           | directly.                                          |
 +-------------+-----------+----------------------------------------------------+
 | Unit tests  | Completed | Failed to make generic unit tests. Making tests    |
 | for         |           | for individual cases was successful though, and    |
