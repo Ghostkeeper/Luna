@@ -138,8 +138,8 @@ def _initialise_listeners(instance):
 	#Make a copy of the instance's class to modify some methods of.
 	modified_class = type(instance.__class__.__name__ + "_Model", instance.__class__.__bases__, dict(instance.__class__.__dict__))
 
-	#Replace all methods that could change the instance.
-	changing_methods = ["__delattr__", "__delitem__", "__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__", "__setitem__", "append"] #Not __setattr__! It'll be replaced with a special function.
+	#Replace all methods that change the entire instance. We can bunch these up because we don't need to access any of the parameters to call the listeners properly.
+	changing_methods = ["__iadd__", "__iand__", "__ifloordiv__", "__ilshift__", "__imatmul__", "__imod__", "__imul__", "__ior__", "__ipow__", "__irshift__", "__isub__", "__itruediv__", "__ixor__"]
 	for function_name in [function_name for function_name in changing_methods if hasattr(instance, function_name)]:
 		old_method = getattr(instance, function_name)
 
@@ -147,6 +147,10 @@ def _initialise_listeners(instance):
 		def new_function(old_method, self, *args, **kwargs):
 			"""
 			Changes the model and calls the instance listeners of the model.
+
+			Since the function inherently doesn't change a specific attribute of
+			the instance and has no value, the attribute and value passed on to
+			the listener will be `None`.
 			:param old_method: The method that changes the model.
 			:param self: The model instance which is being listened to.
 			:param args: Positional arguments passed to the method that changes
@@ -167,6 +171,138 @@ def _initialise_listeners(instance):
 				listener_instance(None, None)
 			return result
 		setattr(modified_class, function_name, functools.partial(new_function, old_method)) #Replace the method with a hooked method.
+
+	if hasattr(instance, "__delattr__"):
+		old_delattr = instance.__delattr__
+
+		@functools.wraps(old_delattr)
+		def new_delattr(self, name):
+			"""
+			Deletes an attribute of the model and calls the listeners of the
+			model.
+
+			It calls the attribute listeners of the deleted attribute, and all
+			instance listeners.
+			:param self: The model instance.
+			:param name: The name of the attribute to delete.
+			"""
+			old_delattr(name)
+			for listener in self._instance_listeners: #Instance listeners always need to be called.
+				if type(listener) is weakref:
+					listener_instance = listener() #Dereference the weakref.
+					if listener_instance is None: #Garbage collection nicked it!
+						self._instance_listeners.remove(listener)
+						continue
+				else:
+					listener_instance = listener
+				listener_instance(name, None) #Since the attribute has no value any more, we won't pass any value on to the listener.
+			if name in self._attribute_listeners:
+				for listener in self._attribute_listeners[name]:
+					if type(listener) is weakref:
+						listener_instance = listener() #Dereference the weakref.
+						if listener_instance is None: #Garbage collection nicked it!
+							self._attribute_listeners[name].remove(listener)
+							continue
+					else:
+						listener_instance = listener
+					listener_instance(name, None) #Since the attribute has no value any more, we won't pass any value on to the listener.
+		modified_class.__delattr__ = new_delattr
+
+	if hasattr(instance, "__delitem__"):
+		old_delitem = instance.__delitem__
+
+		@functools.wraps(old_delitem)
+		def new_delitem(self, key):
+			"""
+			Deletes an item of the model and calls the listeners of the model.
+
+			It calls the attribute listeners of the deleted item, and all
+			instance listeners.
+			:param self: The model instance.
+			:param key: The name of the item to delete.
+			"""
+			old_delitem(key)
+			for listener in self._instance_listeners: #Instance listeners always need to be called.
+				if type(listener) is weakref:
+					listener_instance = listener() #Dereference the weakref.
+					if listener_instance is None: #Garbage collection nicked it!
+						self._instance_listeners.remove(listener)
+						continue
+				else:
+					listener_instance = listener
+				listener_instance(key, None) #Since the item has no value any more, we won't pass any value on to the listener.
+			if key in self._attribute_listeners:
+				for listener in self._attribute_listeners[key]:
+					if type(listener) is weakref:
+						listener_instance = listener() #Dereference the weakref.
+						if listener_instance is None: #Garbage collection nicked it!
+							self._attribute_listeners[key].remove(listener)
+							continue
+					else:
+						listener_instance = listener
+					listener_instance(key, None) #Since the item has no value any more, we won't pass any value on to the listener.
+		modified_class.__delitem__ = new_delitem
+
+	if hasattr(instance, "__setitem__"):
+		old_setitem = instance.__setitem__
+
+		@functools.wraps(old_setitem)
+		def new_setitem(self, key, value):
+			"""
+			Changes or adds an item of the model and calls the listeners of the
+			model.
+
+			It calls the attribute listeners of the changed item, and all
+			instance listeners.
+			:param self: The model instance.
+			:param key: The name of the item to set.
+			:param value: The new value of the item.
+			"""
+			old_setitem(key, value)
+			for listener in self._instance_listeners: #Instance listeners always need to be called.
+				if type(listener) is weakref:
+					listener_instance = listener() #Dereference the weakref.
+					if listener_instance is None: #Garbage collection nicked it!
+						self._instance_listeners.remove(listener)
+						continue
+				else:
+					listener_instance = listener
+				listener_instance(key, value)
+			if key in self._attribute_listeners:
+				for listener in self._attribute_listeners[key]:
+					if type(listener) is weakref:
+						listener_instance = listener() #Dereference the weakref.
+						if listener_instance is None: #Garbage collection nicked it!
+							self._attribute_listeners[key].remove(listener)
+							continue
+					else:
+						listener_instance = listener
+					listener_instance(key, value)
+		modified_class.__setitem__ = new_setitem
+
+	if hasattr(instance, "append"):
+		old_append = instance.append
+
+		@functools.wraps(old_append)
+		def new_append(self, x):
+			"""
+			Adds an item to the end of the list.
+
+			It calls all instance listeners.
+			:param self: The model instance.
+			:param x: The new item to add to the list.
+			"""
+			old_append(x)
+			for listener in self._instance_listeners:
+				if type(listener) is weakref:
+					listener_instance = listener() #Dereference the weakref.
+					if listener_instance is None: #Garbage collection nicked it!
+						self._instance_listeners.remove(listener)
+						continue
+				else:
+					listener_instance = listener
+				listener_instance(None, x)
+		modified_class.append = new_append
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
 	old_setattr = instance.__setattr__
@@ -207,6 +343,7 @@ def _initialise_listeners(instance):
 					listener_instance = listener
 				listener_instance(name, value)
 	modified_class.__setattr__ = new_setattr
+
 	instance.__class__ = modified_class #Swap out the class of the object, and thereby change its methods.
 
 def _value_checking_listener(listener, required_value, _, value):
