@@ -25,7 +25,6 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0
 		self.field_string = ""
 		self.listener = unittest.mock.MagicMock()
-		self.listener.reset_mock()
 
 	def tearDown(self):
 		"""
