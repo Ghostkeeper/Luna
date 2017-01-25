@@ -9,7 +9,6 @@ Handles all administration on plug-ins.
 """
 
 import collections #For namedtuple.
-import enum #To track the plug-in loading state.
 import imp #Imports Python modules dynamically.
 import logging #Fallback logging for if the logger plug-ins aren't loaded yet.
 import os #To search through folders to find the plug-ins.
