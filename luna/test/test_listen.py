@@ -43,13 +43,13 @@ class TestListen(unittest.TestCase):
 		self.field_string = "I love you."
 		self.listener.assert_called_with("field_string", "I love you.")
 
-	def test_listen_new_fields(self):
+	def test_listen_future_attribute(self):
 		"""
-		Test listening to all changes of an instance and then making new fields.
+		Tests listening to attributes that don't exist yet.
 		"""
-		luna.listen.listen(self.listener, self)
-		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
-		self.listener.assert_called_once_with("field_float", 3.1416)
+		luna.listen.listen(self.listener, self, "field_float")
+		self.field_float = 3.14
+		self.listener.assert_called_with("field_float", 3.14)
 
 	def test_listen_multiple_attributes(self):
 		"""
@@ -65,6 +65,14 @@ class TestListen(unittest.TestCase):
 		self.listener.assert_called_with("field_string", "poo")
 		self.assertEqual(self.listener.call_count, 4, "The listener must be called twice for two attributes and twice for the instance.")
 
+	def test_listen_new_fields(self):
+		"""
+		Test listening to all changes of an instance and then making new fields.
+		"""
+		luna.listen.listen(self.listener, self)
+		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
+		self.listener.assert_called_once_with("field_float", 3.1416)
+
 	def test_listen_nochange(self):
 		"""
 		Tests that the listener doesn't get called if the state doesn't change.
@@ -72,14 +80,6 @@ class TestListen(unittest.TestCase):
 		luna.listen.listen(self.listener, self, "field_integer")
 		self.field_integer = 0 #Equal to starting state.
 		self.listener.assert_not_called()
-
-	def test_listen_nonexisting_attribute(self):
-		"""
-		Tests listening to attributes that don't exist yet.
-		"""
-		luna.listen.listen(self.listener, self, "field_float")
-		self.field_float = 3.14
-		self.listener.assert_called_with("field_float", 3.14)
 
 	def test_listen_simple(self):
 		"""
