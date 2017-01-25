@@ -161,7 +161,7 @@ def _initialise_listeners(instance):
 			"""
 			result = old_method(self, *args, **kwargs)
 			for listener in self._instance_listeners:
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener()
 					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
@@ -188,7 +188,7 @@ def _initialise_listeners(instance):
 			"""
 			old_delattr(name)
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
@@ -198,7 +198,7 @@ def _initialise_listeners(instance):
 				listener_instance(name, None) #Since the attribute has no value any more, we won't pass any value on to the listener.
 			if name in self._attribute_listeners:
 				for listener in self._attribute_listeners[name]:
-					if type(listener) is weakref:
+					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
 							self._attribute_listeners[name].remove(listener)
@@ -223,7 +223,7 @@ def _initialise_listeners(instance):
 			"""
 			old_delitem(key)
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
@@ -233,7 +233,7 @@ def _initialise_listeners(instance):
 				listener_instance(key, None) #Since the item has no value any more, we won't pass any value on to the listener.
 			if key in self._attribute_listeners:
 				for listener in self._attribute_listeners[key]:
-					if type(listener) is weakref:
+					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
 							self._attribute_listeners[key].remove(listener)
@@ -260,7 +260,7 @@ def _initialise_listeners(instance):
 			"""
 			old_setitem(key, value)
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
@@ -270,7 +270,7 @@ def _initialise_listeners(instance):
 				listener_instance(key, value)
 			if key in self._attribute_listeners:
 				for listener in self._attribute_listeners[key]:
-					if type(listener) is weakref:
+					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
 							self._attribute_listeners[key].remove(listener)
@@ -294,7 +294,7 @@ def _initialise_listeners(instance):
 			"""
 			old_append(x)
 			for listener in self._instance_listeners:
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
 						self._instance_listeners.remove(listener)
@@ -324,7 +324,7 @@ def _initialise_listeners(instance):
 			if old_value == getattr(self, name):
 				return #Set to the same value it already had. No change!
 		for listener in self._instance_listeners: #Instance listeners always need to be called.
-			if type(listener) is weakref:
+			if isinstance(listener, weakref.ReferenceType):
 				listener_instance = listener() #Dereference the weakref.
 				if listener_instance is None: #Garbage collection nicked it!
 					self._instance_listeners.remove(listener)
@@ -334,7 +334,7 @@ def _initialise_listeners(instance):
 			listener_instance(name, value)
 		if name in self._attribute_listeners:
 			for listener in self._attribute_listeners[name]:
-				if type(listener) is weakref:
+				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
 						self._attribute_listeners[name].remove(listener)
