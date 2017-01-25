@@ -24,7 +24,7 @@ _plugin_locations = []
 List of directories where to look for plug-ins.
 """
 
-_plugin_types = {}
+plugin_types = luna.listen.DictionaryModel() #pylint: disable=C0103
 """
 Dictionary of all plug-in types.
 
@@ -102,7 +102,7 @@ def activate(identity):
 		return
 
 	candidate = _plugins[identity]
-	candidate_types = candidate.keys() & _plugin_types.keys() #The plug-in types to register the plug-in at.
+	candidate_types = candidate.keys() & plugin_types.keys() #The plug-in types to register the plug-in at.
 	for candidate_type in candidate_types:
 		_register(identity, candidate_type)
 	api("logger").info("Loaded plug-in {plugin}.", plugin=identity)
@@ -132,9 +132,9 @@ def api(plugin_type):
 	type.
 	:raises ImportError: The plug-in type is unknown.
 	"""
-	if plugin_type not in _plugin_types:
+	if plugin_type not in plugin_types:
 		raise ImportError("No API known for \"{type}\".".format(type=plugin_type))
-	return _plugin_types[plugin_type].api
+	return plugin_types[plugin_type].api
 
 def discover():
 	"""
@@ -179,13 +179,13 @@ def deactivate(identity):
 			continue
 		if plugin_type == "type": #We're deactivating a plug-in type. Do that at the very end, so we don't get errors if the plug-in implements its own type.
 			continue
-		if plugin_type not in _plugin_types: #The type was deleted prior, because it was a dependency.
+		if plugin_type not in plugin_types: #The type was deleted prior, because it was a dependency.
 			continue
 		if identity in plugins_by_type[plugin_type]:
 			_unregister(identity, plugin_type)
 			api("logger").info("Unregistered plug-in {plugin} as {plugin_type}.", plugin=identity, plugin_type=plugin_type)
 	if "type" in _plugins[identity]: #Now unregister any plug-in type it may define.
-		del _plugin_types[_plugins[identity]["type"]["type_name"]]
+		del plugin_types[_plugins[identity]["type"]["type_name"]]
 		api("logger").info("Unregistered plug-in {plugin} as plug-in type.", plugin=identity)
 	dependees = [dependee_identity for dependee_identity, dependee in _plugins.items() if identity in dependee["dependencies"]]
 	for dependee_identity in dependees:
@@ -313,7 +313,7 @@ def _parse_metadata(modules):
 			register = metadata["type"]["register"] if ("register" in metadata["type"]) else lambda *args, **kwargs: None #If not present, use a no-op lambda function.
 			unregister = metadata["type"]["unregister"] if ("unregister" in metadata["type"]) else lambda *args, **kwargs: None
 			plugin_type = _PluginType(api=metadata["type"]["api"], register=register, unregister=unregister, validate_metadata=metadata["type"]["validate_metadata"])
-			_plugin_types[metadata["type"]["type_name"]] = plugin_type
+			plugin_types[metadata["type"]["type_name"]] = plugin_type
 			plugins_by_type[metadata["type"]["type_name"]] = luna.listen.DictionaryModel()
 
 		yield _UnresolvedCandidate(identity=identity, metadata=metadata, dependencies=metadata["dependencies"])
@@ -333,7 +333,7 @@ def _register(plugin_identity, type_identity):
 		return
 	plugins_by_type[type_identity][plugin_identity] = _plugins[plugin_identity]
 	try:
-		_plugin_types[type_identity].register(plugin_identity, _plugins[plugin_identity])
+		plugin_types[type_identity].register(plugin_identity, _plugins[plugin_identity])
 	except Exception as e:
 		api("logger").error("Couldn't register plug-in {plugin} as type {plugin_type}: {error_message}", plugin=plugin_identity, plugin_type=type_identity, error_message=str(e))
 		del plugins_by_type[type_identity][plugin_identity]
@@ -373,7 +373,7 @@ def _safe_log_warning(message, **formatted_strings):
 	:param formatted_strings: Any strings to replace bracket-enclosed keywords
 	in the log message.
 	"""
-	if "logger" in _plugin_types:
+	if "logger" in plugin_types:
 		api("logger").warning(message, **formatted_strings)
 	else:
 		logging.exception(message.format(**formatted_strings)) #pylint: disable=logging-format-interpolation
@@ -393,7 +393,7 @@ def _unregister(plugin_identity, type_identity):
 		return
 	del plugins_by_type[type_identity][plugin_identity]
 	try:
-		_plugin_types[type_identity].unregister(plugin_identity)
+		plugin_types[type_identity].unregister(plugin_identity)
 	except Exception as e:
 		api("logger").error("Couldn't unregister plug-in {plugin} as type {plugin_type}: {error_message}", plugin=plugin_identity, plugin_type=type_identity, error_message=str(e))
 		plugins_by_type[type_identity][plugin_identity] = _plugins[plugin_identity]
@@ -409,10 +409,10 @@ def _validate_metadata(candidates):
 	metadata.
 	"""
 	for candidate in candidates:
-		candidate_types = candidate.metadata.keys() & _plugin_types.keys() #The plug-in types this candidate claims to implement.
+		candidate_types = candidate.metadata.keys() & plugin_types.keys() #The plug-in types this candidate claims to implement.
 		for candidate_type in candidate_types:
 			try:
-				_plugin_types[candidate_type].validate_metadata(candidate.metadata)
+				plugin_types[candidate_type].validate_metadata(candidate.metadata)
 			except Exception as e:
 				api("logger").warning("Could not validate {candidate} as a plug-in of type {type}: {error_message}", candidate=candidate.identity, type=candidate_type, error_message=str(e))
 				break #Do not load this plug-in, even if other types may be valid! That could cause plug-ins to get their dependencies resolved while those dependencies don't have valid metadata.
