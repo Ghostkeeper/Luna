@@ -10,6 +10,7 @@ Tests the listening module that provides a way to listen for state changes.
 
 import unittest #To define automatic tests.
 import unittest.mock #To track how often a listener function was called.
+import weakref #To check whether objects are properly garbage collected.
 
 import luna.listen #The module we're testing.
 
@@ -79,6 +80,18 @@ class TestListen(unittest.TestCase):
 		luna.listen.listen(self.listener, self, "field_float")
 		self.field_float = 3.14 #pylint: disable=attribute-defined-outside-init
 		self.listener.assert_called_with("field_float", 3.14)
+
+	def test_listen_memory_leak(self):
+		"""
+		Tests whether the listener trackers properly don't prevent garbage
+		collection from collecting the objects surrounding the listener.
+		"""
+		listener = unittest.mock.MagicMock()
+		listener_ref = weakref.ref(listener) #If this references to None, the object is garbage collected.
+		luna.listen.listen(listener, self, "field_integer")
+		listener = None #Should delete the listener from memory.
+		self.field_integer = 2
+		self.assertIsNone(listener_ref(), "The listener must have been deallocated.")
 
 	def test_listen_multiple_attributes(self):
 		"""
