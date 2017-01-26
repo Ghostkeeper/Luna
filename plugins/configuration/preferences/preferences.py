@@ -27,11 +27,11 @@ class Preferences:
 		parent class of this class (``Configuration``) is defined yet.
 		"""
 		if "configuration" not in luna.plugins.plugin_types: #Configuration plug-in type does not exist yet.
-			luna.listen.listen(self.prepare, luna.plugins.plugin_types, "configuration")
+			luna.listen.listen(self._prepare, luna.plugins.plugin_types, "configuration")
 		else:
-			self.prepare(None, None)
+			self._prepare(None, None)
 
-	def prepare(self, _attribute, _value):
+	def _prepare(self, _attribute, _value):
 		"""
 		Finalizes the class initialisation using data that is only available at
 		run time.
