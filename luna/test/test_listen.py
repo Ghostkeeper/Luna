@@ -52,6 +52,16 @@ class TestListen(unittest.TestCase):
 		dictionary["foo"] = "bar"
 		self.listener.assert_called_once_with("foo", "bar")
 
+	def test_listen_dictionary_set(self):
+		"""
+		Tests listening for changing items in a dictionary.
+		"""
+		dictionary = luna.listen.DictionaryModel()
+		dictionary["pie"] = "delicious"
+		luna.listen.listen(self.listener, dictionary, "pie")
+		dictionary["pie"] = "eaten"
+		self.listener.assert_called_once_with("pie", "eaten")
+
 	def test_listen_future_attribute(self):
 		"""
 		Tests listening to attributes that don't exist yet.
