@@ -102,7 +102,7 @@ class TestListen(unittest.TestCase):
 		self.field_float = 3.1416 #pylint: disable=attribute-defined-outside-init
 		self.listener.assert_called_once_with("field_float", 3.1416)
 
-	def test_listen_nochange(self):
+	def test_listen_no_change(self):
 		"""
 		Tests that the listener doesn't get called if the state doesn't change.
 		"""
