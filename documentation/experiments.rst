@@ -26,8 +26,8 @@ One of the goals listed in :doc:`goals` is to explore more exotic programming te
 |             |           | there will really never be more than one           |
 |             |           | implementation of the type.                        |
 +-------------+-----------+----------------------------------------------------+
-| Model       | In        | Largely a success. Difficult to implement.         |
-| change      | Progress  | Difficult to debug. Makes onChange listeners       |
+| Model       | Completed | Largely a success. Difficult to implement.         |
+| change      |           | Difficult to debug. Makes onChange listeners       |
 | listeners   |           | extremely easy and elegant to use. Forces the      |
 |             |           | programmer to use an explicit state that gets      |
 |             |           | updated rather than firing an event, so this makes |
