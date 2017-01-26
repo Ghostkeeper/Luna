@@ -160,15 +160,17 @@ def _initialise_listeners(instance):
 			:return: The result of the method that changed the model.
 			"""
 			result = old_method(self, *args, **kwargs)
+			to_remove = set()
 			for listener in self._instance_listeners:
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener()
 					if listener_instance is None: #Garbage collection nicked it!
-						self._instance_listeners.remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(None, None)
+			self._instance_listeners -= to_remove
 			return result
 		setattr(modified_class, function_name, functools.partial(new_function, old_method)) #Replace the method with a hooked method.
 
@@ -187,25 +189,29 @@ def _initialise_listeners(instance):
 			:param name: The name of the attribute to delete.
 			"""
 			old_delattr(name)
+			to_remove = set()
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
-						self._instance_listeners.remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(name, None) #Since the attribute has no value any more, we won't pass any value on to the listener.
+			self._instance_listeners -= to_remove
 			if name in self._attribute_listeners:
+				to_remove = set()
 				for listener in self._attribute_listeners[name]:
 					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
-							self._attribute_listeners[name].remove(listener)
+							to_remove.add(listener)
 							continue
 					else:
 						listener_instance = listener
 					listener_instance(name, None) #Since the attribute has no value any more, we won't pass any value on to the listener.
+				self._attribute_listeners[name] -= to_remove
 		modified_class.__delattr__ = new_delattr
 
 	if hasattr(instance, "__delitem__"):
@@ -222,25 +228,29 @@ def _initialise_listeners(instance):
 			:param key: The name of the item to delete.
 			"""
 			old_delitem(key)
+			to_remove = set()
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
-						self._instance_listeners.remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(key, None) #Since the item has no value any more, we won't pass any value on to the listener.
+			self._instance_listeners -= to_remove
 			if key in self._attribute_listeners:
+				to_remove = set()
 				for listener in self._attribute_listeners[key]:
 					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
-							self._attribute_listeners[key].remove(listener)
+							to_remove.add(listener)
 							continue
 					else:
 						listener_instance = listener
 					listener_instance(key, None) #Since the item has no value any more, we won't pass any value on to the listener.
+				self._attribute_listeners[key] -= to_remove
 		modified_class.__delitem__ = new_delitem
 
 	if hasattr(instance, "__setitem__"):
@@ -259,25 +269,29 @@ def _initialise_listeners(instance):
 			:param value: The new value of the item.
 			"""
 			old_setitem(key, value)
+			to_remove = set()
 			for listener in self._instance_listeners: #Instance listeners always need to be called.
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
-						self._instance_listeners.remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(key, value)
+			self._instance_listeners -= to_remove
 			if key in self._attribute_listeners:
+				to_remove = set()
 				for listener in self._attribute_listeners[key]:
 					if isinstance(listener, weakref.ReferenceType):
 						listener_instance = listener() #Dereference the weakref.
 						if listener_instance is None: #Garbage collection nicked it!
-							self._attribute_listeners[key].remove(listener)
+							to_remove.add(listener)
 							continue
 					else:
 						listener_instance = listener
 					listener_instance(key, value)
+				self._attribute_listeners[key] -= to_remove
 		modified_class.__setitem__ = new_setitem
 
 	if hasattr(instance, "append"):
@@ -293,15 +307,17 @@ def _initialise_listeners(instance):
 			:param x: The new item to add to the list.
 			"""
 			old_append(x)
+			to_remove = set()
 			for listener in self._instance_listeners:
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
-						self._instance_listeners.remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(None, x)
+			self._instance_listeners -= to_remove
 		modified_class.append = new_append
 
 	#Replace __setattr__ with a special one that alerts the attribute listeners.
@@ -323,25 +339,29 @@ def _initialise_listeners(instance):
 		if hasattr(self, name): #Only detect that we haven't actually changed the value if the value existed before setting.
 			if old_value == getattr(self, name):
 				return #Set to the same value it already had. No change!
+		to_remove = set()
 		for listener in self._instance_listeners: #Instance listeners always need to be called.
 			if isinstance(listener, weakref.ReferenceType):
 				listener_instance = listener() #Dereference the weakref.
 				if listener_instance is None: #Garbage collection nicked it!
-					self._instance_listeners.remove(listener)
+					to_remove.add(listener)
 					continue
 			else:
 				listener_instance = listener
 			listener_instance(name, value)
+		self._instance_listeners -= to_remove
 		if name in self._attribute_listeners:
+			to_remove = set()
 			for listener in self._attribute_listeners[name]:
 				if isinstance(listener, weakref.ReferenceType):
 					listener_instance = listener() #Dereference the weakref.
 					if listener_instance is None: #Garbage collection nicked it!
-						self._attribute_listeners[name].remove(listener)
+						to_remove.add(listener)
 						continue
 				else:
 					listener_instance = listener
 				listener_instance(name, value)
+				self._attribute_listeners[name] -= to_remove
 	modified_class.__setattr__ = new_setattr
 
 	instance.__class__ = modified_class #Swap out the class of the object, and thereby change its methods.
