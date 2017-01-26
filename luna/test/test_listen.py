@@ -91,6 +91,7 @@ class TestListen(unittest.TestCase):
 		luna.listen.listen(listener, self, "field_integer")
 		listener = None #Should delete the listener from memory.
 		self.field_integer = 2
+		self.assertIsNone(listener, "Just a check to prevent code optimisers from removing the deallocation of the listener.") #Setting the variable to None must be executed.
 		self.assertIsNone(listener_ref(), "The listener must have been deallocated.")
 
 	def test_listen_multiple_attributes(self):
