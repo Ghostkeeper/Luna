@@ -52,6 +52,16 @@ class TestListen(unittest.TestCase):
 		dictionary["foo"] = "bar"
 		self.listener.assert_called_once_with("foo", "bar")
 
+	def test_listen_dictionary_remove(self):
+		"""
+		Tests listening for removed items in a dictionary.
+		"""
+		dictionary = luna.listen.DictionaryModel()
+		dictionary["item"] = "Flask of Invincibility"
+		luna.listen.listen(self.listener, dictionary, "item")
+		del dictionary["item"]
+		self.listener.assert_called_once_with("item", None)
+
 	def test_listen_dictionary_set(self):
 		"""
 		Tests listening for changing items in a dictionary.
