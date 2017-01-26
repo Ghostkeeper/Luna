@@ -110,6 +110,15 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0 #Equal to starting state.
 		self.listener.assert_not_called()
 
+	def test_listen_remove_field(self):
+		"""
+		Tests whether removing a field triggers the listeners of the field.
+		"""
+		self.field_float = 3.14
+		luna.listen.listen(self.listener, self, "field_float")
+		del self.field_float
+		self.listener.assert_called_once_with("field_float", None)
+
 	def test_listen_simple(self):
 		"""
 		Tests a simple happy path with a single state change and single
