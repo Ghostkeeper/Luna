@@ -100,3 +100,15 @@ class TestListen(unittest.TestCase):
 		self.field_integer = 0 #Trigger two changes.
 		self.listener.assert_called_with("field_integer", 0)
 		self.assertEqual(self.listener.call_count, 2, "The state was changed twice.")
+
+	def test_listen_value_simple(self):
+		"""
+		Tests listening for a specific value.
+		"""
+		luna.listen.listen_value(self.listener, self, "field_integer", 3)
+		self.field_integer = 1
+		self.listener.assert_not_called()
+		self.field_integer = 2
+		self.listener.assert_not_called()
+		self.field_integer = 3
+		self.listener.assert_called_once_with()
