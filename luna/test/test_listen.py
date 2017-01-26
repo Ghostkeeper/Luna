@@ -114,7 +114,7 @@ class TestListen(unittest.TestCase):
 		"""
 		Tests whether removing a field triggers the listeners of the field.
 		"""
-		self.field_float = 3.14
+		self.field_float = 3.14 #pylint: disable=attribute-defined-outside-init
 		luna.listen.listen(self.listener, self, "field_float")
 		del self.field_float
 		self.listener.assert_called_once_with("field_float", None)
