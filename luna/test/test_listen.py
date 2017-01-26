@@ -13,6 +13,7 @@ import unittest.mock #To track how often a listener function was called.
 import weakref #To check whether objects are properly garbage collected.
 
 import luna.listen #The module we're testing.
+import luna.tests #To get an object that is not callable.
 
 class TestListen(unittest.TestCase):
 	"""
@@ -86,7 +87,7 @@ class TestListen(unittest.TestCase):
 		Tests whether the listener trackers properly don't prevent garbage
 		collection from collecting the objects surrounding the listener.
 		"""
-		listener = unittest.mock.MagicMock()
+		listener = luna.tests.AlmostDictionary()
 		listener_ref = weakref.ref(listener) #If this references to None, the object is garbage collected.
 		luna.listen.listen(listener, self, "field_integer")
 		listener = None #Should delete the listener from memory.
