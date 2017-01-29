@@ -27,155 +27,129 @@ The configuration name is a name by which the API exposes the type of configurat
 ----------------------
 Configuration instance
 ----------------------
-The configuration instance is an instance of the class that basically implements the configuration type you provide. The instance must implement the abstract base class ``collections.abc.MutableMapping``. Furthermore, it needs to have a specific ``define`` functionality to allow creating new entries, while the normal ``__setitem__`` method disallows creating new items. The instance also requires functionality to save and load itself from a directory in persistent storage.
+The configuration instance is an object that basically implements the configuration type you provide. To make all configuration types behave the same externally, the implementation of a configuration instance must have the methods listed below.
 
-This is quite a lot of work. To help implement this, a base class is defined that already implements most of these, allowing for configuration in a basic tree structure. However, this base class is part of this ``configurationtype`` plug-in and you have no guarantee that the plug-in is already loaded at the point when your plug-in's metadata is evaluated. You should therefore have to swap out the class at runtime when the configuration type plug-in is loaded in order to satisfy the abstract base class, or otherwise face implementing all functions yourself.
-
-The functions required are all described below. However, typical implementations should only have to overwrite the ``define`` method and the ``save`` and ``load`` methods and handle the rest through the ``Configuration`` base class.
+It is not advisable to create additional methods or functions on your instance unless they begin with an underscore. Doing so may introduce name clashes with the configuration items in your configuration type.
 
 ----
 
-	.. function:: __delitem__(self, item)
+	.. function:: __getattr__(self, attribute)
 
-Deletes a child configuration item.
+Gets the value of a configuration item. Only the value is returned, no other metadata.
 
-The default implementation is basically the inverse of ``define``. A more strict configuration class could for example restrict this operation to only happen in certain conditions or prevent this operation entirely.
-
-- ``item``: The identifier of the configuration item to delete.
-- Raises: ``KeyError`` if no item with the specified identifier exists in this configuration.
-
-----
-
-	.. function:: __getitem__(self, item)
-
-Gets a configuration item with a specified identifier.
-
-- ``item``: The identifier of the item to get.
-- Return: The configuration item with the specified identifier.
-- Raises: ``KeyError`` if no item with the specified identifier exists in this configuration.
+- ``attribute``: The identifier of the configuration item to get.
+- Returns: The value of the configuration item.
+- Raises ``AttributeError``: No configuration item with the specified identifier exists.
 
 ----
 
 	.. function:: __iter__(self)
 
-Gives an iterator over the configuration items in this configuration.
+Creates an iterator over the identifiers of the configuration items. This allows external components to list all items, in a specific order if necessary. This is also used by the configuration API to implement filtering queries on the configuration.
 
-The default implementation gives no guarantee as to the order in which items are passed.
-
-- Return: An iterator over the configuration items in this configuration type.
+- Returns: An iterator object that iterates over the configuration items.
 
 ----
 
-	.. function:: __len__(self)
+	.. function:: __setattr__(self, attribute, value)
 
-Returns the number of child configurations in this configuration.
+Changes the value of a configuration item. Only the value is changed, no other metadata. Which values are allowed is specified during the definition phase. Specifically, changing the data type of a configuration item should generally be disallowed in order to allow external plug-ins to better access and use the data.
 
-- Return: The number of child configurations.
+This method should not allow adding new attributes. If a configuration item is set that doesn't exist yet, an ``AttributeError`` should be raised. Creating new configuration items is solely the right of the ``_define`` and ``_deserialise`` methods.
 
-----
-
-	.. function:: __setitem__(self, item, value)
-
-Changes an existing configuration item to have the specified value. This should not create new configuration items, so it first needs to check if the configuration item exists and raise a ``KeyError`` if it doesn't.
-
-- ``item``: The identifier of the item to change.
-- Raises: ``KeyError`` if no item with the specified identifier exists in this configuration.
+- ``attribute``: The identifier of the configuration item to change.
+- ``value``: The new value for the configuration item.
+- Raises ``AttributeError``: No configuration item with the specified identifier exists.
 
 ----
 
-	.. function:: define(...)
+	.. function:: _define(self, identifier, ...)
 
-Adds a new configuration entry as child configuration.
+Adds a new configuration item. The precise parameters of this function are left to the implementation of the configuration type. The user of the configuration type is expected to be dependent on the configuration type in order to know what these parameters are.
 
-The parameters to this method are free for the configuration type to choose. Typically, a configuration type would require an item key, usually a default value, and perhaps a data type and validation function. But other properties may be required by the configuration type as well if more metadata is desired.
+If identifiers are used via attribute access, they should adhere to the `syntax of a Python identifier`_. This is not required however. Any string may be used by the identifier unless a configuration type forbids it. Just be aware that attribute access becomes impossible if an identifier contains characters that are not allowed in a Python identifier. An example of a situation where these characters may be allowed is when the user provides the identifier of a configuration item. The configuration item can then only be obtained through iteration or via the ``getattr`` built-in function. Additionally, all identifiers starting with an underscore are forbidden in order to prevent name clashes with methods. If the identifiers are directly provided by a user, it is advised to use a prefix in the attribute name that is stored in the instance, which is removed again when the item is shown to the user.
 
-The default implementation allows only configuration types to be added and therefore doesn't require a data type.
+This method is the place to perform checks on the configuration item as well, such as whether the item has a data type that is allowed. If this is not allowed, the method may raise arbitrary exceptions. The component that uses the configuration type must know what these exceptions are in order to catch them.
 
-Because the ``define`` method of different configuration types may differ, any component wanting to define new configuration entries must depend on the specific configuration type they wish to define things in, so that they know what parameters to call the ``define`` method with.
+- ``identifier``: The identifier of the new configuration item.
+- ... This method may have any arbitrary parameters.
+- Raises ``Exception``: The definition is invalid for this configuration type.
+
+.. _syntax of a Python identifier: https://docs.python.org/3/reference/lexical_analysis.html#identifiers
 
 ----
 
-	.. function:: load(self, directory)
+	.. function:: _load(self, directory)
 
-Loads all of the configuration instance from a specified directory. This overwrites all configuration items in the configuration type by the configuration that the string represents.
+Loads all of the configuration instance from a specified directory. This overwrites all configuration items in the configuration type by the configuration that the contents of the directory represent.
 
-The directory to load the configuration from is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced however, and it is advisable to access only data within the confines of the specified directory and its subdirectories.
+The directory to load the configuration from is given by the framework. It will be provided specifically for the configuration type, so no other function should have access to that directory and no data should be present. This is not enforced however, and it is strongly advised to access only data within the confines of the specified directory and its subdirectories and treat the data within with distrust.
 
 - ``directory``: The directory containing serialised configuration data to load the configuration from.
 - Raises: ``ConfigurationError`` if the provided configuration is not a well-formed representation of any configuration state.
 
 ----
 
-	.. function:: save(self, directory)
+	.. function:: _metadata(self, identifier)
+
+Gets a dictionary of the metadata of the configuration instance. This metadata should contain all information provided in the ``_define`` method any additional metadata that may be useful. This is also used by the configuration API to implement query filtering.
+
+A few metadata keys are reserved. These should not appear in your metadata dictionaries:
+
+- ``value``. This is reserved for the current value of the configuration item in filter queries.
+- ``key``. This is reserved for the identifier of the configuration item in filter queries.
+- ``type``. This is reserved for the identifier of the configuration type you're implementing in filter queries.
+
+All configuration items should have the same metadata entries. This makes formulating queries easier for components that query on metadata. This is not a hard requirement though.
+
+- ``identifier``: The identifier of the configuration item to get the metadata of.
+- Return: A dictionary of the metadata of your configuration item.
+
+----
+
+	.. function:: _save(self, directory)
 
 Saves the current configuration state to a specified directory. This method should be a snapshot of the configuration state, meaning that it should be atomic and not save a representation of a state of the configuration that never existed at a single point in time.
 
-The directory to save the configuration to is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced, however, and it is advisable to access only data within the confines of the specified directory and its subdirectories.
+The directory to save the configuration to is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced however, and it is strongly advised to access only data within the confines of the specified directory and its subdirectories.
+
+This may save the configuration all into one file, or into many, using as many subdirectories as necessary.
 
 - ``directory``: The directory to save the configuration data to.
+- Raises ``OSError``: The configuration could not be saved for some reason.
 
--------------------------
-Automatically implemented
--------------------------
-The following methods are automatically implemented by the ``collections.abc.MutableMapping`` abstract base class as well as by the ``Configuration`` base class. The author of a configuration type plug-in will rarely have to implement them, but they are also required:
-
-----
-
-	.. function:: __contains__(self, key)
-
-Returns whether the configuration has an entry with the specified identifier.
-
-- ``key``: The identifier to search for in this configuration.
-- Return: ``True`` if an entry with the specified identifier is present, or ``False`` if it isn't.
+----------------------------------------
+Configuration instance: Optional methods
+----------------------------------------
+The following methods may improve the functionality or performance of your configuration type, but they are not required.
 
 ----
 
-	.. function:: __eq__(self, other)
+	.. function:: __delattr__(self, attribute)
 
-Returns whether all elements in this configuration are the same as all elements in another configuration. This includes keys as well as values.
+Removes a configuration item with the specified identifier.
 
-- ``other``: The configuration to compare against.
-- Return: ``True`` if the configuration is exactly equal to the other configuration, or ``False`` if it isn't.
+If not implemented, the user of this configuration type should expect a ``TypeError`` (because the method doesn't exist). Do not implement this and then return a ``NotImplementedError``.
 
-----
-
-	.. function:: __ne__(self, other)
-
-Returns whether this configuration is not equal to another configuration. This is typically the inverse of the ``__eq__`` method. This includes keys as well as values.
-
-- ``other``: The configuration to compare against.
-- Return: ``True`` if the configuration is not exactly equal to the other configuration, or ``False`` if it is.
+- ``attribute``: The identifier of the configuration item to change.
 
 ----
 
-	.. function:: get(self, key, default=None)
+	.. function:: __len__(self)
 
-Returns the value of the configuration item with the given key. If no entry with the specified identifier is available, the default is returned.
+Returns the number of configuration items in this configuration type.
 
-- ``key``: The identifier of the item to get.
-- ``default``: A value to return if no item with the specified identifier is available.
-- Return: The value of the entry with the specified identifier, or the default value if no such entry is available.
+If this is not implemented, the length is automatically obtained by iterating over the configuration items. This may be inefficient, so providing this method can improve performance.
 
-----
-
-	.. function:: items(self)
-
-Returns a sequence of all child configuration entries as tuples of their identifier with their value.
-
-- Return: A sequence of all child configuration items.
+- Return: The number of configuration items in this configuration type.
 
 ----
 
-	.. function:: keys(self)
+	.. function:: __contains__(self, item)
 
-Returns a sequence of all identifiers for child configurations.
+Returns whether this configuration type contains a configuration item with the specified identifier.
 
-- Return: A sequence of all identifiers for child configurations.
+If this is not implemented, it is found by iterating over the configuration items. This may be inefficient, so providing this method can improve performance.
 
-----
-
-	.. function:: values(self)
-
-Returns a sequence of the values of all child configurations. They are not passed in any particular order unless your configuration type specifies it so.
-
-- Return: A sequence of the values of all child configurations.
+- ``item``: The identifier of the configuration item to test for.
+- Return: ``True`` if a configuration item exists with the specified identifier, or ``False`` if no such item exists.
