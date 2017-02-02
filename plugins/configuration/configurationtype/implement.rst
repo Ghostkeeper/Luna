@@ -139,6 +139,8 @@ If not implemented, the user of this configuration type should expect a ``TypeEr
 
 Returns the number of configuration items in this configuration type.
 
+This should not count any sub-items within these configuration items. In other words, it should not count descendants but just children.
+
 If this is not implemented, the length is automatically obtained by iterating over the configuration items. This may be inefficient, so providing this method can improve performance.
 
 - Return: The number of configuration items in this configuration type.
