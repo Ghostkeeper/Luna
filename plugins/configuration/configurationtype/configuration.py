@@ -7,230 +7,139 @@
 """
 An API for storing and retrieving configuration data of the application.
 
-This API is used by way of key-value pairs. This API behaves like a dictionary.
-Every configuration type adds an entry to this dictionary with as key the
-identifier of the configuration plug-in and as value a similar dictionary. This
-way a hierarchical structure of configuration is produced in dictionaries. For
-instance, you could get a preference like this::
+This API is used by retrieving the configuration types as attributes of this
+API. These attributes contain configuration instances, which behave in the same
+way. For instance, imagine a configuration type called "preferences". These
+preferences contain a preference category called "user_interface", which then
+contain a preference called "language". That preference would then be accessed
+like this::
 
-	luna.plugins("configuration")["preference"]["user interface"]["language"]
+	luna.plugins("configuration").preferences.user_interface.language
 
 You can change the value of a preference in a similar way::
 
-	luna.plugins("configuration")["preference"]["user interface"]["language"] = "Quenya"
+	luna.plugins("configuration").preferences.user_interface.language = "Quenya"
 
-Adding new items to the configuration behaves differently from a normal
-dictionary. A configuration item can only be created via the ``define``
-function, like so::
+Adding new items to the configuration behaves differently, since new entries may
+require additional metadata. A configuration item can only be created via the
+``_define`` method, like so::
 
-	luna.plugins("configuration")["preference"]["user interface"].define(
+	luna.plugins("configuration").preferences.user_interface._define(
 		key="language"
-		data_type="language"
 		default="Common"
 		validate=lambda language_key: language_key in luna.plugins("internationalisation").languages
 	)
 
-Getting or setting an item that doesn't exist yields a ``KeyError``.
+This would define a preference called "language". It specifies the default
+value, from which the data type is also inferred. And it specifies a validation
+function, which checks that a value must be one of the supported languages.
 
-It is up to the specific configuration plug-in to decide how to store the
-information persistently. It may store each unique path to a unique file on the
-file system, or choose to store everything in one file. It may even choose to
-store this information remotely.
+Getting or setting a configuration item that doesn't exist yields an
+``AttributeError``.
 """
 
-import collections #To implement MutableMapping, and for namedtuple.
+import sys #To replace the module with an instance of configuration in order to allow directly calling the API as if it were a configuration instance.
 
 import luna.plugins #To call the data type API.
 
-ConfigurationEntry = collections.namedtuple("ConfigurationEntry", ["value", "data_type", "validate"])
-"""
-An element of configuration that holds a bit more information than just the
-value of the configuration item.
-
-It needs to track a bit of metadata, too. To that end it contains the following
-fields:
-* ``value``: The actual value of the configuration. The "data" as it were.
-* ``data_type``: The type of data contained in this entry. This needs to be the
-identity of a data type plug-in.
-* ``validate``: A validation predicate, which indicates whether a specific value
-is allowed in this configuration entry.
-"""
-
-class Configuration(collections.MutableMapping):
+class Configuration:
 	"""
-	Node in the configuration tree, representing a section of configuration.
+	The root node of the configuration tree.
 
-	This class wraps around a dictionary, providing access to that dictionary
-	when necessary. It should behave like a normal dictionary in that respect.
-	Some behaviour is restricted however:
-	* Creating new entries is not allowed. Instead, the ``define`` function is
-	provided that adds new entries, but requires a bit more information.
-	* Setting the value of an entry is subject to restrictions. This class only
-	forbids changing the value of ``configuration``-type settings. It is
-	intended that the setter gets overridden though, by configuration types that
-	specialise in some specific type of configuration.
+	This basic implementation allows only other configuration entries to be
+	defined. Furthermore, changing the values of settings after defining them is
+	disabled due to the nature of its contents, being configuration types.
+
+	This class is implemented by referring to the currently active plug-ins,
+	rather than keeping any actual data. This prevents data duplication. For
+	this reason and the reasons listed above, this implementation is not a good
+	example to use as a reference on how to implement new configuration types.
+	Refer to actual configuration type implementations for an example.
 	"""
 
-	def __init__(self):
+	def __contains__(self, item):
 		"""
-		Initialises a new ``Configuration`` instance.
+		Returns whether the specified configuration type exists.
+		:param item: The identifier of the configuration type to check for.
+		:return: ``True`` if a configuration type exists with the specified
+		identifier, or ``False`` if no such type exists.
+		"""
+		return item in luna.plugins.plugins_by_type["configuration"]
 
-		The configuration is initially empty.
+	def __getattr__(self, attribute):
 		"""
-		self._entries = {} #Holds a ``ConfigurationEntry`` for every key.
-		#Initialising with initial data is not allowed since we must enter new entries via the define function.
-
-	def __delitem__(self, key):
+		Gets the specified configuration type by its identifier.
+		:param attribute: The name of the configuration type.
+		:return: The configuration instance of the specified configuration type.
+		:raises AttributeError: No configuration type with the specified name
+		exists.
 		"""
-		Removes an entry of configuration.
-		:param key: The name of the child configuration to remove.
-		"""
-		del self._entries[key]
-
-	def __getitem__(self, item):
-		"""
-		Gets the value of a specified child configuration.
-		:param item: The name of the child configuration.
-		:return: The value of the child configuration.
-		"""
-		return self._entries[item].value
+		try:
+			return luna.plugins.plugins_by_type["configuration"][attribute]["instance"]
+		except KeyError as e:
+			raise AttributeError("No configuration type {attribute} exists.".format(attribute=attribute)) from e
 
 	def __iter__(self):
 		"""
-		Returns an iterator that runs over the child configuration names.
+		Returns an iterator that runs over all configuration type names.
 		:return: An iterator over the child configuration names.
 		"""
-		return iter(self._entries)
+		return iter(luna.plugins.plugins_by_type["configuration"])
 
 	def __len__(self):
 		"""
-		Returns the number of child configurations.
-
-		Further descendants are not counted, just direct children.
-		:return: The number of child configurations.
+		Returns the number of configuration types.
+		:return: The number of configuration types.
 		"""
-		return len(self._entries)
+		return len(luna.plugins.plugins_by_type["configuration"])
 
-	def __setitem__(self, key, value):
+	def __setattr__(self, attribute, value):
 		"""
-		Changes the value of the specified child configuration, if it exists.
+		This action is disallowed. It raises an exception.
 
-		If the child configuration does not yet exist, this gives a
-		``KeyError``, rather than adding it immediately.
-
-		The new value is validated before setting it. If the validation fails, a
-		``ValueError`` is raised.
-		:param key: The key of the configuration to change.
-		:param value: The new value for the configuration.
-		:raises KeyError: No configuration with the specified key is found in
-		this configuration.
-		:raises ValueError: The specified value is not allowed in this
-		configuration.
+		Normally this would change the configuration instance of a configuration
+		type. Since this configuration instance should always be the
+		configuration instance that the configuration type provides, it may not
+		be changed.
+		:param attribute: The configuration type to change.
+		:param value: The new configuration instance for the type.
+		:raises AttributeError: Always raised, because changing configuration
+		instances is not allowed.
 		"""
-		if key not in self._entries:
-			raise KeyError("{key} is not defined in this configuration.".format(key=key))
-		entry = self._entries[key]
+		raise AttributeError("Changing the configuration instances of configuration types directly is not allowed.")
 
-		if not luna.plugins.api("data").is_instance(entry.data_type, value):
-			raise ValueError("Setting {key} cannot hold value {value}, since it is not of type {data_type}.".format(key=key, value=str(value), data_type=entry.data_type))
-		if not entry.validate(value):
-			raise ValueError("A value of {value} is not allowed for setting {key}.".format(key=key, value=str(value)))
-		entry.value = value #Store the new value.
-
-	def define(self, key, data_type, default_value, validate):
+	def _define(self, identifier):
 		"""
-		Defines a new configuration entry.
-		:param key: The key for the new configuration entry.
-		:param data_type: The sort of data that will be stored in this
-		configuration entry. This needs to be an identifier of a data type
-		plug-in.
-		:param default_value: The value that this configuration will get at
-		first run.
-		:param validate: A predicate function that determines whether a
-		specified value is valid for this configuration entry.
-		:raises KeyError: A configuration with the specified key already exists.
+		This action is disallowed. It raises an exception.
+
+		Normally this would add a configuration type to the base of the
+		configuration tree, but since this configuration tree is maintained by
+		the plug-in structure, configuration types can only be added by
+		registering a plug-in to do so.
+		:param identifier: The identifier of the configuration entry you would
+		want to add.
+		:raise NotImplementedError: Always raised, because adding configuration
+		types is not allowed.
 		"""
-		if key in self._entries:
-			raise KeyError("A configuration with the key {key} already exists.".format(key=key))
+		raise NotImplementedError("Defining new configuration types directly is not allowed.")
 
-		if data_type not in luna.plugins.api("data").data_types():
-			raise ValueError("Unknown data type for configuration with the key {key}: {data_type}.".format(key=key, data_type=data_type))
+	def _load(self, directory):
+		raise NotImplementedError("Not implemented yet.")
 
-		if not luna.plugins.api("data").is_instance(data_type, default_value):
-			raise ValueError("Setting {key} cannot hold default value {value}, since it is not of type {data_type}.".format(key=key, value=str(default_value), data_type=data_type))
-		if not validate(default_value):
-			raise ValueError("The default value {value} for the configuration {key} is invalid according to the provided validator.".format(key=key, value=str(default_value)))
+	def _metadata(self, identifier):
+		"""
+		Gets a dictionary of metadata for the specified configuration type.
 
-		self._entries[key] = ConfigurationEntry(value=default_value, data_type=data_type, validate=validate)
+		Configuration types have no metadata, so this dictionary is empty.
+		:param identifier: The configuration type to get the metadata of.
+		:return: An empty dictionary.
+		:raise KeyError: The specified configuration type doesn't exist.
+		"""
+		if identifier not in luna.plugins.plugins_by_type["configuration"]: #While we always give an empty dictionary, we should only give it for configuration types that exist.
+			raise KeyError("The configuration type {identifier} doesn't exist.".format(identifier=identifier))
+		return {}
 
-_configuration_root = Configuration()
-"""
-The root node of the configuration tree.
+	def _save(self, directory):
+		raise NotImplementedError("Not implemented yet.")
 
-Since this module itself should also behave like a dictionary, we transparently
-delegate all function calls to that end to the configuration root (in addition
-to providing the rest of the functionality of the actual API). Only the root of
-the tree can only be modified through registering and unregistering a plug-in,
-so only the getters are exposed for this root.
-"""
-
-def __contains__(identity):
-	"""
-	Returns whether a specified configuration type exists.
-
-	This should normally not be used. If a plug-in knows that some configuration
-	type exists, it should have that configuration type as dependency and this
-	guarantees that the plug-in gets disabled if the configuration type is not
-	present (or disabled). However, while a bit far-fetched, it is technically
-	feasible to have optional dependencies on configuration types as well and in
-	those cases we might want to check for the presence of configuration types.
-	:param identity: The identity of the configuration plug-in to check for.
-	:return: ``True`` if the configuration type exists, or ``False`` if it
-	doesn't.
-	"""
-	return identity in _configuration_root
-
-def __getitem__(identity):
-	"""
-	Gets a configuration item belonging to the specified configuration plug-in.
-	:param identity: The identity of a configuration plug-in.
-	:return: The configuration node belonging to the specified configuration
-	plug-in.
-	"""
-	return _configuration_root[identity]
-
-def __iter__():
-	"""
-	Returns an iterator that runs over the configuration nodes of all
-	configuration types.
-	:return: An iterator over the sequence of configuration nodes.
-	"""
-	return iter(_configuration_root)
-
-def __len__():
-	"""
-	Return the number of configuration types.
-	:return: The number of configuration types.
-	"""
-	return len(_configuration_root)
-
-def items():
-	"""
-	Return a view of the configuration types and their accompanying nodes.
-	:return: A view of the configuration types and their accompanying nodes.
-	"""
-	return _configuration_root.items()
-
-def keys():
-	"""
-	Return a sequence of the configuration types.
-	:return: A view of the configuration types.
-	"""
-	return _configuration_root.keys()
-
-def values():
-	"""
-	Return a view of the configuration nodes for all configuration types.
-	:return: A view of the configuration nodes for all configuration types.
-	"""
-	return _configuration_root.values()
+sys.modules[__name__] = Configuration()
