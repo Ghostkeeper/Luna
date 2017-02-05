@@ -17,33 +17,73 @@ class IncompleteConfiguration:
 	A mock class for a configuration type, except that it misses iteration.
 	"""
 
-	def __getitem__(self, *args, **kwargs):
+	def __getattr__(self, *args, **kwargs):
 		"""
-		Gets a configuration element. This raises an ``AssertionError``.
+		Gets the value of a configuration item. This raises an
+		``AssertionError``.
 
 		The metadata validator should never call any function on the instance.
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
 		"""
 		raise AssertionError("An item was requested by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def deserialise(self, *args, **kwargs): #pylint: disable=no-self-use
+	def __setattr__(self, *args, **kwargs):
 		"""
-		Sets the state of configuration to what is represented by a byte
-		sequence. This raises an ``AssertionError``.
-		:param args: All arguments will be put in the exception's message.
-		:param kwargs: All arguments will be put in the exception's message.
-		"""
-		raise AssertionError("The deserialise function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
-
-	def serialise(self, *args, **kwargs): #pylint: disable=no-self-use
-		"""
-		Serialises the state of configuration. This raises an
+		Changes the value of a configuration item. This raises an
 		``AssertionError``.
+
+		The metadata validator should never call any function on the instance.
 		:param args: All arguments will be put in the exception's message.
 		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
 		"""
-		raise AssertionError("The serialise function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
+		raise AssertionError("An item was set by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
+
+	def _define(self, *args, **kwargs):
+		"""
+		Creates a new configuration item. This raises an ``AssertionError``.
+
+		The metadata validator should never call any function on the instance.
+		:param args: All arguments will be put in the exception's message.
+		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
+		"""
+		raise AssertionError("A new item was defined by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
+
+	def _load(self, *args, **kwargs): #pylint: disable=no-self-use
+		"""
+		Loads configuration from a directory. This raises an ``AssertionError``.
+
+		The metadata validator should never call any function on the instance.
+		:param args: All arguments will be put in the exception's message.
+		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
+		"""
+		raise AssertionError("The _load function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
+
+	def _metadata(self, *args, **kwargs):
+		"""
+		Obtains the metadata of an item. This raises an ``AssertionError``.
+
+		The metadata validator should never call any function on the instance.
+		:param args: All arguments will be put in the exception's message.
+		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
+		"""
+		raise AssertionError("Item metadata was requested by the plug-in metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
+
+	def _save(self, *args, **kwargs): #pylint: disable=no-self-use
+		"""
+		Saves the state of configuration. This raises an ``AssertionError``.
+
+		The metadata validator should never call any function on the instance.
+		:param args: All arguments will be put in the exception's message.
+		:param kwargs: All arguments will be put in the exception's message.
+		:raises AssertionError: Always.
+		"""
+		raise AssertionError("The _save function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
 class ValidConfiguration(IncompleteConfiguration):
 	"""
