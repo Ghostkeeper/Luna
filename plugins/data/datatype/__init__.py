@@ -45,7 +45,8 @@ def validate_metadata(data_metadata):
 
 	Data metadata must have a ``deserialise``, ``is_instance``,
 	``is_serialised`` and a ``serialise`` field, which must all contain callable
-	objects, such as functions.
+	objects, such as functions. The metadata may also not contain a partial
+	implementation of MIME types.
 	:param data_metadata: The metadata to validate.
 	:raises luna.plugins.MetadataValidationError: The metadata was invalid.
 	"""
@@ -61,3 +62,9 @@ def validate_metadata(data_metadata):
 				raise luna.plugins.MetadataValidationError("The {entry} entry is not callable.".format(entry=required_function))
 	except (AttributeError, TypeError):
 		raise luna.plugins.MetadataValidationError("The data metadata entry is not a dictionary.")
+
+	mimetype_entries = {"mimetype", "name"} #If one of these is present, the others must be too.
+	optional_mimetype_entries = {"extensions"} #If one of these is present, the required MIME type entries must be too.
+	unimplemented_mimetype_entries = mimetype_entries - data_metadata["data"].keys()
+	if len(unimplemented_mimetype_entries) != len(mimetype_entries) and (len(unimplemented_mimetype_entries) != 0 or len(data_metadata["data"].keys() - optional_mimetype_entries) != 0): #Either all are included, or none.
+		raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(unimplemented_mimetype_entries)))

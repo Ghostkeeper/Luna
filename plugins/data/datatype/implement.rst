@@ -50,3 +50,17 @@ Serialises an instance of the data type into a stream of ``bytes`` for storage o
 
 - ``data``: The instance of the data type.
 - Return: A stream of ``bytes`` that represents the state of the instance completely.
+
+---------
+MIME Type
+---------
+A data type may specify an optional MIME type. If it does, the data should be considered fit to be stored in a file (by itself). This opens the way for registering the file to be opened with the application, and allowing for tricks like dropping the file onto the window of the application to open it.
+
+To implement a MIME type, the following metadata entries must be provided in addition to the functionality listed above.
+
+- ``mimetype``: The media type identifier as specified by `RFC 6838`_. For example ``text/plain`` or ``application/x-luna-preferences``.
+- ``name``: A human-readable name in English for the media type. For example ``Plain text`` or ``Luna preferences``.
+
+Additionally, the ``extensions`` entry may optionally be provided in order to specify any file extensions belonging to the media type. File dialogues may make use of these extensions to filter files. This must be a sequence of strings. The sequence may be empty, in which case the entry is ignored. If not defined or empty, files containing this data type are assumed to have no extension. The extensions do not include the period in front (so use ``txt`` instead of ``.txt``) but may contain periods if multiple extensions are desired (as in ``tar.gz``).
+
+.. _`RFC 6838`: https://tools.ietf.org/html/rfc6838

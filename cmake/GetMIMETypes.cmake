@@ -11,7 +11,7 @@ function(get_mime_types plugin_dir)
 		COMMAND "${PYTHON_EXECUTABLE}" "-c" "import imp
 file, path, description = imp.find_module('${plugin_name}', ['${parent_dir}'])
 module = imp.load_module('${plugin_name}', file, path, description)
-metadata = module.metadata()['mime']
+metadata = module.metadata()['data']
 result = []
 for extension in metadata['extensions']:
 	result.append(metadata['mimetype'] + '|' + metadata['name'] + '|' + extension)
