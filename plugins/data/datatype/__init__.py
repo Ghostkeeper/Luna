@@ -65,6 +65,6 @@ def validate_metadata(data_metadata):
 
 	mimetype_entries = {"mimetype", "name"} #If one of these is present, the others must be too.
 	optional_mimetype_entries = {"extensions"} #If one of these is present, the required MIME type entries must be too.
-	unimplemented_mimetype_entries = mimetype_entries - data_metadata["data"].keys()
-	if len(unimplemented_mimetype_entries) != len(mimetype_entries) and (len(unimplemented_mimetype_entries) != 0 or len(data_metadata["data"].keys() - optional_mimetype_entries) != 0): #Either all are included, or none.
-		raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(unimplemented_mimetype_entries)))
+	if (mimetype_entries + optional_mimetype_entries) & data_metadata["data"].keys(): #MIME type is implemented, at least partially.
+		if mimetype_entries - data_metadata["data"].keys():
+			raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(mimetype_entries - data_metadata["data"].keys())))
