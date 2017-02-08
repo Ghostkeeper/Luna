@@ -72,3 +72,8 @@ def validate_metadata(data_metadata):
 			raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(mimetype_entries - data_metadata["data"].keys())))
 		if not re.match(r"^[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}/[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}$", data_metadata["data"]["mimetype"]):
 			raise luna.plugins.MetadataValidationError("The MIME type in the data plug-in is not valid according to RFC 6838: {mimetype}".format(mimetype=data_metadata["data"]["mimetype"]))
+		if "extensions" in data_metadata["data"]:
+			if not hasattr(data_metadata["data"]["extensions"], "__iter__"): #Must be a sequence.
+				raise luna.plugins.MetadataValidationError("The extensions for the MIME type in the data plug-in are not a sequence.")
+			if isinstance(data_metadata["data"]["extensions"], str): #We want to disallow strings, since iterating over them gives single characters instead of proper extensions, without giving errors at runtime.
+				raise luna.plugins.MetadataValidationError("The extensions for the MIME type in the data plug-in are a single string, not a sequence.")
