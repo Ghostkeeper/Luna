@@ -48,9 +48,6 @@ set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins 
 	plugins/logger/standardout/c_type_rectangle.py
 	plugins/logger/standardout/standard_out.py
 	plugins/logger/standardout/test/test_standard_out.py
-	plugins/mime/mimetype/__init__.py
-	plugins/mime/mimetype/mime.py
-	plugins/mime/mimetype/test/test_init.py
 	plugins/storage/localstorage/__init__.py
 	plugins/storage/localstorage/atomic_write_stream.py
 	plugins/storage/localstorage/local_storage.py
