@@ -40,6 +40,56 @@ class TestDataType(luna.tests.TestCase):
 					"serialise": functools.partial(luna.tests.arbitrary_function, 3) #A partial function.
 				}
 			}
+		},
+		"mimetype": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "type/test",
+					"name": "Testing data"
+				}
+			}
+		},
+		"mimetype_extensions": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "type/test",
+					"name": "Testing data",
+					"extensions": {"tst", "log"}
+				}
+			}
+		},
+		"mimetype_extensions_empty": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "type/test",
+					"name": "Testing data",
+					"extensions": {}
+				}
+			}
+		},
+		"mimetype_specialchars": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "a..-_!#$^&9001/b",
+					"name": "Testing data"
+				}
+			}
 		}
 	})
 	def test_validate_metadata_correct(self, metadata):
