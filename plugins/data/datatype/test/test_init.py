@@ -153,6 +153,79 @@ class TestDataType(luna.tests.TestCase):
 					"serialise": luna.tests.arbitrary_function,
 				}
 			}
+		},
+		"partial_mime": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "type/test",
+					"extensions": {"tst"}
+				}
+			}
+		},
+		"partial_mime_extensions": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"extensions": {"tst"}
+				}
+			}
+		},
+		"wrong_mime_chars": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "$1million/dollars", #Not allowed to start with a special character.
+					"name": "Testing data"
+				}
+			}
+		},
+		"no_mime_slash": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "image",
+					"name": "Testing data"
+				}
+			}
+		},
+		"extensions_not_iterable": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "test/x-test",
+					"name": "Test MIME Type",
+					"extensions": -1 #Try counting to that!
+				}
+			}
+		},
+		"extensions_string": {
+			"metadata": {
+				"data": {
+					"deserialise": luna.tests.arbitrary_function,
+					"is_instance": luna.tests.arbitrary_function,
+					"is_serialised": luna.tests.arbitrary_function,
+					"serialise": luna.tests.arbitrary_function,
+					"mimetype": "test/x-test",
+					"name": "Test MIME Type",
+					"extensions": "doc" #Must be a sequence, not a single extension.
+				}
+			}
 		}
 	})
 	def test_validate_metadata_incorrect(self, metadata):
