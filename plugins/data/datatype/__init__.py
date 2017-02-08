@@ -15,6 +15,8 @@ communicate via a pipe.
 Data types are identified by their plug-in identity.
 """
 
+import re #To check whether the MIME type of plug-ins is according to specification.
+
 import datatype.data #The API for other plug-ins to use data types with.
 import luna.plugins
 
@@ -68,3 +70,5 @@ def validate_metadata(data_metadata):
 	if (mimetype_entries + optional_mimetype_entries) & data_metadata["data"].keys(): #MIME type is implemented, at least partially.
 		if mimetype_entries - data_metadata["data"].keys():
 			raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(mimetype_entries - data_metadata["data"].keys())))
+		if not re.match(r"^[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}/[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}$", data_metadata["data"]["mimetype"]):
+			raise luna.plugins.MetadataValidationError("The MIME type in the data plug-in is not valid according to RFC 6838: {mimetype}".format(mimetype=data_metadata["data"]["mimetype"]))
