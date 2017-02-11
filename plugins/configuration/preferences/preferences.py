@@ -43,6 +43,13 @@ class Preferences:
 		"""
 		return iter(self._preferences)
 
+	def __len__(self):
+		"""
+		Gives the number of preferences in existence.
+		:return: The total number of preferences.
+		"""
+		return len(self._preferences)
+
 	def __setattr__(self, key, value):
 		"""
 		Changes the value of a specific preference.
