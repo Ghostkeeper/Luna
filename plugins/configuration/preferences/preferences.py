@@ -30,6 +30,8 @@ class Preferences:
 		:param item: The key of the preference to get the value of.
 		:return: The current value of the specified preference.
 		"""
+		if item.startswith("_"): #Get internal fields normally.
+			return super().__getattr__(item)
 		if item not in self._preferences:
 			raise AttributeError("The preference {key} does not exist.".format(key=item))
 		return self._preferences[item].value
@@ -47,6 +49,8 @@ class Preferences:
 		:param key: The key of the preference to get the value of.
 		:param value: The new value for the preference.
 		"""
+		if key.startswith("_"): #Set internal fields normally.
+			return super().__setattr__(key, value)
 		if key not in self._preferences:
 			raise AttributeError("The preference {key} does not exist.".format(key=key))
 		new_data_type = luna.plugins.api("data").type_of(value)
