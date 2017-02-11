@@ -18,29 +18,78 @@ class Preferences:
 
 	def __init__(self):
 		"""
-		Registers the initialisation for this class to occur when the
-		configuration type plug-in is loaded.
+		Initialises the preferences configuration instance.
 
-		The initialisation of this class can't be done directly in this method,
-		since the instance of this class is created when the metadata of the
-		preferences plug-in is loaded. It is then not yet guaranteed that the
-		parent class of this class (``Configuration``) is defined yet.
+		It starts off without any defined preferences.
 		"""
-		if "configuration" not in luna.plugins.plugin_types: #Configuration plug-in type does not exist yet.
-			luna.listen.listen(self._prepare, luna.plugins.plugin_types, "configuration")
-		else:
-			self._prepare(None, None)
+		self._preferences = {} #The preferences, by key.
 
-	def _prepare(self, _attribute, _value):
+	def __getattr__(self, item):
 		"""
-		Finalizes the class initialisation using data that is only available at
-		run time.
-		:param _attribute: The attribute that was changed when triggering this
-		preparation.
-		:param _value: The new value of the attribute that caused this
-		preparation to trigger.
+		Gets the value of a specific preference.
+		:param item: The key of the preference to get the value of.
+		:return: The current value of the specified preference.
 		"""
-		original_class = self.__class__
-		parent_class = luna.plugins.api("configuration").Configuration
-		self.__class__ = original_class.__class__(original_class.__name__ + "Configuration", (original_class, parent_class), {}) #Add the configuration class mixin.
-		super().__init__() #Execute the Configuration class' initialisation method to create the data structures.
+		if item not in self._preferences:
+			raise AttributeError("The preference {key} does not exist.".format(key=item))
+		return self._preferences[item].value
+
+	def __iter__(self):
+		"""
+		Returns an iterator over all preference keys.
+		:return: An iterator that yields all preference keys.
+		"""
+		return iter(self._preferences)
+
+	def __setattr__(self, key, value):
+		"""
+		Changes the value of a specific preference.
+		:param key: The key of the preference to get the value of.
+		:param value: The new value for the preference.
+		"""
+		if key not in self._preferences:
+			raise AttributeError("The preference {key} does not exist.".format(key=key))
+		new_data_type = luna.plugins.api("data").type_of(value)
+		if new_data_type != self._preferences[key].data_type:
+			if new_data_type is None:
+				raise ValueError("The type of the new value for preference {key} is unknown: {value}".format(key=key, value=str(value)))
+			else:
+				raise ValueError("The preference {key} may not have a value with data type {data_type}.".format(key=key, data_type=new_data_type))
+		self._preferences[key].value = value
+
+	def _define(self, identifier, name, description, default_value):
+		"""
+		Defines a new preference setting.
+
+		This setting will be stored persistently and be shared across multiple
+		instances of the application.
+		:param identifier: A unique key for the preference by which to look it
+		up.
+		:param name: A human-readable name for the preference.
+		:param description: A text description to help the user use the
+		preference better.
+		:param default_value: The default value for this preference. From this
+		value the data type is also derived.
+		:raises KeyError: A preference with the specified key already exists.
+		"""
+		if identifier in self:
+			raise KeyError("A preference with the key {key} already exists.".format(key=identifier))
+		if identifier.startswith("_"):
+			raise KeyError("Preferences starting with an underscore are reserved, so {key} is not allowed.".format(key=identifier))
+		self[identifier] = preferences.preference.Preference(name, description, default_value)
+
+	def _metadata(self, identifier):
+		"""
+		Gets a dictionary of metadata of the configuration instance.
+
+		This metadata contains a name, description and default value.
+		:param identifier: The identifier of the preference to get the metadata
+		of.
+		:return: A dictionary of metadata on the specified preference.
+		"""
+		preference = self._preferences[identifier]
+		return {
+			"default_value": preference.default_value,
+			"description": preference.description,
+			"name": preference.name
+		}

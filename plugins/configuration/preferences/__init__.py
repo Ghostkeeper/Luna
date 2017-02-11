@@ -39,7 +39,7 @@ def metadata():
 		},
 
 		"configuration": {
-			"name": "Preferences",
+			"name": "preferences",
 			"instance": preferences_module.Preferences()
 		}
 	}
