@@ -8,7 +8,7 @@ This document gives instructions on how to implement a configuration plug-in. A 
 
 A configuration plug-in stores a set of configuration items. Each configuration item has an identifier, but for the rest may consist of any object. The API provides a blind filter that filters configuration items in a particular configuration plug-in by the attributes on the objects.
 
-To implement a configuration plug-in, one needs to provide a name for the configuration by which the type of configuration can be identified, and an object that provides the functionality to store configuration. The object needs to provide a way to access individual elements of configuration, iterate over them, and has methods to serialise and deserialise its content.
+To implement a configuration plug-in, one needs to provide a name for the configuration by which the type of configuration can be identified, and an object that provides the functionality to store configuration. The object needs to provide a way to access individual elements of configuration and iterate over them.
 
 ---------------------
 Filtering on metadata
@@ -79,17 +79,6 @@ This method is the place to perform checks on the configuration item as well, su
 
 ----
 
-	.. function:: _load(self, directory)
-
-Loads all of the configuration instance from a specified directory. This overwrites all configuration items in the configuration type by the configuration that the contents of the directory represent.
-
-The directory to load the configuration from is given by the framework. It will be provided specifically for the configuration type, so no other function should have access to that directory and no data should be present. This is not enforced however, and it is strongly advised to access only data within the confines of the specified directory and its subdirectories and treat the data within with distrust.
-
-- ``directory``: The directory containing serialised configuration data to load the configuration from.
-- Raises: ``ConfigurationError`` if the provided configuration is not a well-formed representation of any configuration state.
-
-----
-
 	.. function:: _metadata(self, identifier)
 
 Gets a dictionary of the metadata of the configuration instance. This metadata should contain all information provided in the ``_define`` method any additional metadata that may be useful. This is also used by the configuration API to implement query filtering.
@@ -105,19 +94,6 @@ All configuration items should have the same metadata entries. This makes formul
 
 - ``identifier``: The identifier of the configuration item to get the metadata of.
 - Return: A dictionary of the metadata of your configuration item.
-
-----
-
-	.. function:: _save(self, directory)
-
-Saves the current configuration state to a specified directory. This method should be a snapshot of the configuration state, meaning that it should be atomic and not save a representation of a state of the configuration that never existed at a single point in time.
-
-The directory to save the configuration to is given by the framework. It will be provided specifically for the configuration plug-in, so no other function should have access to that directory. This is not enforced however, and it is strongly advised to access only data within the confines of the specified directory and its subdirectories.
-
-This may save the configuration all into one file, or into many, using as many subdirectories as necessary.
-
-- ``directory``: The directory to save the configuration data to.
-- Raises ``OSError``: The configuration could not be saved for some reason.
 
 ----------------------------------------
 Configuration instance: Optional methods
