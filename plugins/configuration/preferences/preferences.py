@@ -24,6 +24,15 @@ class Preferences:
 		"""
 		self._preferences = {} #The preferences, by key.
 
+	def __contains__(self, item):
+		"""
+		Finds whether there is a preference with the specified key.
+		:param item: The key of the preference to look for.
+		:return: ``True`` if a preference with the specified key exists, or
+		``False`` if there is no such key.
+		"""
+		return item in self._preferences
+
 	def __getattr__(self, item):
 		"""
 		Gets the value of a specific preference.
