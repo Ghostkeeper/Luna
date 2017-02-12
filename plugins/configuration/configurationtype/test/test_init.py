@@ -140,8 +140,7 @@ class TestConfigurationType(luna.tests.TestCase):
 		"""
 		configurationtype.register(identity, {})
 
-	@staticmethod
-	def test_validate_metadata_correct():
+	def test_validate_metadata_correct(self):
 		"""
 		Tests the ``validate_metadata`` function against metadata that is
 		correct.
