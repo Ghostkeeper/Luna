@@ -13,6 +13,7 @@ set(LUNA_DESCRIPTION "Conversion application." CACHE STRING "Description of the 
 set(LUNA_VERSION_MAJOR 0 CACHE STRING "Major version number. The major version number must increase for every release that alters any pre-existing API.")
 set(LUNA_VERSION_MINOR 0 CACHE STRING "Minor version number. The minor version number must increase for every release that introduces new features and does not alter any pre-existing API.")
 set(LUNA_VERSION_PATCH 0 CACHE STRING "Patch version number. The patch version number must increase for every release that only fixes bugs and does not alter any pre-existing API.")
+configure_file("${CMAKE_SOURCE_DIR}/luna/__init__.py" "${CMAKE_BINARY_DIR}/luna/__init__.py")
 
 #----------------------------------File Lists-----------------------------------
 set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins without having to use GLOB.
