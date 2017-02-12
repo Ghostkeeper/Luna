@@ -13,6 +13,7 @@ reading that configuration back.
 """
 
 import configurationtype.configuration #The API for other plug-ins to use configuration with.
+import configurationtype.configuration_error #To raise an error when configuration plug-in identities are invalid.
 import luna.plugins
 
 def metadata():
@@ -37,9 +38,22 @@ def metadata():
 		"type": { #This is a "plug-in type" plug-in.
 			"type_name": "configuration",
 			"api": configurationtype.configuration,
-			"validate_metadata": validate_metadata
+			"validate_metadata": validate_metadata,
+			"register": register
 		}
 	}
+
+def register(identity, _):
+	"""
+	Registers a new configuration plug-in.
+
+	This doesn't actually register anything here, but simply checks if the
+	identity is allowable.
+	:param identity: The identity of the new configuration plug-in.
+	:param _: The metadata of the plug-in. This is unused.
+	"""
+	if identity in dir(configurationtype.configuration):
+		raise configurationtype.configuration_error.ConfigurationError("The configuration plug-in identity {identity} is disallowed.".format(identity=identity))
 
 def validate_metadata(configuration_metadata):
 	"""
