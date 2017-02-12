@@ -83,12 +83,12 @@ This method is the place to perform checks on the configuration item as well, su
 
 Gets a dictionary of the metadata of the configuration instance. This metadata should contain all information provided in the ``define`` method any additional metadata that may be useful. This is also used by the configuration API to implement query filtering.
 
-A few metadata keys are reserved. These should not appear in your metadata dictionaries:
+A few metadata keys are required. These should always be included in the metadata dictionaries:
 
-- ``value``. This is reserved for the current value of the configuration item in filter queries.
-- ``key``. This is reserved for the identifier of the configuration item in filter queries.
-- ``type``. This is reserved for the identifier of the configuration type you're implementing in filter queries.
-- ``data_type``. This is reserved for the type of data contained in the configuration item.
+- ``value``: The current value of the configuration item.
+- ``key``: The identifier of the configuration item.
+- ``type``: The identifier of the configuration type you're implementing.
+- ``data_type``: The type of data contained in the configuration item.
 
 All configuration items should have the same metadata entries. This makes formulating queries easier for components that query on metadata. This is not a hard requirement though.
 

@@ -110,7 +110,11 @@ class Preferences:
 		"""
 		preference = self._preferences[identifier]
 		return {
+			"data_type": preference.data_type,
 			"default_value": preference.default_value,
 			"description": preference.description,
-			"name": preference.name
+			"key": identifier,
+			"name": preference.name,
+			"type": "preferences",
+			"value": preference.value,
 		}
