@@ -139,7 +139,36 @@ class Configuration:
 			raise KeyError("The configuration type {identifier} doesn't exist.".format(identifier=identifier))
 		return {}
 
-	def save(self, directory):
+	def save(self):
+		"""
+		Saves all configuration to persistent storage.
+
+		Configuration items which have their own MIME type, such as the
+		configuration type itself, will get stored in a separate file in a
+		folder named after their parent configuration. Configuration items that
+		don't have a MIME type will get stored inside their parent configuration
+		item. This way, the configuration is stored in a manner that is both
+		logical to humans reading the file structure and extensible for all
+		sorts of configuration types.
+		"""
+		directory = self._configuration_directory()
+		self._save_configuration(self, directory) #Entry point of recursive saving.
+
+	def _configuration_directory(self):
+		"""
+		Gets the directory where to save all configuration.
+		:return: A URI pointing to a directory to save the configuration.
+		"""
+		raise NotImplementedError("Not implemented yet.")
+
+	def _save_configuration(self, configuration, directory):
+		"""
+		Saves a configuration instance to a specified directory.
+
+		Sub-configurations are saved recursively.
+		:param configuration: The configuration instance to save.
+		:param directory: The directory to save it in.
+		"""
 		raise NotImplementedError("Not implemented yet.")
 
 sys.modules[__name__] = Configuration()
