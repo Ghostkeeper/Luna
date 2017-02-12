@@ -43,7 +43,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("An item was set by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def _define(self, *args, **kwargs):
+	def define(self, *args, **kwargs):
 		"""
 		Creates a new configuration item. This raises an ``AssertionError``.
 
@@ -54,18 +54,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("A new item was defined by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def _load(self, *args, **kwargs): #pylint: disable=no-self-use
-		"""
-		Loads configuration from a directory. This raises an ``AssertionError``.
-
-		The metadata validator should never call any function on the instance.
-		:param args: All arguments will be put in the exception's message.
-		:param kwargs: All arguments will be put in the exception's message.
-		:raises AssertionError: Always.
-		"""
-		raise AssertionError("The _load function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
-
-	def _metadata(self, *args, **kwargs):
+	def metadata(self, *args, **kwargs):
 		"""
 		Obtains the metadata of an item. This raises an ``AssertionError``.
 
@@ -75,17 +64,6 @@ class IncompleteConfiguration:
 		:raises AssertionError: Always.
 		"""
 		raise AssertionError("Item metadata was requested by the plug-in metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
-
-	def _save(self, *args, **kwargs): #pylint: disable=no-self-use
-		"""
-		Saves the state of configuration. This raises an ``AssertionError``.
-
-		The metadata validator should never call any function on the instance.
-		:param args: All arguments will be put in the exception's message.
-		:param kwargs: All arguments will be put in the exception's message.
-		:raises AssertionError: Always.
-		"""
-		raise AssertionError("The _save function was called by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
 class ValidConfiguration(IncompleteConfiguration):
 	"""
