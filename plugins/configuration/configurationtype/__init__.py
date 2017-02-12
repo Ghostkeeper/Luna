@@ -53,7 +53,7 @@ def register(identity, _):
 	:param _: The metadata of the plug-in. This is unused.
 	"""
 	if identity in dir(configurationtype.configuration):
-		raise configurationtype.configuration_error.ConfigurationError("The configuration plug-in identity {identity} is disallowed.".format(identity=identity))
+		raise configurationtype.configuration_error.ConfigurationError("The configuration plug-in identity {identity} is disallowed.".format(identity=identity), "configurationtype")
 
 def validate_metadata(configuration_metadata):
 	"""
