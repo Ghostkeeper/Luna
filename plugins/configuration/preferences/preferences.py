@@ -93,11 +93,11 @@ class Preferences:
 		value the data type is also derived.
 		:raises KeyError: A preference with the specified key already exists.
 		"""
-		if identifier in self:
+		if identifier in self._preferences:
 			raise KeyError("A preference with the key {key} already exists.".format(key=identifier))
 		if identifier in self._reserved:
 			raise KeyError("The preference identifier {key} is reserved.".format(key=identifier))
-		self[identifier] = preferences.preference.Preference(name, description, default_value)
+		self._preferences[identifier] = preferences.preference.Preference(name, description, default_value)
 
 	def metadata(self, identifier):
 		"""
