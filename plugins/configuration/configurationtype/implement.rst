@@ -63,13 +63,13 @@ This method should not allow adding new attributes. If a configuration item is s
 
 ----
 
-	.. function:: _define(self, identifier, ...)
+	.. function:: define(self, identifier, ...)
 
 Adds a new configuration item. The precise parameters of this function are left to the implementation of the configuration type. The user of the configuration type is expected to be dependent on the configuration type in order to know what these parameters are.
 
 If identifiers are used via attribute access, they should adhere to the `syntax of a Python identifier`_. This is not required however. Any string may be used by the identifier unless a configuration type forbids it. Just be aware that attribute access becomes impossible if an identifier contains characters that are not allowed in a Python identifier. An example of a situation where these characters may be allowed is when the user provides the identifier of a configuration item. The configuration item can then only be obtained through iteration or via the ``getattr`` built-in function. Additionally, all identifiers starting with an underscore are forbidden in order to prevent name clashes with methods. If the identifiers are directly provided by a user, it is advised to use a prefix in the attribute name that is stored in the instance, which is removed again when the item is shown to the user.
 
-This method is the place to perform checks on the configuration item as well, such as whether the item has a data type that is allowed. If this is not allowed, the method may raise arbitrary exceptions. The component that uses the configuration type must know what these exceptions are in order to catch them.
+This method is the place to perform checks on the configuration item as well, such as whether the item has a data type that is allowed. If this is not allowed, the method may raise arbitrary exceptions. The component that uses the configuration type must know what these exceptions are in order to catch them. It is also advisable to check whether the identity of the item clashes with any of the built-in methods of your configuration item, such as the methods in this document.
 
 - ``identifier``: The identifier of the new configuration item.
 - ... This method may have any arbitrary parameters.
@@ -79,9 +79,9 @@ This method is the place to perform checks on the configuration item as well, su
 
 ----
 
-	.. function:: _metadata(self, identifier)
+	.. function:: metadata(self, identifier)
 
-Gets a dictionary of the metadata of the configuration instance. This metadata should contain all information provided in the ``_define`` method any additional metadata that may be useful. This is also used by the configuration API to implement query filtering.
+Gets a dictionary of the metadata of the configuration instance. This metadata should contain all information provided in the ``define`` method any additional metadata that may be useful. This is also used by the configuration API to implement query filtering.
 
 A few metadata keys are reserved. These should not appear in your metadata dictionaries:
 

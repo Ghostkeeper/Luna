@@ -23,6 +23,7 @@ class Preferences:
 		It starts off without any defined preferences.
 		"""
 		self._preferences = {} #The preferences, by key.
+		self._reserved = set(dir(self)) | {"_reserved"} #Reserved item identifiers (they would collide with methods in this class).
 
 	def __contains__(self, item):
 		"""
@@ -77,7 +78,7 @@ class Preferences:
 				raise ValueError("The preference {key} may not have a value with data type {data_type}.".format(key=key, data_type=new_data_type))
 		self._preferences[key].value = value
 
-	def _define(self, identifier, name, description, default_value):
+	def define(self, identifier, name, description, default_value):
 		"""
 		Defines a new preference setting.
 
@@ -94,11 +95,11 @@ class Preferences:
 		"""
 		if identifier in self:
 			raise KeyError("A preference with the key {key} already exists.".format(key=identifier))
-		if identifier.startswith("_"):
-			raise KeyError("Preferences starting with an underscore are reserved, so {key} is not allowed.".format(key=identifier))
+		if identifier in self._reserved:
+			raise KeyError("The preference identifier {key} is reserved.".format(key=identifier))
 		self[identifier] = preferences.preference.Preference(name, description, default_value)
 
-	def _metadata(self, identifier):
+	def metadata(self, identifier):
 		"""
 		Gets a dictionary of metadata of the configuration instance.
 

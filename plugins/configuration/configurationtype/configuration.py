@@ -22,9 +22,9 @@ You can change the value of a preference in a similar way::
 
 Adding new items to the configuration behaves differently, since new entries may
 require additional metadata. A configuration item can only be created via the
-``_define`` method, like so::
+``define`` method, like so::
 
-	luna.plugins("configuration").preferences.user_interface._define(
+	luna.plugins("configuration").preferences.user_interface.define(
 		key="language"
 		default="Common"
 		validate=lambda language_key: language_key in luna.plugins("internationalisation").languages
@@ -108,7 +108,7 @@ class Configuration:
 		"""
 		raise AttributeError("Changing the configuration instances of configuration types directly is not allowed.")
 
-	def _define(self, identifier):
+	def define(self, identifier):
 		"""
 		This action is disallowed. It raises an exception.
 
@@ -123,10 +123,10 @@ class Configuration:
 		"""
 		raise NotImplementedError("Defining new configuration types directly is not allowed.")
 
-	def _load(self, directory):
+	def load(self, directory):
 		raise NotImplementedError("Not implemented yet.")
 
-	def _metadata(self, identifier):
+	def metadata(self, identifier):
 		"""
 		Gets a dictionary of metadata for the specified configuration type.
 
@@ -139,7 +139,7 @@ class Configuration:
 			raise KeyError("The configuration type {identifier} doesn't exist.".format(identifier=identifier))
 		return {}
 
-	def _save(self, directory):
+	def save(self, directory):
 		raise NotImplementedError("Not implemented yet.")
 
 sys.modules[__name__] = Configuration()
