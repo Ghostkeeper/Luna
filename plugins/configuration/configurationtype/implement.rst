@@ -86,7 +86,7 @@ Gets a dictionary of the metadata of the configuration instance. This metadata s
 A few metadata keys are required. These should always be included in the metadata dictionaries:
 
 - ``value``: The current value of the configuration item.
-- ``key``: The identifier of the configuration item.
+- ``identifier``: The identifier of the configuration item.
 - ``type``: The identifier of the configuration type you're implementing.
 - ``data_type``: The type of data contained in the configuration item.
 
