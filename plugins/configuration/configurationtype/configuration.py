@@ -38,9 +38,13 @@ Getting or setting a configuration item that doesn't exist yields an
 ``AttributeError``.
 """
 
+import os #To get environment variables to find the configuration directory.
+import os.path #To join paths to construct the configuration directory.
+import platform #To detect the current platform, for finding the configuration directory.
 import sys #To replace the module with an instance of configuration in order to allow directly calling the API as if it were a configuration instance.
 
-import luna.plugins #To call the data type API.
+import luna #To get the application name.
+import luna.plugins #To call the data type API and to log things.
 
 class Configuration:
 	"""
@@ -159,7 +163,23 @@ class Configuration:
 		Gets the directory where to save all configuration.
 		:return: A URI pointing to a directory to save the configuration.
 		"""
-		raise NotImplementedError("Not implemented yet.")
+		system = platform.system()
+		if system == "Windows":
+			local_dir = os.getenv("LOCALAPPDATA")
+			if not local_dir: #Environment variable wasn't defined.
+				local_dir = os.path.expanduser("~\\AppData\\Local\\")
+			return os.path.join(local_dir, luna.application_name)
+		elif system == "Linux":
+			config_dir = os.getenv("XDG_CONFIG_HOME")
+			if not config_dir: #Environment variable wasn't defined.
+				config_dir = os.path.expanduser("~/.config")
+			return os.path.join(config_dir, luna.application_name)
+		elif system == "Darwin":
+			support_dir = os.path.expanduser("~/Library/Application Support")
+			return os.path.join(support_dir, luna.application_name)
+		else: #Unknown system!
+			luna.plugins.api("logger").warning("Unknown system: {system}. I don't know where to save my configuration!", system=system)
+			return os.path.join(os.getcwd(), luna.application_name)
 
 	def _save_configuration(self, configuration, directory):
 		"""
