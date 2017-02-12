@@ -126,7 +126,7 @@ class Configuration:
 	def load(self, directory):
 		raise NotImplementedError("Not implemented yet.")
 
-	def metadata(self, identifier):
+	def metadata(self, identifier): #pylint: disable=no-self-use
 		"""
 		Gets a dictionary of metadata for the specified configuration type.
 

@@ -43,7 +43,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("An item was set by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def define(self, *args, **kwargs):
+	def define(self, *args, **kwargs): #pylint: disable=no-self-use
 		"""
 		Creates a new configuration item. This raises an ``AssertionError``.
 
@@ -54,7 +54,7 @@ class IncompleteConfiguration:
 		"""
 		raise AssertionError("A new item was defined by the metadata validator with parameters {args} and {kwargs}.".format(args=str(args), kwargs=str(kwargs)))
 
-	def metadata(self, *args, **kwargs):
+	def metadata(self, *args, **kwargs): #pylint: disable=no-self-use
 		"""
 		Obtains the metadata of an item. This raises an ``AssertionError``.
 
@@ -110,7 +110,7 @@ class TestConfigurationType(luna.tests.TestCase):
 	@luna.tests.parametrise({
 		"preferences": {"identity": "preferences"},
 		"with_digit0": {"identity": "with_digit0"}
-	})
+	}) #pylint: disable=no-self-use
 	def test_register_safe(self, identity):
 		"""
 		Tests whether registering a plug-in with a good identity works.
@@ -118,7 +118,8 @@ class TestConfigurationType(luna.tests.TestCase):
 		"""
 		configurationtype.register(identity, {})
 
-	def test_validate_metadata_correct(self):
+	@staticmethod
+	def test_validate_metadata_correct():
 		"""
 		Tests the ``validate_metadata`` function against metadata that is
 		correct.
