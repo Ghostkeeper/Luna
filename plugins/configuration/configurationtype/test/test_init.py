@@ -124,9 +124,21 @@ class TestConfigurationType(luna.tests.TestCase):
 		transparently patched through when using ``unittest.mock.patch()``, this
 		is not a viable option this time. We'll have to settle with updating the
 		test sometimes.
+		:param identity: The identity of the plug-in to register.
 		"""
 		with self.assertRaises(configurationtype.configuration_error.ConfigurationError):
 			configurationtype.register(identity, {})
+
+	@luna.tests.parametrise({
+		"preferences": {"identity": "preferences"},
+		"with_digit0": {"identity": "with_digit0"}
+	})
+	def test_register_safe(self, identity):
+		"""
+		Tests whether registering a plug-in with a good identity works.
+		:param identity: The identity of the plug-in to register.
+		"""
+		configurationtype.register(identity, {})
 
 	@staticmethod
 	def test_validate_metadata_correct():
