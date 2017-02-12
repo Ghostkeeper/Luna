@@ -5,10 +5,12 @@
 #The license can also be read online: <https://creativecommons.org/publicdomain/zero/1.0/>. If this online license differs from the license provided with this software, the license provided with this software should be applied.
 
 """
-Tests the behaviour of the validation function for configuration types.
+Tests the behaviour of the validation and registration functions for
+configuration types.
 """
 
 import configurationtype #The module we're testing.
+import configurationtype.configuration_error #To test whether ConfigurationError is raised.
 import luna.plugins #To check whether a MetadataValidationError is raised.
 import luna.tests #For parametrised tests
 
@@ -102,8 +104,29 @@ class ValidConfiguration(IncompleteConfiguration):
 
 class TestConfigurationType(luna.tests.TestCase):
 	"""
-	Tests the behaviour of the validation function for configuration types.
+	Tests the behaviour of the validation and registration functions for
+	configuration types.
 	"""
+
+	@luna.tests.parametrise({
+		"define":      {"identity": "define"},
+		"__getattr__": {"identity": "__getattr__"},
+		"metadata":    {"identity": "metadata"}
+	})
+	def test_register_clashing(self, identity):
+		"""
+		Tests whether registering a plug-in with an identity that clashes
+		results in a ``ConfigurationError``.
+
+		Normally we'd want to test this by patching the configuration API with
+		some class we made for this test, so that any changes to the API will
+		not cause false negatives for this test. However, since ``dir()`` is not
+		transparently patched through when using ``unittest.mock.patch()``, this
+		is not a viable option this time. We'll have to settle with updating the
+		test sometimes.
+		"""
+		with self.assertRaises(configurationtype.configuration_error.ConfigurationError):
+			configurationtype.register(identity, {})
 
 	@staticmethod
 	def test_validate_metadata_correct():
