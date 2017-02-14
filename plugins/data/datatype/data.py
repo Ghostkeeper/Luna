@@ -76,6 +76,17 @@ def is_serialised(data_type, serialised):
 		luna.plugins.api("logger").warning("Checking against non-existent data type {data_type}.", data_type=data_type)
 		return False
 
+def mime_type(data_type):
+	"""
+	Gets the MIME type of a specified data type, if it has one.
+
+	If the data type has no MIME type, ``None`` is returned.
+	:param data_type: The data type to get the MIME type of.
+	:return: The MIME type of the specified data type, or ``None`` if it has no
+	MIME type.
+	"""
+	return luna.plugins.plugins_by_type["data"][data_type]["data"].get("mime_type", None)
+
 def serialise(data, data_type=None):
 	"""
 	Serialises the specified data.
