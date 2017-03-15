@@ -361,7 +361,7 @@ class TestLocalStorage(luna.tests.TestCase):
 				os.remove("end.txt")
 
 	@luna.tests.parametrise(_test_bytes)
-	def test_open_read(self, content):
+	def test_read(self, content):
 		"""
 		Tests whether reading a simple file is successful.
 
@@ -372,20 +372,18 @@ class TestLocalStorage(luna.tests.TestCase):
 		with open(_unsafe_target_file, "wb") as file_handle: #Create the file with simple content.
 			file_handle.write(content)
 
-		with localstorage.local_storage.open_read(_unsafe_target_file) as file_handle:
-			result = file_handle.read()
+		result = localstorage.local_storage.read(_unsafe_target_file)
 		self.assertEqual(result, content, "Read must be exactly equal to what was written to the file.")
 
-	def test_open_read_atomicity(self):
+	def test_read_atomicity(self):
 		"""
-		Tests the ``open_read`` function to see whether it is an atomic read.
+		Tests the ``read`` function to see whether it is an atomic read.
 		"""
 		with open(_unsafe_target_file, "wb") as unsafe_file_handle:
 			unsafe_file_handle.write(b"Test") #Some initial data to test with. This is not tested.
 
 		with unittest.mock.patch("builtins.open", _open_simulate_concurrency):
-			with localstorage.local_storage.open_read(_unsafe_target_file) as tested_file_handle:
-				result = tested_file_handle.read()
+			result = localstorage.local_storage.read(_unsafe_target_file)
 			self.assertIn(result, [ #At any stage during the writing.
 				b"Test",
 				b"1",
@@ -409,8 +407,7 @@ class TestLocalStorage(luna.tests.TestCase):
 		it back to verify that the content was written correctly.
 		:param content: The content to write to the file, as `bytes`.
 		"""
-		with localstorage.local_storage.open_write(_unsafe_target_file) as file_handle:
-			file_handle.write(content)
+		localstorage.local_storage.write(_unsafe_target_file, content)
 
 		with open(_unsafe_target_file, "rb") as file_handle:
 			result = file_handle.read()
@@ -418,12 +415,11 @@ class TestLocalStorage(luna.tests.TestCase):
 
 	def test_write_atomicity(self):
 		"""
-		Tests the ``open_write`` function to see whether it is an atomic write.
+		Tests the ``write`` function to see whether it is an atomic write.
 		"""
 		test_bytes = b"Test"
 		with unittest.mock.patch("builtins.open", _open_simulate_concurrency):
-			with localstorage.local_storage.open_write(_unsafe_target_file) as tested_file_handle:
-				tested_file_handle.write(test_bytes)
+			localstorage.local_storage.write(_unsafe_target_file, test_bytes)
 		with open(_unsafe_target_file, "rb") as written_file_handle:
 			result = written_file_handle.read()
 			self.assertEqual(result, test_bytes, "File write is not atomic.")
@@ -439,8 +435,7 @@ class TestLocalStorage(luna.tests.TestCase):
 		with open(_unsafe_target_file, "w") as file_handle: #Make sure the file exists.
 			file_handle.write("Original file contents.")
 
-		with localstorage.local_storage.open_write(_unsafe_target_file) as file_handle:
-			file_handle.write(content) #Overwrite with new data.
+		localstorage.local_storage.write(_unsafe_target_file, content) #Overwrite with new data.
 
 		with open(_unsafe_target_file, "rb") as file_handle:
 			result = file_handle.read()
