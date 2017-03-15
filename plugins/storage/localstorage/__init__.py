@@ -34,7 +34,7 @@ def metadata():
 			"delete": localstorage.local_storage.delete,
 			"exists": localstorage.local_storage.exists,
 			"move": localstorage.local_storage.move,
-			"open_read": localstorage.local_storage.open_read,
-			"open_write": localstorage.local_storage.open_write
+			"read": localstorage.local_storage.read,
+			"write": localstorage.local_storage.write
 		}
 	}

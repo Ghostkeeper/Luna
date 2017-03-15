@@ -17,12 +17,10 @@ dealing only with other instances of the same application, these functions
 should behave atomically.
 """
 
-import shutil #For the move function.
 import os #To delete files, get modification times and flush data to files.
+import shutil #For the move function.
+import tempfile #To create temporary files to make the file write appear atomic.
 import urllib.parse #To get the scheme from a URI.
-
-import localstorage.atomic_write_stream #To implement atomic writing.
-import luna.stream #To allow iterating over bytes of the stream.
 
 def can_read(uri):
 	"""
@@ -89,7 +87,7 @@ def move(source, destination):
 	"""
 	shutil.move(_uri_to_path(source), _uri_to_path(destination)) #Use shutil because it overwrites old files on Windows too.
 
-def open_read(uri):
+def read(uri):
 	"""
 	Reads the contents of the specified file.
 
@@ -103,15 +101,16 @@ def open_read(uri):
 	is long gone. It reads the data that it got at the point where it opened the
 	stream.
 	:param uri: The URI of the resource to read.
-	:return: A stream that reads the contents of the resource as a bytes string.
+	:return: The ``bytes`` representing the contents of the file.
 	:raises IOError: The file could not be opened for reading.
 	"""
 	path = _uri_to_path(uri)
-	return luna.stream.BytesStreamReader(open(path, "rb"))
+	with open(path, "rb") as file_handle:
+		return file_handle.read()
 
-def open_write(uri):
+def write(uri, data):
 	"""
-	Opens a file for writing and returns a stream for writing to it.
+	Writes the specified data to a file.
 
 	Any old data in the resource will get overwritten. If no resource exists at
 	the specified location, a new resource will be created.
@@ -120,15 +119,17 @@ def open_write(uri):
 	writing is made instantaneously. This is done by writing the data to a
 	temporary file, then moving the new file on top of the old file. Therefore,
 	the actual atomicity of this write depends on the atomicity of ``move``.
-
-	Since flushing the stream is directly in conflict with atomic writing,
-	flushing the stream returned by this write function is not supported.
 	:param uri: The location of the resource to write the data to.
 	:param data: The data to write to the resource, as a bytes string.
 	:raises IOError: The data could not be written.
 	"""
 	path = _uri_to_path(uri)
-	return localstorage.atomic_write_stream.AtomicWriteStream(path)
+	directory, _ = os.path.split(path) #Put the temporary file in the same directory, so it will be on the same file system which guarantees an atomic move.
+	with tempfile.NamedTemporaryFile(dir=directory, delete=False, mode="wb") as temp_handle:
+		temp_handle.write(data)
+		temp_handle.flush() #Make sure it's all written.
+		os.fsync(temp_handle.fileno()) #Make sure that the file system is up-to-date.
+	move(temp_handle.name, uri) #Move the new file into place, replacing the old file if it existed.
 
 def _uri_to_path(uri):
 	"""
