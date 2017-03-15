@@ -50,7 +50,6 @@ set(PYTHON_FILES_RELATIVE #Used to find files for linting, and to find plug-ins 
 	plugins/logger/standardout/standard_out.py
 	plugins/logger/standardout/test/test_standard_out.py
 	plugins/storage/localstorage/__init__.py
-	plugins/storage/localstorage/atomic_write_stream.py
 	plugins/storage/localstorage/local_storage.py
 	plugins/storage/localstorage/test/test_local_storage.py
 	plugins/storage/storagetype/__init__.py
