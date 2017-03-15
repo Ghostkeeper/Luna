@@ -11,7 +11,7 @@ To implement a storage plug-in, one needs to implement all functions listed belo
 --------------------------------
 URIs and which plug-in gets used
 --------------------------------
-Every storage plug-in provides two functions that allow the storage API to gauge the functionality of the plug-in: ``can_read`` and ``can_write``. These determine respectively for a URI whether the storage plug-in can read from such a URI and whether it can write to it. These functions are meant to be implemented without actually trying to read or write anything on the device the URI points to. Ability to read or write should be determined purely on the URI itself. Based on this information, the API selects a plug-in that says it can read or write the URI, depending on what type of operation is necessary.
+Every storage plug-in provides two functions that allow the storage API to gauge the functionality of the plug-in: ``can_read`` and ``can_write``. These determine respectively for a URI whether the storage plug-in can read from such a URI and whether it can write to it. These functions are meant to be implemented without actually accessing the device the URI points to. Ability to read or write should be determined purely on the URI itself. Based on this information, the API selects a plug-in that says it can read or write the URI, depending on what type of operation is necessary.
 
 The ``can_read`` and ``can_write`` functions should be fast. That means that they should make their judgement purely based on the URI. They should not check for existence of the file, permissions, or anything of the sort.
 
@@ -71,22 +71,24 @@ If there is already a resource at the destination, that resource will be lost.
 
 ----
 
-	.. function:: open_read(uri)
+	.. function:: read(uri)
 
-Opens a stream of binary data from the specified location.
+Reads the contents of the specified resource completely.
 
 - ``uri``: An absolute URI to a resource that must be read.
-- Return: A stream of ``bytes`` that read from the specified location.
+- Return: The ``bytes`` representing the contents of the specified resource.
 - Raises: ``IOException`` if the resource could not be read.
 
 ----
 
 	.. function:: write(uri, data)
 
-Opens a stream that writes binary data to the specified location.
+Writes the specified data to the specified resource.
 
 If there is already a resource at the specified URI, that resource will be lost.
+This overwrites any existing data, rather than appending to it.
 
 - ``uri``: An absolute URI to where the data must be written.
-- Return: A stream for ``bytes`` that writes to the specified location.
+- ``data``: The ``bytes`` representing the data that must be written to the
+resource.
 - Raises: ``IOException`` if the resource could not be written to.
