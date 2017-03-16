@@ -17,10 +17,10 @@ These are the functions that need to be implemented by a data plug-in. All of th
 
 	.. function:: deserialise(serialised)
 
-Turns a serialised sequence of ``bytes``, which represents a state of being of an instance of this data type, into an instance of this data type with that state.
+Turns the serialised ``bytes``, which represent a state of being of an instance of this data type, into an instance of this data type with that state.
 
-- ``serialised``: A sequence of ``bytes`` that represents the state of an instance of the data type.
-- Return: An instance of the data type that the serialised sequence represented.
+- ``serialised``: The ``bytes`` that represent the state of an instance of the data type.
+- Return: An instance of the data type that the serialised ``bytes`` represented.
 
 ----
 
@@ -35,21 +35,21 @@ Checks if a data object is of the data type that the plug-in implements.
 
 	.. function:: is_serialised(serialised)
 
-Checks if a sequence of bytes is of the data type that the plug-in implements.
+Checks if the specified ``bytes`` represent an object of the data type that the plug-in implements.
 
-For performance reasons, it is important to check this fairly efficiently using as few bytes from the source sequence as possible. Generating bytes from the source sequence may involve slow I/O. Use a magic number if available.
+For performance reasons, it is important to check this fairly efficiently, since every data type must be tested in order to find the data type of a sequence of bytes. Use a magic number if available.
 
-- ``serialised``: A sequence of bytes representing some object.
+- ``serialised``: ``bytes`` representing some object.
 - Return: ``True`` if the sequence of bytes represents an object of this data type, or ``False`` if it doesn't.
 
 ----
 
 	.. function:: serialise(data)
 
-Serialises an instance of the data type into a stream of ``bytes`` for storage or communication.
+Serialises an instance of the data type into ``bytes`` for storage or communication.
 
 - ``data``: The instance of the data type.
-- Return: A stream of ``bytes`` that represents the state of the instance completely.
+- Return: A ``bytes`` object that represents the state of the instance completely.
 
 ---------
 MIME Type
