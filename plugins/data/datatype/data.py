@@ -8,8 +8,6 @@
 An API for finding the available data types and (de)serialising them.
 """
 
-import itertools #To split a byte sequence to check its type with every data plug-in.
-
 import luna.plugins #To find the data types that are available.
 
 class SerialisationException(Exception):
@@ -28,10 +26,10 @@ def data_types():
 
 def deserialise(serialised, data_type=None):
 	"""
-	Deserialises the specified sequence of bytes, turning it into an instance of
-	the specified data type.
+	Deserialises the given bytes, turning it into an instance of the specified
+	data type.
 	:param serialised: A serialised form of data representing an instance of the
-	specified data type, in the form of a byte sequence.
+	specified data type, in the form of bytes.
 	:param data_type: The type of data the serialised ``bytes`` should be
 	interpreted as. If no data type is provided, the data type is found
 	automatically.
@@ -63,12 +61,12 @@ def is_instance(data_type, data):
 
 def is_serialised(data_type, serialised):
 	"""
-	Checks whether a sequence of ``bytes`` represents an instance of the
-	specified data type.
+	Checks whether the given ``bytes`` represents an instance of the specified
+	data type.
 	:param data_type: The data type to check for.
-	:param serialised: A sequence of bytes to check the data type of.
+	:param serialised: A ``bytes`` object to check the data type of.
 	:return: ``True`` if the stream of bytes represents an instance of the
-	specified data type, or ``False if it doesn't.
+	specified data type, or ``False`` if it doesn't.
 	"""
 	try:
 		return luna.plugins.plugins_by_type["data"][data_type]["data"]["is_serialised"](serialised)
@@ -91,12 +89,12 @@ def serialise(data, data_type=None):
 	"""
 	Serialises the specified data.
 
-	The result is a sequence of bytes. The ``deserialise`` operation turns it
+	The result is a ``bytes`` object. The ``deserialise`` operation turns it
 	back into a copy of the original object.
 	:param data: The data that must be serialised.
 	:param data_type: The type of data that will be provided. If no data type is
 	provided, the data type is found automatically.
-	:return: A sequence of bytes representing exactly the state of the data.
+	:return: A ``bytes`` object representing exactly the state of the data.
 	"""
 	if data_type is None:
 		data_type = type_of(data)
@@ -128,17 +126,14 @@ def type_of_serialised(serialised):
 	Attempts to find the data type of a serialised form of an object.
 
 	This goes by all data types in turn and asks if any of them thinks the bytes
-	stream is theirs. The first one that reports it is a representation
-	belonging to its data type is returned, even if multiple data types would
-	match.
-	:param serialised: A sequence of bytes to find the data type of.
-	:return: The data type that the sequence represents, or ``None`` if it has
-	no known data type.
+	represent an instance of their data type. The first one that reports it is a
+	representation belonging to its data type is returned, even if multiple data
+	types would match.
+	:param serialised: The ``bytes`` to find the data type of.
+	:return: The data type that the bytes represent, or ``None`` if it has no
+	known data type.
 	"""
-	num_data_plugins = len(luna.plugins.plugins_by_type["data"])
-	input_streams = itertools.tee(serialised, num_data_plugins) #Create a stream for every plug-in to read from.
-	for stream, plugin in zip(input_streams, luna.plugins.plugins_by_type["data"].items()):
-		identity, metadata = plugin
-		if metadata["data"]["is_serialised"](stream):
+	for identity, metadata in luna.plugins.plugins_by_type["data"].items():
+		if metadata["data"]["is_serialised"](serialised):
 			return identity
 	return None #No data type found.
