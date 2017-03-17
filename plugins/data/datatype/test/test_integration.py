@@ -68,7 +68,6 @@ class TestIntegration(luna.tests.TestCase):
 		"""
 		serialised_of = set() #The plug-ins that this sequence is supposedly the serialised form of.
 		for identity, metadata in luna.plugins.plugins_by_type["data"].items():
-			is_serialised = metadata["data"]["is_serialised"]
-			if is_serialised(luna.stream.BytesStreamReader(serialised)):
+			if metadata["data"]["is_serialised"](serialised):
 				serialised_of.add(identity)
 		self.assertLessEqual(len(serialised_of), 1, "Byte sequence {serialised} is found to be the serialised form of multiple data types: {data_plugins}".format(serialised=str(serialised), data_plugins=", ".join(serialised_of)))
