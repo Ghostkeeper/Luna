@@ -19,13 +19,13 @@ import luna.stream #To return streams of serialised enumerated types.
 def deserialise(serialised):
 	"""
 	Deserialises a serialisation of an enumerated type.
-	:param serialised: A sequence of bytes that represents an enumerated type.
+	:param serialised: The bytes that represent an enumerated type.
 	:return: An instance of the enumerated type the sequence represents.
 	:raises SerialisationException: The serialisation does not represent an
 	enumerated type.
 	"""
 	try:
-		serialised_string = serialised.read().decode(encoding="utf_8")
+		serialised_string = serialised.decode(encoding="utf_8")
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised data is not UTF-8 encoded.") from e
 	path_segments = serialised_string.split(".")
@@ -50,14 +50,13 @@ def is_instance(instance):
 
 def is_serialised(serialised):
 	"""
-	Detects whether a byte sequence represents an enumerated type.
-	:param serialised: A sequence of bytes of which the represented type is
-	unknown.
-	:return: ``True`` if the sequence represents an enumerated type, or
-	``False`` if it doesn't.
+	Detects whether some bytes represent an enumerated type.
+	:param serialised: The bytes of which the represented type is unknown.
+	:return: ``True`` if the bytes represent an enumerated type, or ``False``
+	if it doesn't.
 	"""
 	try:
-		unicode_string = io.TextIOWrapper(serialised, encoding="utf_8").readline() #Only need at most one line.
+		unicode_string = io.TextIOWrapper(io.BytesIO(serialised), encoding="utf_8").readline() #Only need at most one line.
 	except UnicodeDecodeError:
 		return False #If it's not UTF-8 encoded, it's not an enum.
 	num_pieces = 1 #How many period-delimited pieces we find. We want at least 3: A module, a class and an instance.
@@ -87,7 +86,7 @@ def serialise(instance):
 		reference = instance.__module__ + "." + instance.__class__.__qualname__ + "." + instance.name
 	except AttributeError: #Translate the cryptic type error that arises from this if it is no enum.
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise something that is not an enumerated type: {instance}".format(instance=str(instance)))
-	return luna.stream.BytesStreamReader(reference.encode(encoding="utf_8"))
+	return reference.encode(encoding="utf_8")
 
 _allowed_id_continue_categories = {"Ll", "Lm", "Lo", "Lt", "Lu", "Mc", "Mn", "Nd", "Nl", "Pc"}
 """
