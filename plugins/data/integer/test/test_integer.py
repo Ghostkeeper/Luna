@@ -56,7 +56,6 @@ class TestInteger(luna.tests.TestCase):
 		"empty":          {"serialised": b""},
 		"not_utf_8":      {"serialised": bytes([0x80, 0x61, 0x62, 0x63])}, #First 0x80, the Euro sign, which is not an allowed start character for UTF-8. Then followed by "abc".
 		"letters":        {"serialised": b"ghostkeeper"},
-		"foreign_digits": {"serialised": "４".encode("utf_8")},
 		"float":          {"serialised": b"3.1416"},
 		"round_float":    {"serialised": b"9.0"}
 	})
@@ -179,16 +178,3 @@ class TestInteger(luna.tests.TestCase):
 		serialised = integer_module.serialise(instance)
 		deserialised = integer_module.deserialise(serialised)
 		self.assertEqual(instance, deserialised, "The integer must be the same after serialising and deserialising.")
-
-	@luna.tests.parametrise({
-		#We only want to include tests that wouldn't be JSON-serialisable. If it's JSON-serialisable, then for all that this module is concerned it quacks like an integer.
-		"custom_object": {"instance": luna.tests.CallableObject()}
-	})
-	@unittest.mock.patch("luna.plugins.api", mock_api)
-	def test_serialise_error(self, instance):
-		"""
-		Tests fail cases in which serialisation must raise an exception.
-		:param instance: An object that is not an integer.
-		"""
-		with self.assertRaises(luna.tests.MockException):
-			integer_module.serialise(instance)
