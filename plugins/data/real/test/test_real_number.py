@@ -14,7 +14,6 @@ module.
 import unittest.mock #To replace the dependency on the data module.
 
 import real.real_number #The module we're testing.
-import luna.stream #To create streams of bytes as input.
 import luna.tests #For parametrised tests and mock exceptions.
 
 def mock_api(plugin_type):
