@@ -7,10 +7,8 @@
 """
 Provides the implementation of integers as a data type definition.
 
-Integers are serialised using the JSON format.
+Integers are serialised in a human-readable format as a string of base 10.
 """
-
-import json #We're using JSON to serialise integers in a readable format quickly.
 
 import luna.plugins #To access the data API for raising SerialisationExceptions.
 
@@ -21,13 +19,11 @@ def deserialise(serialised):
 	:return: The integer that was being represented by the bytes.
 	"""
 	try:
-		instance = json.loads(serialised.decode(encoding="utf-8"))
+		instance = int(serialised.decode(encoding="utf-8"))
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence is not proper UTF-8, so it doesn't represent an integer.") from e
-	except json.JSONDecodeError as e:
-		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent a JSON-format document and therefore doesn't represent an integer.") from e
-	if type(instance) != int:
-		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent an integer, but an instance of type {instance_type}.".format(instance_type=type(instance)))
+	except ValueError as e:
+		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent an integer with base 10.") from e
 	return instance
 
 def is_instance(instance):
@@ -59,8 +55,4 @@ def serialise(instance):
 	:param instance: The integer to serialise.
 	:return: The ``bytes`` representing that integer.
 	"""
-	try:
-		output = json.dumps(instance).encode("utf_8")
-	except TypeError as e:
-		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not an integer.") from e
-	return output
+	return str(instance).encode("utf_8")
