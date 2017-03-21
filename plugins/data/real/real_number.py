@@ -10,21 +10,18 @@ Provides the implementation of real numbers as a data type definition.
 Real numbers are serialised using the JSON format for floating point numbers.
 """
 
-import io #To decode UTF-8 streaming.
 import json #We're using JSON to serialise floating point numbers in a readable format quickly.
 
 import luna.plugins #To access the data API for raising SerialisationExceptions.
-import luna.stream #To provide the serialised streams in their expected format.
 
 def deserialise(serialised):
 	"""
-	Interprets a sequence of bytes that represents a real number.
-	:param serialised: A sequence of bytes that represents a real number.
-	:return: The real number that was being represented by the sequence of
-	bytes.
+	Interprets ``bytes`` that represent a real number.
+	:param serialised: The bytes that represent a real number.
+	:return: The real number that was being represented by the ``bytes``.
 	"""
 	try:
-		instance = json.load(io.TextIOWrapper(serialised, encoding="utf_8"))
+		instance = json.loads(serialised.decode(encoding="utf_8"))
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence is not proper UTF-8, so it doesn't represent a real number.") from e
 	except json.JSONDecodeError as e:
@@ -43,10 +40,10 @@ def is_instance(instance):
 
 def is_serialised(serialised):
 	"""
-	Detects whether a byte stream represents a real number.
-	:param serialised: A byte stream which must be identified as being a real
-	number or not.
-	:return: ``True`` if the stream likely represents a real number, or
+	Detects whether some bytes represent a real number.
+	:param serialised: A ``bytes`` object which must be identified as being a
+	real number or not.
+	:return: ``True`` if the ``bytes`` likely represent a real number, or
 	``False`` if it does not.
 	"""
 	#This works with a simple finite state automaton in a linear fashion:
@@ -114,7 +111,6 @@ def serialise(instance):
 	:return: A sequence of bytes representing the real number.
 	"""
 	try:
-		output = luna.stream.BytesStreamReader(json.dumps(instance).encode("utf_8"))
+		return json.dumps(instance).encode("utf_8")
 	except TypeError as e:
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not a real number.") from e
-	return output

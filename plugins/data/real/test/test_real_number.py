@@ -59,7 +59,7 @@ class TestRealNumber(luna.tests.TestCase):
 		Tests whether we can deserialise real numbers.
 		:param serialised: The serialised form of some real number.
 		"""
-		result = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
+		result = real.real_number.deserialise(serialised)
 		self.assertIsInstance(result, float)
 
 	@luna.tests.parametrise({
@@ -80,7 +80,7 @@ class TestRealNumber(luna.tests.TestCase):
 		:param serialised: Some serialised data that is not a real number.
 		"""
 		with self.assertRaises(luna.tests.MockException):
-			real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
+			real.real_number.deserialise(serialised)
 
 	@luna.tests.parametrise({
 		"zero": {
@@ -143,10 +143,10 @@ class TestRealNumber(luna.tests.TestCase):
 		"""
 		if synonyms is None:
 			synonyms = set() #Empty set as default.
-		instance = real.real_number.deserialise(luna.stream.BytesStreamReader(serialised))
+		instance = real.real_number.deserialise(serialised)
 		new_serialised = real.real_number.serialise(instance)
 		allowed_answers = {serialised} | synonyms #Allow original string as well as all synonyms.
-		self.assertIn(new_serialised.read(), allowed_answers, "The serialised form {serialised} must be consistent or a synonym after deserialising and serialising.".format(serialised=str(serialised)))
+		self.assertIn(new_serialised, allowed_answers, "The serialised form {serialised} must be consistent or a synonym after deserialising and serialising.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
@@ -199,7 +199,7 @@ class TestRealNumber(luna.tests.TestCase):
 		:param serialised: A sequence of bytes that doesn't represent a real
 		number.
 		"""
-		self.assertFalse(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "{serialised} must not be identified as a serialised real number.".format(serialised=str(serialised)))
+		self.assertFalse(real.real_number.is_serialised(serialised), "{serialised} must not be identified as a serialised real number.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":           {"serialised": b"0.0"},
@@ -222,7 +222,7 @@ class TestRealNumber(luna.tests.TestCase):
 		as such.
 		:param serialised: A correct serialised form of a real number.
 		"""
-		self.assertTrue(real.real_number.is_serialised(luna.stream.BytesStreamReader(serialised)), "{serialised} must be identified as a serialised real number.".format(serialised=str(serialised)))
+		self.assertTrue(real.real_number.is_serialised(serialised), "{serialised} must be identified as a serialised real number.".format(serialised=str(serialised)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
@@ -242,7 +242,6 @@ class TestRealNumber(luna.tests.TestCase):
 		result = real.real_number.serialise(instance)
 		for byte in result:
 			self.assertIsInstance(byte, int, "The serialised real number for {instance} must be a byte sequence.".format(instance=str(instance)))
-		self.assertTrue(hasattr(result, "read"), "The serialised real number for {instance} must be a byte stream.".format(instance=str(instance)))
 
 	@luna.tests.parametrise({
 		"zero":          {"instance": 0.0},
