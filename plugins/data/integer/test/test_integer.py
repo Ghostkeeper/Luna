@@ -14,7 +14,6 @@ module.
 import unittest.mock #To replace the dependency on the data module.
 
 import integer.integer as integer_module #The module we're testing.
-import luna.stream #To create streams of bytes as input.
 import luna.tests #For parametrised tests and mock exceptions.
 
 def mock_api(plugin_type):
@@ -50,7 +49,7 @@ class TestInteger(luna.tests.TestCase):
 		Tests whether we can deserialise integers.
 		:param serialised: The serialised form of some integer.
 		"""
-		result = integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
+		result = integer_module.deserialise(serialised)
 		self.assertIsInstance(result, int)
 
 	@luna.tests.parametrise({
@@ -68,7 +67,7 @@ class TestInteger(luna.tests.TestCase):
 		:param serialised: Some serialised data that is not an integer.
 		"""
 		with self.assertRaises(luna.tests.MockException):
-			integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
+			integer_module.deserialise(serialised)
 
 	@luna.tests.parametrise({
 		"zero":       {"serialised": b"0"},
@@ -84,9 +83,9 @@ class TestInteger(luna.tests.TestCase):
 		:param serialised: The serialised form to start (and hopefully end up)
 		with.
 		"""
-		instance = integer_module.deserialise(luna.stream.BytesStreamReader(serialised))
+		instance = integer_module.deserialise(serialised)
 		new_serialised = integer_module.serialise(instance)
-		self.assertEqual(serialised, new_serialised.read(), "The serialised form must be consistent after deserialising and serialising.")
+		self.assertEqual(serialised, new_serialised, "The serialised form must be consistent after deserialising and serialising.")
 
 	@luna.tests.parametrise({
 		"zero":       {"instance": 0},
@@ -132,7 +131,7 @@ class TestInteger(luna.tests.TestCase):
 		:param serialised: A sequence of bytes that doesn't represent an
 		integer.
 		"""
-		self.assertFalse(integer_module.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must not be identified as a serialised integer.")
+		self.assertFalse(integer_module.is_serialised(serialised), "This must not be identified as a serialised integer.")
 
 	@luna.tests.parametrise({
 		"zero":       {"serialised": b"0"},
@@ -146,7 +145,7 @@ class TestInteger(luna.tests.TestCase):
 		such.
 		:param serialised: A correct serialised form of an integer.
 		"""
-		self.assertTrue(integer_module.is_serialised(luna.stream.BytesStreamReader(serialised)), "This must be identified as a serialised integer.")
+		self.assertTrue(integer_module.is_serialised(serialised), "This must be identified as a serialised integer.")
 
 	@luna.tests.parametrise({
 		"zero":       {"instance": 0},
@@ -163,7 +162,6 @@ class TestInteger(luna.tests.TestCase):
 		result = integer_module.serialise(instance)
 		for byte in result:
 			self.assertIsInstance(byte, int, "The serialised integer must be a byte sequence.")
-		self.assertTrue(hasattr(result, "read"), "The serialised integer must be a byte stream.")
 
 	@luna.tests.parametrise({
 		"zero":       {"instance": 0},

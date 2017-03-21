@@ -10,20 +10,18 @@ Provides the implementation of integers as a data type definition.
 Integers are serialised using the JSON format.
 """
 
-import io #To decode UTF-8 streaming.
 import json #We're using JSON to serialise integers in a readable format quickly.
 
 import luna.plugins #To access the data API for raising SerialisationExceptions.
-import luna.stream #To provide the serialised streams in their expected format.
 
 def deserialise(serialised):
 	"""
 	Interprets a sequence of bytes that represents an integer.
-	:param serialised: A sequence of bytes that represents an integer.
-	:return: The integer that was being represented by the sequence of bytes.
+	:param serialised: A ``bytes`` object that represents an integer.
+	:return: The integer that was being represented by the bytes.
 	"""
 	try:
-		instance = json.load(io.TextIOWrapper(serialised, encoding="utf_8"))
+		instance = json.loads(serialised.decode(encoding="utf-8"))
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence is not proper UTF-8, so it doesn't represent an integer.") from e
 	except json.JSONDecodeError as e:
@@ -42,11 +40,11 @@ def is_instance(instance):
 
 def is_serialised(serialised):
 	"""
-	Detects whether a byte stream represents an integer.
-	:param serialised: A byte stream which must be identified as being an
+	Detects whether a ``bytes`` object represents an integer.
+	:param serialised: A ``bytes`` instance which must be identified as being an
 	integer or not.
-	:return: ``True`` if the stream likely represents an integer, or ``False``
-	if it does not.
+	:return: ``True`` if the ``bytes`` likely represent an integer, or ``False``
+	if they do not.
 	"""
 	first_byte = True
 	for byte in serialised:
@@ -57,12 +55,12 @@ def is_serialised(serialised):
 
 def serialise(instance):
 	"""
-	Serialises an integer to a sequence of bytes.
+	Serialises an integer to bytes.
 	:param instance: The integer to serialise.
-	:return: A sequence of bytes representing the integer.
+	:return: The ``bytes`` representing that integer.
 	"""
 	try:
-		output = luna.stream.BytesStreamReader(json.dumps(instance).encode("utf_8"))
+		output = json.dumps(instance).encode("utf_8")
 	except TypeError as e:
 		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not an integer.") from e
 	return output
