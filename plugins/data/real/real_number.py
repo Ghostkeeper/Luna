@@ -7,10 +7,8 @@
 """
 Provides the implementation of real numbers as a data type definition.
 
-Real numbers are serialised using the JSON format for floating point numbers.
+Real numbers are serialised in a human-readable format in base 10.
 """
-
-import json #We're using JSON to serialise floating point numbers in a readable format quickly.
 
 import luna.plugins #To access the data API for raising SerialisationExceptions.
 
@@ -21,13 +19,11 @@ def deserialise(serialised):
 	:return: The real number that was being represented by the ``bytes``.
 	"""
 	try:
-		instance = json.loads(serialised.decode(encoding="utf_8"))
+		instance = float(serialised.decode(encoding="utf_8"))
 	except UnicodeDecodeError as e:
 		raise luna.plugins.api("data").SerialisationException("The serialised sequence is not proper UTF-8, so it doesn't represent a real number.") from e
-	except json.JSONDecodeError as e:
-		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent a JSON-format document and therefore doesn't represent a real number.") from e
-	if type(instance) != float:
-		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent a real number, but an instance of type {instance_type}.".format(instance_type=type(instance)))
+	except ValueError as e:
+		raise luna.plugins.api("data").SerialisationException("The serialised sequence does not represent a real number.") from e
 	return instance
 
 def is_instance(instance):
@@ -110,7 +106,4 @@ def serialise(instance):
 	:param instance: The real number to serialise.
 	:return: A sequence of bytes representing the real number.
 	"""
-	try:
-		return json.dumps(instance).encode("utf_8")
-	except TypeError as e:
-		raise luna.plugins.api("data").SerialisationException("Trying to serialise an object that is not a real number.") from e
+	return str(instance).encode("utf_8")
