@@ -41,52 +41,52 @@ class TestDataType(luna.tests.TestCase):
 				}
 			}
 		},
-		"mimetype": {
+		"mime_type": {
 			"metadata": {
 				"data": {
 					"deserialise": luna.tests.arbitrary_function,
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "type/test",
+					"mime_type": "type/test",
 					"name": "Testing data"
 				}
 			}
 		},
-		"mimetype_extensions": {
+		"mime_type_extensions": {
 			"metadata": {
 				"data": {
 					"deserialise": luna.tests.arbitrary_function,
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "type/test",
+					"mime_type": "type/test",
 					"name": "Testing data",
 					"extensions": {"tst", "log"}
 				}
 			}
 		},
-		"mimetype_extensions_empty": {
+		"mime_type_extensions_empty": {
 			"metadata": {
 				"data": {
 					"deserialise": luna.tests.arbitrary_function,
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "type/test",
+					"mime_type": "type/test",
 					"name": "Testing data",
 					"extensions": {}
 				}
 			}
 		},
-		"mimetype_specialchars": {
+		"mime_type_specialchars": {
 			"metadata": {
 				"data": {
 					"deserialise": luna.tests.arbitrary_function,
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "a..-_!#$^&9001/b",
+					"mime_type": "a..-_!#$^&9001/b",
 					"name": "Testing data"
 				}
 			}
@@ -161,7 +161,7 @@ class TestDataType(luna.tests.TestCase):
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "type/test",
+					"mime_type": "type/test",
 					"extensions": {"tst"}
 				}
 			}
@@ -184,7 +184,7 @@ class TestDataType(luna.tests.TestCase):
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "$1million/dollars", #Not allowed to start with a special character.
+					"mime_type": "$1million/dollars", #Not allowed to start with a special character.
 					"name": "Testing data"
 				}
 			}
@@ -196,7 +196,7 @@ class TestDataType(luna.tests.TestCase):
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "image",
+					"mime_type": "image",
 					"name": "Testing data"
 				}
 			}
@@ -208,7 +208,7 @@ class TestDataType(luna.tests.TestCase):
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "test/x-test",
+					"mime_type": "test/x-test",
 					"name": "Test MIME Type",
 					"extensions": -1 #Try counting to that!
 				}
@@ -221,7 +221,7 @@ class TestDataType(luna.tests.TestCase):
 					"is_instance": luna.tests.arbitrary_function,
 					"is_serialised": luna.tests.arbitrary_function,
 					"serialise": luna.tests.arbitrary_function,
-					"mimetype": "test/x-test",
+					"mime_type": "test/x-test",
 					"name": "Test MIME Type",
 					"extensions": "doc" #Must be a sequence, not a single extension.
 				}

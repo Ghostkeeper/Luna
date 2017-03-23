@@ -65,13 +65,13 @@ def validate_metadata(data_metadata):
 	except (AttributeError, TypeError):
 		raise luna.plugins.MetadataValidationError("The data metadata entry is not a dictionary.")
 
-	mimetype_entries = {"mimetype", "name"} #If one of these is present, the others must be too.
-	optional_mimetype_entries = {"extensions"} #If one of these is present, the required MIME type entries must be too.
-	if (mimetype_entries | optional_mimetype_entries) & data_metadata["data"].keys(): #MIME type is implemented, at least partially.
-		if mimetype_entries - data_metadata["data"].keys():
-			raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(mimetype_entries - data_metadata["data"].keys())))
-		if not re.match(r"^[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}/[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}$", data_metadata["data"]["mimetype"]):
-			raise luna.plugins.MetadataValidationError("The MIME type in the data plug-in is not valid according to RFC 6838: {mimetype}".format(mimetype=data_metadata["data"]["mimetype"]))
+	mime_type_entries = {"mime_type", "name"} #If one of these is present, the others must be too.
+	optional_mime_type_entries = {"extensions"} #If one of these is present, the required MIME type entries must be too.
+	if (mime_type_entries | optional_mime_type_entries) & data_metadata["data"].keys(): #MIME type is implemented, at least partially.
+		if mime_type_entries - data_metadata["data"].keys():
+			raise luna.plugins.MetadataValidationError("The data plug-in has an incomplete implementation of MIME types, missing {entries}.".format(entries=", ".join(mime_type_entries - data_metadata["data"].keys())))
+		if not re.match(r"^[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}/[A-Za-z0-9][A-Za-z0-9!#\$&-\^\.\+_]{0,126}$", data_metadata["data"]["mime_type"]):
+			raise luna.plugins.MetadataValidationError("The MIME type in the data plug-in is not valid according to RFC 6838: {mime_type}".format(mime_type=data_metadata["data"]["mime_type"]))
 		if "extensions" in data_metadata["data"]:
 			if not hasattr(data_metadata["data"]["extensions"], "__iter__"): #Must be a sequence.
 				raise luna.plugins.MetadataValidationError("The extensions for the MIME type in the data plug-in are not a sequence.")

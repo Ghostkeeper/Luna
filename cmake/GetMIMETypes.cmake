@@ -14,7 +14,7 @@ module = imp.load_module('${plugin_name}', file, path, description)
 metadata = module.metadata()['data']
 result = []
 for extension in metadata['extensions']:
-	result.append(metadata['mimetype'] + '|' + metadata['name'] + '|' + extension)
+	result.append(metadata['mime_type'] + '|' + metadata['name'] + '|' + extension)
 print(';'.join(result))"
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		RESULT_VARIABLE python_status
