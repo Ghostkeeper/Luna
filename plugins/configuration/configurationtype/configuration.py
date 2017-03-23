@@ -156,7 +156,7 @@ class Configuration:
 		sorts of configuration types.
 		"""
 		directory = self._configuration_directory()
-		self._save_configuration(self, directory) #Entry point of recursive saving.
+		self._save_configuration(self, "configuration", directory) #Entry point of recursive saving.
 
 	def _configuration_directory(self):
 		"""
@@ -181,13 +181,53 @@ class Configuration:
 			luna.plugins.api("logger").warning("Unknown system: {system}. I don't know where to save my configuration!", system=system)
 			return os.path.join(os.getcwd(), luna.application_name)
 
-	def _save_configuration(self, configuration, directory):
+	def _save_configuration(self, configuration, name, directory):
 		"""
 		Saves a configuration instance to a specified directory.
 
 		Sub-configurations are saved recursively.
 		:param configuration: The configuration instance to save.
+		:param name: The name of the configuration instance.
 		:param directory: The directory to save it in.
+		"""
+		serialised = self._serialise(self)
+		filename = name
+		extensions = luna.plugins.api("data").extensions("configuration")
+		if extensions:
+			filename += "." + next(iter(extensions)) #Take the first known extension.
+		luna.plugins.api("storage").write(os.path.join(directory, filename), serialised)
+
+		#Save all child configurations with a MIME type in the subdirectory dedicated to this node.
+		#This creates the following sort of structure:
+		#-                       (configuration.cfg is empty and therefore left out.)
+		#-configuration
+		#  |-                    (preferences.cfg is empty and therefore left out.)
+		#  |- preferences
+		#  |   |- general.cfg    (general has items with MIME type as well as without, so there is a subdirectory and a file with the name.)
+		#  |   |- general
+		#  |   |   |- macro1.py
+		#  |   |   |- macro2.py
+		#  |   |- tools.cfg      (tools has no items with MIME types so there is no subdirectory.)
+		subdirectory = os.path.join(directory, name)
+		for item in configuration:
+			data_type = configuration.metadata(item)["data_type"]
+			if data_type == "configurationtype": #If it's a sub-configuration, call recursively so that subdirectory gets filled.
+				self._save_configuration(configuration[item], item, subdirectory)
+			elif luna.plugins.api("data").mime_type(data_type): #The item has a MIME type. Save it as a separate file.
+				serialised = luna.plugins.api("data").serialise(configuration[item], data_type)
+				self._ensure_directory(subdirectory)
+				filename = item
+				extensions = luna.plugins.api("data").extensions(data_type)
+				if extensions:
+					filename += "." + next(iter(extensions)) #Take the first known extension.
+				luna.plugins.api("storage").write(os.path.join(subdirectory, filename), serialised)
+
+	@staticmethod
+	def _serialise(configuration):
+		"""
+		Serialises a configuration instance so that it can be stored in a file.
+		:param configuration: The configuration instance to serialise.
+		:return: The ``bytes`` that represent the configuration instance.
 		"""
 		raise NotImplementedError("Not implemented yet.")
 
