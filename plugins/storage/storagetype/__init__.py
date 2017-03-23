@@ -54,7 +54,7 @@ def validate_metadata(storage_metadata):
 	"""
 	if "storage" not in storage_metadata:
 		raise luna.plugins.MetadataValidationError("This is not a storage plug-in.")
-	required_functions = {"can_read", "can_write", "delete", "exists", "move", "open_read", "open_write"}
+	required_functions = {"can_read", "can_write", "delete", "exists", "move", "read", "write"}
 	try:
 		if not required_functions <= storage_metadata["storage"].keys():
 			raise luna.plugins.MetadataValidationError("The storage specifies no functions {function_names}.".format(function_names=", ".join(required_functions - storage_metadata["storage"].keys())))
