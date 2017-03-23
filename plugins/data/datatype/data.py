@@ -44,6 +44,18 @@ def deserialise(serialised, data_type=None):
 	except KeyError as e: #Plug-in with specified data type is not available.
 		raise KeyError("There is no activated data plug-in with data type {data_type} to serialise with.".format(data_type=data_type)) from e
 
+def extensions(data_type):
+	"""
+	Gets the known file extensions of a specified data type, if it has them.
+
+	If the data type has no MIME type or no extensions are known, an empty set
+	is returned.
+	:param data_type: The data type to get the extensions of.
+	:return: A sequence of file extensions for the specified data type, or an
+	empty set if no file extensions are known.
+	"""
+	return luna.plugins.plugins_by_type["data"][data_type]["data"].get("extensions", set())
+
 def is_instance(data_type, data):
 	"""
 	Checks whether the specified object is an instance of the specified data
