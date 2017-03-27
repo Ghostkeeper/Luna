@@ -185,11 +185,40 @@ class Configuration:
 		"""
 		Saves a configuration instance to a specified directory.
 
-		Sub-configurations are saved recursively.
+		The configuration items in this configuration are split into three
+		parts:
+		* The configuration items that don't have a MIME type will get saved in
+		a .cfg file, in a key-value pair format. If there are no items without
+		MIME type, the file is not created.
+		* The configuration items that do have a MIME type will get saved in
+		their own files in a subdirectory made for their parent configuration
+		(this instance).
+		* Configuration items that are of the configuration type themselves will
+		get saved recursively into a subdirectory made for their parent
+		configuration (this instance). This may create one directory and one
+		configuration file in the subdirectory, but name clashes are impossible
+		because they both get the same identifier, but one gets an extension.
+
+		The aforementioned second and third part may cause a directory to appear
+		with the same name as this configuration item's identifier. If there are
+		no items in the second or third category, no directory is created.
+
+		This creates the following sort of structure, for example:
+		-                      (configuration.cfg is empty and therefore left out.)
+		-configuration         (Directory created for MIME-typed items in configuration.)
+		  |-                   (preferences.cfg is empty and therefore left out.)
+		  |- preferences       (Directory created for MIME-typed items in preferences.)
+		  |   |- general.cfg   (general has items with MIME type as well as without, so there is a subdirectory and a file with the name.)
+		  |   |- general       (Directory created for MIME-typed items in general.)
+		  |   |   |- macro1.py (Item that has a MIME type.)
+		  |   |   |- macro2.py (Item that has a MIME type.)
+		  |   |- tools.cfg     (tools has items without MIME type so there is a file for those.)
+		  |   |-               (tools has no items with MIME type so there is no subdirectory.)
 		:param configuration: The configuration instance to save.
 		:param name: The name of the configuration instance.
 		:param directory: The directory to save it in.
 		"""
+		#Save all child configuration items without a MIME type to a config file.
 		serialised = self._serialise(self)
 		filename = name
 		extensions = luna.plugins.api("data").extensions("configuration")
@@ -197,17 +226,7 @@ class Configuration:
 			filename += "." + next(iter(extensions)) #Take the first known extension.
 		luna.plugins.api("storage").write(os.path.join(directory, filename), serialised)
 
-		#Save all child configurations with a MIME type in the subdirectory dedicated to this node.
-		#This creates the following sort of structure:
-		#-                       (configuration.cfg is empty and therefore left out.)
-		#-configuration
-		#  |-                    (preferences.cfg is empty and therefore left out.)
-		#  |- preferences
-		#  |   |- general.cfg    (general has items with MIME type as well as without, so there is a subdirectory and a file with the name.)
-		#  |   |- general
-		#  |   |   |- macro1.py
-		#  |   |   |- macro2.py
-		#  |   |- tools.cfg      (tools has no items with MIME types so there is no subdirectory.)
+		#Save all child configurations with a MIME type in separate files.
 		subdirectory = os.path.join(directory, name)
 		for item in configuration:
 			data_type = configuration.metadata(item)["data_type"]
@@ -226,6 +245,10 @@ class Configuration:
 	def _serialise(configuration):
 		"""
 		Serialises a configuration instance so that it can be stored in a file.
+
+		All configuration items that don't have a MIME type are stored in the
+		file, since the configuration items that do have a MIME type should get
+		stored in separate files.
 		:param configuration: The configuration instance to serialise.
 		:return: The ``bytes`` that represent the configuration instance.
 		"""
