@@ -38,6 +38,8 @@ Getting or setting a configuration item that doesn't exist yields an
 ``AttributeError``.
 """
 
+import configparser #To store and read configuration items without MIME types in a config file.
+import io #Converting config files quickly from and to bytes.
 import os #To get environment variables to find the configuration directory.
 import os.path #To join paths to construct the configuration directory.
 import platform #To detect the current platform, for finding the configuration directory.
@@ -249,9 +251,22 @@ class Configuration:
 		All configuration items that don't have a MIME type are stored in the
 		file, since the configuration items that do have a MIME type should get
 		stored in separate files.
+
+		The configuration items are stored in the config format, which is just
+		key=value pairs.
 		:param configuration: The configuration instance to serialise.
 		:return: The ``bytes`` that represent the configuration instance.
 		"""
-		raise NotImplementedError("Not implemented yet.")
+		parser = configparser.ConfigParser()
+		parser.add_section("values")
+		for child_identifier in configuration: #Fill a parser with the serialised versions of all children.
+			metadata = configuration.metadata(child_identifier)
+			child_serialised = luna.plugins.api("data").serialise(configuration[child_identifier], data_type=metadata["data_type"])
+			parser["values"][child_identifier] = child_serialised.decode("latin_1") #Latin-1 is a single-byte character set, which is bijective and never gives decoding errors.
+		#Would've been nice to have a configparser that could directly write to bytes and handle bytes input as well.
+		result_stream = io.BytesIO()
+		parser.write(result_stream)
+		result_stream.seek(0) #Rewind so that we can return all contents.
+		return result_stream.read()
 
 sys.modules[__name__] = Configuration()
