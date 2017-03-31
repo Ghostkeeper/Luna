@@ -76,6 +76,16 @@ def exists(uri):
 	"""
 	return os.path.isfile(_uri_to_path(uri))
 
+def iterate_directory(uri):
+	"""
+	Gives a sequence of the files in a directory.
+	:param uri: A URI pointing to some directory to list the files of.
+	:return: A sequence of files and subdirectories in the directory.
+	:raises NotADirectoryError: The specified URI doesn't point to a directory.
+	:raises IOError: The specified resouce could not be accessed.
+	"""
+	return os.listdir(_uri_to_path(uri))
+
 def move(source, destination):
 	"""
 	Moves a resource from one location to another.

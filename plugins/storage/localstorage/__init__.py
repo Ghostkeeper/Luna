@@ -33,6 +33,7 @@ def metadata():
 			"can_write": localstorage.local_storage.can_write,
 			"delete": localstorage.local_storage.delete,
 			"exists": localstorage.local_storage.exists,
+			"iterate_directory": localstorage.local_storage.iterate_directory,
 			"move": localstorage.local_storage.move,
 			"read": localstorage.local_storage.read,
 			"write": localstorage.local_storage.write
