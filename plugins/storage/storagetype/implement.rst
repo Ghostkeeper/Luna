@@ -92,3 +92,21 @@ This overwrites any existing data, rather than appending to it.
 - ``data``: The ``bytes`` representing the data that must be written to the
 resource.
 - Raises: ``IOException`` if the resource could not be written to.
+
+----------------------
+Optional functionality
+----------------------
+These functions may be implemented by a storage plug-in, but are not required. If implemented, these functions must be in the metadata of the plug-in, indexed by their function names. If not implemented, the storage API will raise an IOException when the function would otherwise be called.
+
+----
+
+	.. function:: iterate_directory(uri)
+
+Enumerates all files in a directory.
+
+If the resource knows the concept of a directory, this can list all files in a directory.
+
+- ``uri``: An absolute URI to the directory whose resources to iterate over.
+- Return: A sequence of URIs to resources in the specified directory.
+- Raises: ``NotADirectoryError`` if the specified resource is not a directory.
+- Raises: ``IOException`` if the directory could not be accessed.
