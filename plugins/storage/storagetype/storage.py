@@ -67,6 +67,27 @@ def exists(uri):
 				#Try with the next plug-in.
 	raise IOError("No storage plug-in can check for URI existence: {uri}".format(uri=uri))
 
+def iterate_directory(uri):
+	"""
+	Iterates over the files in a directory.
+
+	The URI is taken relative to the application's working directory. That means
+	that any relative URIs will iterate over files, since the working directory
+	has the file scheme.
+
+	:param uri: The location of the directory to iterate over.
+	:return: A sequence of URIs to files inside the specified directory.
+	:raise NotADirectoryError: The specified URI doesn't point to a directory.
+	:raise IOError: The specified URI could not be accessed.
+	"""
+	uri = _to_absolute_uri(uri)
+	for storage in luna.plugins.plugins_by_type["storage"].values():
+		if "iterate_directory" in storage["storage"]:
+			yield from storage["storage"]["iterate_directory"](uri)
+			break
+	else:
+		raise IOError("No storage plug-in can read the contents of the directory {uri}.".format(uri=uri))
+
 def move(source, destination):
 	"""
 	Moves data from one place to another.
