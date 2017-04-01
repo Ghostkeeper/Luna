@@ -76,6 +76,20 @@ def exists(uri):
 	"""
 	return os.path.exists(_uri_to_path(uri))
 
+def is_directory(uri):
+	"""
+	Returns whether the specified URI points to a directory or a file.
+	:param uri: A URI pointing to either a file or a directory.
+	:return: ``True`` if the specified URI points to a directory, or ``False``
+	if it points to a file.
+	:raises FileNotFoundError: The specified URI doesn't point to neither a file
+	nor a directory.
+	:raises IOError: The specified resource could not be accessed.
+	"""
+	if not exists(uri):
+		raise FileNotFoundError("The URI {uri} doesn't exist.".format(uri=uri))
+	return os.path.isdir(_uri_to_path(uri))
+
 def iterate_directory(uri):
 	"""
 	Gives a sequence of the files in a directory.
