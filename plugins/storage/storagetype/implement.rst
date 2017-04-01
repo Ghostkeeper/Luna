@@ -100,6 +100,19 @@ These functions may be implemented by a storage plug-in, but are not required. I
 
 ----
 
+	.. function:: is_directory(uri)
+
+Returns whether the specified URI points to a directory.
+
+If the resource knows the concept of a directory, this can disambiguate between files and directories.
+
+- ``uri``: An absolute URI to a resource that may or may not be a directory.
+- Return: ``True`` if the specified URI points to a directory, or ``False`` if it points to a file.
+- Raises ``FileNotFoundError``: The specified URI doesn't point to any file or directory.
+- Raises ``IOException``: The file or directory could not be accessed.
+
+----
+
 	.. function:: iterate_directory(uri)
 
 Enumerates all files in a directory.
@@ -108,5 +121,5 @@ If the resource knows the concept of a directory, this can list all files in a d
 
 - ``uri``: An absolute URI to the directory whose resources to iterate over.
 - Return: A sequence of URIs to resources in the specified directory.
-- Raises: ``NotADirectoryError`` if the specified resource is not a directory.
-- Raises: ``IOException`` if the directory could not be accessed.
+- Raises ``NotADirectoryError``: The specified resource is not a directory.
+- Raises ``IOException``: The directory could not be accessed.
