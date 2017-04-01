@@ -74,7 +74,7 @@ def exists(uri):
 	:return: ``True`` if the file exists, or ``False`` if it doesn't.
 	:raises IOError: The existence check could not be performed.
 	"""
-	return os.path.isfile(_uri_to_path(uri))
+	return os.path.exists(_uri_to_path(uri))
 
 def iterate_directory(uri):
 	"""
@@ -82,7 +82,7 @@ def iterate_directory(uri):
 	:param uri: A URI pointing to some directory to list the files of.
 	:return: A sequence of files and subdirectories in the directory.
 	:raises NotADirectoryError: The specified URI doesn't point to a directory.
-	:raises IOError: The specified resouce could not be accessed.
+	:raises IOError: The specified resource could not be accessed.
 	"""
 	return os.listdir(_uri_to_path(uri))
 
