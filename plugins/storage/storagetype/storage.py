@@ -67,6 +67,30 @@ def exists(uri):
 				#Try with the next plug-in.
 	raise IOError("No storage plug-in can check for URI existence: {uri}".format(uri=uri))
 
+def is_directory(uri):
+	"""
+	Returns whether the specified URI points to a directory.
+
+	This can be used to disambiguate between files and directories. If the
+	specified URI has a scheme that doesn't know the concept of directories, all
+	resources are considered files, not directories.
+	:param uri: A URI pointing to a resource which must be identified as a file
+	or a directory.
+	:return: ``True`` if the URI points to a directory, or ``False`` if it
+	points to a file.
+	:raise FileNotFoundError: There is no file or directory at the specified
+	URI.
+	:raise IOException: The file could not be accessed.
+	"""
+	uri = _to_absolute_uri(uri)
+	for storage in luna.plugins.plugins_by_type["storage"].values():
+		if storage["storage"]["can_read"](uri):
+			if "is_directory" in storage["storage"]:
+				return storage["storage"]["is_directory"](uri)
+			else: #Can read, but no disambiguation between files and directories.
+				return True #Everything counts as file.
+	raise IOError("No storage plug-in can check whether the URI is a directory: {uri}".format(uri=uri))
+
 def iterate_directory(uri):
 	"""
 	Iterates over the files in a directory.
@@ -74,7 +98,6 @@ def iterate_directory(uri):
 	The URI is taken relative to the application's working directory. That means
 	that any relative URIs will iterate over files, since the working directory
 	has the file scheme.
-
 	:param uri: The location of the directory to iterate over.
 	:return: A sequence of URIs to files inside the specified directory.
 	:raise NotADirectoryError: The specified URI doesn't point to a directory.
