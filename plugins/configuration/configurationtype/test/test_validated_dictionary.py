@@ -33,3 +33,17 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		self.empty["apples"] = "3"
 		self.empty["apples"] = None
 		self.empty["apples"] = lambda x: x ** 2
+
+	def test_add_validate_positive(self):
+		"""
+		Tests adding an item with a simple validation function.
+		"""
+		self.empty.add("pears", 4, lambda n: n > 0)
+		#Test setting the item to a few good values.
+		self.empty["pears"] = 2
+		self.empty["pears"] = 1
+		#Test setting the item to a few bad values.
+		with self.assertRaises(ValueError):
+			self.empty["pears"] = 0
+		with self.assertRaises(ValueError):
+			self.empty["pears"] = -5
