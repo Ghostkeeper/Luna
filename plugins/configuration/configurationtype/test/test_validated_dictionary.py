@@ -58,3 +58,20 @@ class TestValidatedDictionary(luna.tests.TestCase):
 			self.empty["pears"] = 0
 		with self.assertRaises(ValueError):
 			self.empty["pears"] = -5
+
+	def test_add_validate_type(self):
+		"""
+		Tests adding an item with a type-validator.
+
+		This is probably the most common case for the validator.
+		"""
+		self.empty.add("kiwis", 6, lambda n: isinstance(n, int))
+		#Test setting the item to a few good values.
+		self.empty["kiwis"] = 0
+		self.empty["kiwis"] = 10
+		self.empty["kiwis"] = -4
+		#Test setting the item to a few bad values.
+		with self.assertRaises(ValueError):
+			self.empty["kiwis"] = 0.5 #Float, not int.
+		with self.assertRaises(ValueError):
+			self.empty["kiwis"] = "tasty" #String, not int.
