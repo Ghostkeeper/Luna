@@ -34,6 +34,13 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		self.empty["apples"] = None
 		self.empty["apples"] = lambda x: x ** 2
 
+	def test_add_not_a_predicate(self):
+		"""
+		Tests what happens when you provide something that is not a predicate.
+		"""
+		with self.assertRaises(ValueError):
+			self.empty.add("oranges", 2, lambda x, y: x * y)
+
 	def test_add_validate_positive(self):
 		"""
 		Tests adding an item with a simple validation function.
