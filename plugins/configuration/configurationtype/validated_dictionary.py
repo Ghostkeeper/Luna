@@ -53,7 +53,7 @@ class ValidatedDictionary(dict):
 		It is initially empty.
 		"""
 		super().__init__()
-		self._items = {}
+		self._metadata = {} #The metadata for every key.
 
 	def __setitem__(self, key, value):
 		"""
@@ -73,7 +73,7 @@ class ValidatedDictionary(dict):
 		if key not in super():
 			raise KeyError("The key {key} is not defined in this validated dictionary.".format(key=key))
 
-		if not self._items[key].validator(value):
+		if not self._metadata[key].validator(value):
 			raise ValueError("The value for the {key} item is invalid: {value}".format(key=key, value=str(value)))
 
 		super().__setitem__(key, value)
