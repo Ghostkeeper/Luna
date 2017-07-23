@@ -29,6 +29,7 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		"""
 		with self.assertRaises(ValueError):
 			self.empty.add("bananas", -2, lambda n: n > 0)
+		self.assertNotIn("bananas", self.empty, "When the default is invalid, the item must not get added.")
 
 	def test_add_no_validation(self):
 		"""
@@ -51,6 +52,7 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		"""
 		with self.assertRaises(ValueError):
 			self.empty.add("oranges", 2, function)
+		self.assertNotIn("oranges", self.empty, "When the validator is not a predicate, the item must not get added.")
 
 	def test_add_validate_positive(self):
 		"""
@@ -65,6 +67,7 @@ class TestValidatedDictionary(luna.tests.TestCase):
 			self.empty["pears"] = 0
 		with self.assertRaises(ValueError):
 			self.empty["pears"] = -5
+		self.assertEqual(self.empty["pears"], 1, "The value must not change when setting an item to an invalid value.")
 
 	def test_add_validate_type(self):
 		"""
@@ -82,3 +85,4 @@ class TestValidatedDictionary(luna.tests.TestCase):
 			self.empty["kiwis"] = 0.5 #Float, not int.
 		with self.assertRaises(ValueError):
 			self.empty["kiwis"] = "tasty" #String, not int.
+		self.assertEqual(self.empty["kiwis"], -4, "The value must not change when setting an item to an invalid value.")
