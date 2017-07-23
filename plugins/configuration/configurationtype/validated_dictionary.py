@@ -72,7 +72,7 @@ class ValidatedDictionary(dict):
 		:raises KeyError: The key does not exist in the dictionary.
 		:raises ValueError: The value is invalid for the specified key.
 		"""
-		if key not in super():
+		if super().__contains__(key):
 			raise KeyError("The key {key} is not defined in this validated dictionary.".format(key=key))
 
 		if not self._metadata[key].validator(value):
@@ -106,7 +106,7 @@ class ValidatedDictionary(dict):
 		:raises KeyError: The key already exists.
 		:raises ValueError: The specified function is not a predicate.
 		"""
-		if key in super():
+		if super().__contains__(key):
 			raise KeyError("The key {key} already exists in this validated dictionary.".format(key=key))
 		if validator.__code__.co_argcount != 1: #To catch programming mistakes early, check whether this is a predicate. The method vs. function is a common mistake.
 			raise ValueError("The validator for key {key} is not a predicate. It has {argument_count} arguments instead of 1.".format(key=key, argument_count = validator.__code__.co_argcount))
