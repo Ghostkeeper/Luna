@@ -80,6 +80,14 @@ class ValidatedDictionary(dict):
 
 		super().__setitem__(key, value)
 
+	def __delitem__(self, key):
+		"""
+		Removes an item from the dictionary.
+		:param key: The key of the item to remove.
+		"""
+		super().__delitem(key)
+		del self._metadata[key]
+
 	def add(self, key, value, validator = lambda _: True):
 		"""
 		Add a new item to the dictionary.
