@@ -73,10 +73,10 @@ class ValidatedDictionary(dict):
 		:raises ValueError: The value is invalid for the specified key.
 		"""
 		if super().__contains__(key):
-			raise KeyError("The key {key} is not defined in this validated dictionary.".format(key=key))
+			raise KeyError("The key \"{key}\" is not defined in this validated dictionary.".format(key=key))
 
 		if not self._metadata[key].validator(value):
-			raise ValueError("The value for the {key} item is invalid: {value}".format(key=key, value=str(value)))
+			raise ValueError("The value for the \"{key}\" item is invalid: {value}".format(key=key, value=str(value)))
 
 		super().__setitem__(key, value)
 
@@ -107,9 +107,9 @@ class ValidatedDictionary(dict):
 		:raises ValueError: The specified function is not a predicate.
 		"""
 		if super().__contains__(key):
-			raise KeyError("The key {key} already exists in this validated dictionary.".format(key=key))
+			raise KeyError("The key \"{key}\" already exists in this validated dictionary.".format(key=key))
 		if validator.__code__.co_argcount != 1: #To catch programming mistakes early, check whether this is a predicate. The method vs. function is a common mistake.
-			raise ValueError("The validator for key {key} is not a predicate. It has {argument_count} arguments instead of 1.".format(key=key, argument_count = validator.__code__.co_argcount))
+			raise ValueError("The validator for key \"{key}\" is not a predicate. It has {argument_count} arguments instead of 1.".format(key=key, argument_count = validator.__code__.co_argcount))
 
 		super().__setitem__(key, value)
 		self._metadata[key] = self._Metadata(default=value, validator=validator)
