@@ -12,7 +12,9 @@ where the keys are more or less frozen after the application has completed its
 start-up phase.
 """
 
-class ValidatedDictionary:
+import collections #For namedtuple.
+
+class ValidatedDictionary(dict):
 	"""
 	A dictionary-like data structure where all values are validated.
 
@@ -25,6 +27,53 @@ class ValidatedDictionary:
 	will be executed to determine whether the value is allowed. If the value is
 	not allowed, an exception will be raised.
 
+	As an additional feature, items in this dictionary can be reset to their
+	original value, that they were set to when they were defined. This is to
+	further serve the task that this dictionary was intended for in
+	configuration.
+
 	For the rest, this class should behave like an ordinary dictionary.
 	"""
-	pass #Not yet implemented.
+
+	"""
+	The metadata belonging to one item in the dictionary.
+
+	This is a named tuple consisting of the following fields:
+	* default: The default value for the item, meaning the original value. This
+	can later be restored.
+	* validator: A predicate that indicates whether a certain value is allowed
+	in this item.
+	"""
+	_Metadata = collections.namedtuple("_Item", "default validator")
+
+	def __init__(self):
+		"""
+		Initialises a new validated dictionary.
+
+		It is initially empty.
+		"""
+		super().__init__()
+		self._items = {}
+
+	def __setitem__(self, key, value):
+		"""
+		Changes the value of an item in the dictionary.
+
+		The key must already exist at this point. If it doesn't exist, a
+		``KeyError`` will be raised.
+
+		Additionally, as per the main functionality of this class, the value is
+		validated first. If the value is invalid, a ``ValueError`` will be
+		raised.
+		:param key: The key of the item to change.
+		:param value: The new value for the item.
+		:raises KeyError: The key does not exist in the dictionary.
+		:raises ValueError: The value is invalid for the specified key.
+		"""
+		if key not in super():
+			raise KeyError("The key {key} is not defined in this validated dictionary.".format(key=key))
+
+		if not self._items[key].validator(value):
+			raise ValueError("The value for the {key} item is invalid: {value}".format(key=key, value=str(value)))
+
+		super().__setitem__(key, value)
