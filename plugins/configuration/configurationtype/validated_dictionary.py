@@ -110,6 +110,8 @@ class ValidatedDictionary(dict):
 			raise KeyError("The key \"{key}\" already exists in this validated dictionary.".format(key=key))
 		if validator.__code__.co_argcount != 1: #To catch programming mistakes early, check whether this is a predicate. The method vs. function is a common mistake.
 			raise ValueError("The validator for key \"{key}\" is not a predicate. It has {argument_count} arguments instead of 1.".format(key=key, argument_count = validator.__code__.co_argcount))
+		if not validator(value):
+			raise ValueError("The default for key \"{key}\" is invalid: {value}".format(key=key, value=value))
 
 		super().__setitem__(key, value)
 		self._metadata[key] = self._Metadata(default=value, validator=validator)

@@ -23,6 +23,13 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		"""
 		self.empty = configurationtype.validated_dictionary.ValidatedDictionary()
 
+	def test_add_bad_default(self):
+		"""
+		Tests adding an item where the default doesn't validate.
+		"""
+		with self.assertRaises(ValueError):
+			self.empty.add("bananas", -2, lambda n: n > 0)
+
 	def test_add_no_validation(self):
 		"""
 		Tests the simple case where the value is not validated.
