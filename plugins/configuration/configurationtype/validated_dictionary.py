@@ -72,7 +72,7 @@ class ValidatedDictionary(dict):
 		:raises KeyError: The key does not exist in the dictionary.
 		:raises ValueError: The value is invalid for the specified key.
 		"""
-		if super().__contains__(key):
+		if not super().__contains__(key):
 			raise KeyError("The key \"{key}\" is not defined in this validated dictionary.".format(key=key))
 
 		if not self._metadata[key].validator(value):
