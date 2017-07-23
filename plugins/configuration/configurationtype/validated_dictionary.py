@@ -14,6 +14,8 @@ start-up phase.
 
 import collections #For namedtuple.
 
+import luna.plugins #To access the loggers.
+
 class ValidatedDictionary(dict):
 	"""
 	A dictionary-like data structure where all values are validated.
@@ -94,9 +96,12 @@ class ValidatedDictionary(dict):
 		make it a method) and must return a value that can be cast to a boolean
 		value that indicates whether the value is valid or not.
 		:raises KeyError: The key already exists.
+		:raises ValueError: The specified function is not a predicate.
 		"""
 		if key in super():
 			raise KeyError("The key {key} already exists in this validated dictionary.".format(key=key))
+		if validator.__code__.co_argcount != 1: #To catch programming mistakes early, check whether this is a predicate. The method vs. function is a common mistake.
+			raise ValueError("The validator for key {key} is not a predicate. It has {argument_count} arguments instead of 1.".format(key=key, argument_count = validator.__code__.co_argcount))
 
 		super().__setitem(key, value)
 		self._metadata[key] = _Metadata(default=value, validator=validator)
