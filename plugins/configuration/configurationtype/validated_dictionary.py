@@ -77,3 +77,26 @@ class ValidatedDictionary(dict):
 			raise ValueError("The value for the {key} item is invalid: {value}".format(key=key, value=str(value)))
 
 		super().__setitem__(key, value)
+
+	def add(self, key, value, validator = lambda _: True):
+		"""
+		Add a new item to the dictionary.
+
+		If no validator is specified, all values will be considered valid for
+		this key.
+
+		The key may not exist already. If it does, a ``KeyError`` will be
+		raised.
+		:param key: The key of the item to add to the dictionary.
+		:param value: The default value of the item to add to the dictionary.
+		:param validator: A predicate that indicates whether a given value is
+		valid or not. The predicate must accept exactly 1 parameter (so don't
+		make it a method) and must return a value that can be cast to a boolean
+		value that indicates whether the value is valid or not.
+		:raises KeyError: The key already exists.
+		"""
+		if key in super():
+			raise KeyError("The key {key} already exists in this validated dictionary.".format(key=key))
+
+		super().__setitem(key, value)
+		self._metadata[key] = _Metadata(default=value, validator=validator)
