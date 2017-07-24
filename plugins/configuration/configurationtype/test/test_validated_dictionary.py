@@ -95,3 +95,10 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		"""
 		self.mangoes["mangoes"] = 3
 		self.assertEqual(self.mangoes["mangoes"], 3)
+
+	def test_set_nonexistent(self):
+		"""
+		Tests setting a key that doesn't exist.
+		"""
+		with self.assertRaises(KeyError):
+			self.mangoes["peaches"] = 5
