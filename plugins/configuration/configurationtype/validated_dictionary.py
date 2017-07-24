@@ -86,7 +86,7 @@ class ValidatedDictionary(dict):
 		Removes an item from the dictionary.
 		:param key: The key of the item to remove.
 		"""
-		super().__delitem(key)
+		super().__delitem__(key)
 		del self._metadata[key]
 
 	def add(self, key, value, validator = lambda _: True):
