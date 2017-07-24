@@ -96,6 +96,13 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		self.assertIn("mangoes", self.mangoes, "Mangoes must be in this dictionary.")
 		self.assertNotIn("olives", self.mangoes, "There are no olives in this dictionary.")
 
+	def test_delete(self):
+		"""
+		Tests removing items from the dictionary.
+		"""
+		del self.mangoes["mangoes"]
+		self.assertNotIn("mangoes", self.mangoes, "The mangoes entry was just deleted.")
+
 	def test_reset(self):
 		"""
 		Tests resetting a setting to its default.
