@@ -25,7 +25,10 @@ class ValidatedDictionary(dict):
 
 	When setting a key to a new value, the predicate associated with the key
 	will be executed to determine whether the value is allowed. If the value is
-	not allowed, an exception will be raised.
+	not allowed, an exception will be raised. For this check, it is assumed that
+	the value is immutable, or at least will not mutate to a state that gives a
+	different result when passed through its validator. If it does mutate, then
+	the validity of the values in the dictionary cannot be assured.
 
 	As an additional feature, items in this dictionary can be reset to their
 	original value, that they were set to when they were defined. This is to
