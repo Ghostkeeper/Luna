@@ -14,8 +14,6 @@ start-up phase.
 
 import collections #For namedtuple.
 
-import luna.plugins #To access the loggers.
-
 class ValidatedDictionary(dict):
 	"""
 	A dictionary-like data structure where all values are validated.
