@@ -89,6 +89,13 @@ class TestValidatedDictionary(luna.tests.TestCase):
 			self.empty["kiwis"] = "tasty" #String, not int.
 		self.assertEqual(self.empty["kiwis"], -4, "The value must not change when setting an item to an invalid value.")
 
+	def test_contains(self):
+		"""
+		Tests the contains check works as a normal dictionary would.
+		"""
+		self.assertIn("mangoes", self.mangoes, "Mangoes must be in this dictionary.")
+		self.assertNotIn("olives", self.mangoes, "There are no olives in this dictionary.")
+
 	def test_set(self):
 		"""
 		Tests a set-get loop to make sure that the values get stored.
