@@ -96,6 +96,14 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		self.assertIn("mangoes", self.mangoes, "Mangoes must be in this dictionary.")
 		self.assertNotIn("olives", self.mangoes, "There are no olives in this dictionary.")
 
+	def test_reset(self):
+		"""
+		Tests resetting a setting to its default.
+		"""
+		self.mangoes["mangoes"] = 8 #Lots of mangoes!
+		self.mangoes.reset("mangoes")
+		self.assertEqual(self.mangoes["mangoes"], 1, "The number of mangoes must have been reset to 1.")
+
 	def test_set(self):
 		"""
 		Tests a set-get loop to make sure that the values get stored.

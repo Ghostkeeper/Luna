@@ -115,3 +115,10 @@ class ValidatedDictionary(dict):
 
 		super().__setitem__(key, value)
 		self._metadata[key] = self._Metadata(default=value, validator=validator)
+
+	def reset(self, key):
+		"""
+		Resets the specified item to its default value.
+		:param key: The key of the item to reset.
+		"""
+		super().__setitem__(key, self._metadata[key].default)
