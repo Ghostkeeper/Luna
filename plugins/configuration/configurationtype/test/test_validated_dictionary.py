@@ -22,6 +22,8 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		Creates a fixture dictionary to test on.
 		"""
 		self.empty = configurationtype.validated_dictionary.ValidatedDictionary()
+		self.mangoes = configurationtype.validated_dictionary.ValidatedDictionary()
+		self.mangoes.add("mangoes", 1, lambda n: n > 0)
 
 	def test_add_bad_default(self):
 		"""
@@ -86,3 +88,10 @@ class TestValidatedDictionary(luna.tests.TestCase):
 		with self.assertRaises(ValueError):
 			self.empty["kiwis"] = "tasty" #String, not int.
 		self.assertEqual(self.empty["kiwis"], -4, "The value must not change when setting an item to an invalid value.")
+
+	def test_set(self):
+		"""
+		Tests a set-get loop to make sure that the values get stored.
+		"""
+		self.mangoes["mangoes"] = 3
+		self.assertEqual(self.mangoes["mangoes"], 3)
