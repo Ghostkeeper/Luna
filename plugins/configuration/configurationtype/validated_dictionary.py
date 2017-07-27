@@ -13,6 +13,14 @@ start-up phase.
 """
 
 import collections #For namedtuple.
+import configparser #Provides the file format for serialising and deserialising.
+
+import luna.plugins #To access the data type API for raising exceptions.
+
+_format_version = 1
+"""
+The current version of the serialisation format.
+"""
 
 class ValidatedDictionary(dict):
 	"""
@@ -123,3 +131,46 @@ class ValidatedDictionary(dict):
 		:param key: The key of the item to reset.
 		"""
 		super().__setitem__(key, self._metadata[key].default)
+
+def deserialise(serialised):
+	"""
+	Parse a serialised validated dictionary, creating a new validated
+	dictionary.
+	:param serialised: A byte sequence representing a validated dictionary.
+	:return: The validated dictionary that the byte sequence represented.
+	"""
+	parser = configparser.ConfigParser(dict_type=dict, interpolation=None)
+	try:
+		parser.read_string(serialised.decode("UTF-8"))
+	except configparser.Error as e:
+		raise luna.plugins.api("data").SerialisationException("Parse error.") from e
+
+	#Check against the current version number.
+	try:
+		if int(parser[None]["format_version"]) != _format_version:
+			raise luna.plugins.api("data").SerialisationException("Unknown version: {file_version} (currently at version {current_version})".format(file_version=parser[None]["format_version"], current_version=_format_version))
+	except configparser.NoOptionError as e:
+		raise luna.plugins.api("data").SerialisationException("Couldn't find any format version number. This is probably not a config file made for Luna.") from e
+	except ValueError as e: #Version number is not an integer.
+		raise luna.plugins.api("data").SerialisationException("Invalid version number: {file_version}".format(file_version=parser[None]["format_version"])) from e
+
+	#Find the definition to deserialise this upon.
+	try:
+		definition = parser[None]["definition"]
+	except configparser.NoOptionError:
+		raise luna.plugins.api("data").SerialisationException("Couldn't find any metadata entry for the definition this config was written for.")
+	path = definition.split("/")
+	node = luna.plugins.api("configuration") #Start searching at the root node.
+	try:
+		for segment in path:
+			node = getattr(node, segment) #TODO: Security risk if attacker writes 1+ configuration file.
+	except AttributeError as e:
+		raise luna.plugins.api("data").SerialisationException("The definition {definition} doesn't exist.".format(definition=definition)) from e
+
+	#Apply the data onto the definition.
+	for key, value in parser["values"].items():
+		try:
+			definition[key] = value
+		except KeyError:
+			luna.plugins.api("logger").warning("Definition {definition} has no configuration entry {key}.", definition=definition, key=key)
+			#Skip this key, but continue filling the rest.
