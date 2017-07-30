@@ -170,18 +170,18 @@ class Configuration:
 			local_dir = os.getenv("LOCALAPPDATA")
 			if not local_dir: #Environment variable wasn't defined.
 				local_dir = os.path.expanduser("~\\AppData\\Local\\")
-			return os.path.join(local_dir, luna.application_name)
+			return os.path.join(local_dir, luna.APPLICATION_NAME)
 		elif system == "Linux":
 			config_dir = os.getenv("XDG_CONFIG_HOME")
 			if not config_dir: #Environment variable wasn't defined.
 				config_dir = os.path.expanduser("~/.config")
-			return os.path.join(config_dir, luna.application_name)
+			return os.path.join(config_dir, luna.APPLICATION_NAME)
 		elif system == "Darwin":
 			support_dir = os.path.expanduser("~/Library/Application Support")
-			return os.path.join(support_dir, luna.application_name)
+			return os.path.join(support_dir, luna.APPLICATION_NAME)
 		else: #Unknown system!
 			luna.plugins.api("logger").warning("Unknown system: {system}. I don't know where to save my configuration!", system=system)
-			return os.path.join(os.getcwd(), luna.application_name)
+			return os.path.join(os.getcwd(), luna.APPLICATION_NAME)
 
 	def _save_configuration(self, configuration, name, directory):
 		"""

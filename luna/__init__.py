@@ -13,7 +13,7 @@ plug-in API itself, but could also include things like the internationalisation
 system in the future.
 """
 
-application_author = "${LUNA_AUTHOR}".replace("$" + "{LUNA_AUTHOR}", "Ghostkeeper")
+APPLICATION_AUTHOR = "${LUNA_AUTHOR}".replace("$" + "{LUNA_AUTHOR}", "Ghostkeeper")
 """
 The author(s) of the application.
 
@@ -21,7 +21,7 @@ This is constructed in such a way that it can be formatted by CMake if necessary
 and still have a default filled in by Python if CMake wasn't applied.
 """
 
-application_description = "${LUNA_DESCRIPTION}".replace("$" + "{LUNA_DESCRIPTION}", "Pluggable application framework.")
+APPLICATION_DESCRIPTION = "${LUNA_DESCRIPTION}".replace("$" + "{LUNA_DESCRIPTION}", "Pluggable application framework.")
 """
 A description for the application.
 
@@ -29,7 +29,7 @@ This is constructed in such a way that it can be formatted by CMake if necessary
 and still have a default filled in by Python if CMake wasn't applied.
 """
 
-application_name = "${LUNA_TITLE}".replace("$" + "{LUNA_TITLE}", "Luna")
+APPLICATION_NAME = "${LUNA_TITLE}".replace("$" + "{LUNA_TITLE}", "Luna")
 """
 The name of the application.
 
@@ -37,7 +37,7 @@ This is constructed in such a way that it can be formatted by CMake if necessary
 and still have a default filled in by Python if CMake wasn't applied.
 """
 
-application_version_major = int("${LUNA_VERSION_MAJOR}".replace("$" + "{LUNA_VERSION_MAJOR}", "0"))
+APPLICATION_VERSION_MAJOR = int("${LUNA_VERSION_MAJOR}".replace("$" + "{LUNA_VERSION_MAJOR}", "0"))
 """
 The major version number of the application.
 
@@ -45,7 +45,7 @@ This is constructed in such a way that it can be formatted by CMake if necessary
 and still have a default filled in by Python if CMake wasn't applied.
 """
 
-application_version_minor = int("${LUNA_VERSION_MINOR}".replace("$" + "{LUNA_VERSION_MINOR}", "0"))
+APPLICATION_VERSION_MINOR = int("${LUNA_VERSION_MINOR}".replace("$" + "{LUNA_VERSION_MINOR}", "0"))
 """
 The minor version number of the application, beneath the major version.
 
@@ -53,7 +53,7 @@ This is constructed in such a way that it can be formatted by CMake if necessary
 and still have a default filled in by Python if CMake wasn't applied.
 """
 
-application_version_patch = int("${LUNA_VERSION_PATCH}".replace("$" + "{LUNA_VERSION_PATCH}", "0"))
+APPLICATION_VERSION_PATCH = int("${LUNA_VERSION_PATCH}".replace("$" + "{LUNA_VERSION_PATCH}", "0"))
 """
 The patch version number of the application, beneath the minor version.
 
